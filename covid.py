@@ -302,7 +302,8 @@ else:
         'Serbia': 6.964,
         'Seychelles': 0.097625,
         'Panama': 4.246,
-        "Rwanda": 12.63,
+        'Rwanda': 12.63,
+        'Papua New Guinea': 8.776
 }
 
 
@@ -437,6 +438,7 @@ icu_beds = {
     'Seychelles': np.nan,
     'Panama': np.nan,
     'Rwanda': np.nan,
+    'Papua New Guinea': np.nan,
 }
 
 
