@@ -11,6 +11,7 @@ import pandas as pd
 NBSP = u"\u00A0"
 converter = mdates.ConciseDateConverter()
 locator = mdates.DayLocator([1])
+formatter = mdates.ConciseDateFormatter(locator)
 
 munits.registry[np.datetime64] = converter
 munits.registry[datetime.date] = converter
@@ -111,7 +112,7 @@ if US_STATES:
 
     dates = np.array(
         [
-            np.datetime64(datetime.datetime.strptime(date, "%Y-%m-%d"), 'h')
+            np.datetime64(datetime.datetime.strptime(date, "%Y-%m-%d"), 'D')
             for date in datestrings
         ]
     )
@@ -124,7 +125,7 @@ if US_STATES:
     vax_data = {}
     for state, subdf in df.groupby('Province_State'):
         vax_data[state] = {
-            'dates': np.array([np.datetime64(date, 'h') for date in subdf['Date']]),
+            'dates': np.array([np.datetime64(date, 'D') for date in subdf['Date']]),
             'vaccinated': np.array(
                 [
                     x.replace("\u202c", "") if isinstance(x, str) else x
@@ -161,7 +162,7 @@ else:
             if dates is None:
                 dates = np.array(
                 [
-                    np.datetime64(datetime.datetime.strptime(date, "%m/%d/%y"), 'h')
+                    np.datetime64(datetime.datetime.strptime(date, "%m/%d/%y"), 'D')
                     for date in subdf.columns
                 ]
             )
@@ -197,7 +198,7 @@ else:
         vax_data[country] = {
             'dates': np.array(
                 [
-                    np.datetime64(datetime.datetime.strptime(date, "%Y-%m-%d"), 'h')
+                    np.datetime64(datetime.datetime.strptime(date, "%Y-%m-%d"), 'D')
                     for date in subdf['date']
                 ]
             ),
@@ -326,15 +327,15 @@ for country in countries:
         if len(vaccinated) > 0:
             # Prepend a zero:
             vaccinated = np.insert(vaccinated, 0, 0.0)
-            vax_dates = np.insert(vax_dates, 0, vax_dates[0] - 24)
+            vax_dates = np.insert(vax_dates, 0, vax_dates[0] - 1)
         else:
             # no non-nan data
             vax_dates = dates
-            vaccinated = np.full(len(dates), -1e6)
+            vaccinated = np.full(len(dates), -1e9)
 
     else:
         vax_dates = dates
-        vaccinated = np.full(len(dates), -1e6)
+        vaccinated = np.full(len(dates), -1e9)
 
     vax_data[country] = {
         'dates': vax_dates,
@@ -522,8 +523,8 @@ for SINGLE in [False, True]:
                     maxfev=100000,
                 )
 
-                k_arr.append(24 * params[0])
-                u_k_arr.append(24 * np.sqrt(covariance[0, 0]))
+                k_arr.append(params[0])
+                u_k_arr.append(np.sqrt(covariance[0, 0]))
 
         k_arr = np.array(k_arr)
         u_k_arr = np.array(u_k_arr)
@@ -532,8 +533,8 @@ for SINGLE in [False, True]:
         u_r_arr = u_k_arr * np.exp(k_arr)
 
         x_model = np.arange(
-            dates[-FIT_PTS] - np.timedelta64(24, 'h'),
-            dates[-1] + np.timedelta64(24 * N_DAYS_PROJECTION, 'h'),
+            dates[-FIT_PTS] - np.timedelta64(1, 'D'),
+            dates[-1] + np.timedelta64(N_DAYS_PROJECTION, 'D'),
         )
         x_model_float = x_model.astype(float)
 
@@ -689,6 +690,7 @@ for SINGLE in [False, True]:
 
         for ax in [ax1, ax2]:
             ax.xaxis.set_major_locator(locator)
+            ax.xaxis.set_major_formatter(formatter)
             ax.get_xaxis().get_major_formatter().show_offset = False
 
         ax1.set_xticklabels([])
