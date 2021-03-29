@@ -1,0 +1,61 @@
+<html>
+<META HTTP-EQUIV="EXPIRES" CONTENT="0">
+<head>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-162432647-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-162432647-1');
+  </script>
+
+  <meta charset="UTF-8">
+  <meta property="og:image" content="COVID_social_preview.png">
+  <meta property="og:title" content="Australian vaccination rollout plots"/>
+  <meta property="og:url" content="http://chrisbillington.net/COVID">
+
+  <style type="text/css">
+    html * {
+      font-family: verdana, arial, sans-serif;
+    }
+  </style>
+</head>
+<body>
+  Last updated: 2021-03-29-12:45 Melbourne time
+  <br>
+  <small>
+    Updates whenever the federal government releases latest vaccination data.
+  </small>
+  <h1>
+    Australian COVID vaccination rollout
+  </h1>
+  <p>
+    Below are daily and cumulative COVID-19 doses administered in Australia, as of the
+    latest federal figures. These are compared to the average rate required for 40
+    million doses to be administered by the end of October, which is approximately what
+    Australia is targeting.
+  </p>
+  <img src="cumulative_doses.svg">
+  <img src="daily_doses.svg">
+
+  <h3>Details</h3>
+  <ul>
+    <li>
+      Data has been smoothed using 2-day Gaussian smoothing. This shows the general trend despiute large day-to-day fluctuations (caused mostly by inconsistent timing of when data is released).
+    </li>
+    <li>
+      Even if the plot has updated recently, the latest data shown may only be up until; some previous date. This occurs if, for example, the government releases data pertaining to several days earlier.
+    </li>
+    <p>
+      Source for dose numbers: <a href="https://covidlive.com.au">covidlive.com.au/</a>
+    </p>
+    <p>
+      Plot by Chris Billington. Contact: <a href="mailto:chrisjbillington@gmail.com">chrisjbillington@gmail.com</a>
+    </p>
+    <p>
+      Python script for producing the plot can be found at <a href="https://github.com/chrisjbillington/chrisjbillington.github.io/blob/master/aus_vax.py">https://github.com/chrisjbillington/chrisjbillington.github.io/blob/master/aus_vax.py</a>.
+    </p>
+  </body>
+  </html>
