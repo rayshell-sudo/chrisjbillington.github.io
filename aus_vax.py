@@ -5,7 +5,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.units as munits
 import matplotlib.dates as mdates
-
+from pathlib import Path
+from pytz import timezone
 
 converter = mdates.ConciseDateConverter()
 locator = mdates.DayLocator([1])
@@ -78,28 +79,8 @@ dates = np.array([np.datetime64(datetime.strptime(d, '%d %b %y'), 'D') for d in 
 doses = doses[dates >= START_DATE]
 dates = dates[dates >= START_DATE]
 
-dates = dates[:-2]
-doses = doses[:-2]
-
-# doses[-1] += 3 * 29000 + 3 * 5000
-# doses[-2] += 2 *29000 + 2 * 5000
-# doses[-1] += 29000 + 5000
-
-# for i in range(50):
-#     dates = np.append(dates, [dates[-1] + 1])
-#     doses = np.append(doses, [doses[-1] *1.05])
-
-
-# dates = np.append(dates, [dates[-1] + 1])
-# doses = np.append(doses, [doses[-1] + 60000])
-
-# for i in range(35):
-#     dates = np.append(dates, [dates[-1] + 1])
-#     doses = np.append(doses, [2 * doses[-1] - doses[-2] + 1600])
-
-# for i in range(35):
-#     dates = np.append(dates, [dates[-1] + 1])
-#     doses = np.append(doses, [doses[-1] * 1.05])
+# dates = dates[:-2]
+# doses = doses[:-2]
 
 
 smoothed_doses = gaussian_smoothing(np.diff(doses, prepend=0), 2).cumsum()
@@ -296,6 +277,16 @@ for ax in [ax1, ax2]:
 # )
 # plt.setp(plt.gca().get_xaxis().get_offset_text(), visible=False)
 
+# Update the date in the HTML
+html_file = 'aus_vaccinations.html'
+html_lines = Path(html_file).read_text().splitlines()
+now = datetime.now(timezone('Australia/Melbourne')).strftime('%Y-%m-%d-%H:%M')
+for i, line in enumerate(html_lines):
+    if 'Last updated' in line:
+        html_lines[i] = f'    Last updated: {now} Melbourne time'
+Path(html_file).write_text('\n'.join(html_lines) + '\n')
+
 fig1.savefig('daily_doses.svg')
 fig2.savefig('cumulative_doses.svg')
 plt.show()
+
