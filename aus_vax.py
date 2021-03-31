@@ -286,7 +286,11 @@ for i, line in enumerate(html_lines):
         html_lines[i] = f'    Last updated: {now} Melbourne time'
 Path(html_file).write_text('\n'.join(html_lines) + '\n')
 
-fig1.savefig('daily_doses.svg')
-fig2.savefig('cumulative_doses.svg')
+fig1.savefig('cumulative_doses.svg')
+fig2.savefig('daily_doses.svg')
+
+fig1.savefig('cumulative_doses.png')
+fig2.savefig('daily_doses.png')
+
 plt.show()
 
