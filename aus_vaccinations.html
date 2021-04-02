@@ -23,11 +23,8 @@
   </style>
 </head>
 <body>
-    Last updated: 2021-03-31-15:44 Melbourne time
+    Last updated: 2021-04-02-17:28 Melbourne time
   <br>
-  <small>
-    Updates whenever the federal government releases latest vaccination data.
-  </small>
   <h1>
     Australian COVID vaccination rollout
   </h1>
@@ -37,20 +34,21 @@
     40 million doses to be administered by the end of October, which is approximately
     what Australia is targeting.
   </p>
-  <img src="daily_doses.svg">
+  <img src="daily_doses_by_state.svg">
   <img src="cumulative_doses.svg">
 
   <h3>Details</h3>
   <ul>
     <li>
-      Data has been smoothed using 2-day Gaussian smoothing. This allows the general
-      trend to be more visible despite large day-to-day fluctuations in the data (caused
-      mostly by inconsistent timing of when data is released).
+      Daily doses have been smoothed using 2-day Gaussian smoothing. This allows the
+      general trend to be more visible despite large day-to-day fluctuations in the
+      data.
     </li>
     <li>
-      Even if the plot has updated recently, the plot may only show data up until some
-      previous date. This occurs if, for example, the government releases data
-      pertaining to several days earlier, as often is the case.
+      If the federal government has not released data recently, the most recent daily
+      rate from reported data is used to project the missing data. This is shown
+      separately in the daily doses plot. The plot of cumulative doses does not include
+      any projected numbers.
     </li>
     <p>
       Source for dose numbers: <a href="https://covidlive.com.au">covidlive.com.au</a>

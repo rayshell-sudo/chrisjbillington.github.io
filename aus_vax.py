@@ -72,16 +72,40 @@ TREND = False
 START_DATE = np.datetime64('2021-02-22')
 PHASE_1B = np.datetime64('2021-03-22')
 
-df = pd.read_html(f"https://covidlive.com.au/report/daily-vaccinations/{state}")[1]
-dates = np.array(df['DATE'][::-1])
-doses = np.array(df['DOSES'][::-1])
-dates = np.array([np.datetime64(datetime.strptime(d, '%d %b %y'), 'D') for d in dates])
-doses = doses[dates >= START_DATE]
-dates = dates[dates >= START_DATE]
+doses_by_state = {}
+for s in STATES:
+    print(f"getting data for {s}")
+    df = pd.read_html(f"https://covidlive.com.au/report/daily-vaccinations/{s}")[1]
+    dates = np.array(df['DATE'][::-1])
+    state_doses = np.array(df['DOSES'][::-1])
+    dates = np.array([np.datetime64(datetime.strptime(d, '%d %b %y'), 'D') for d in dates])
+    state_doses = state_doses[dates >= START_DATE]
+    dates = dates[dates >= START_DATE]
+    doses_by_state[s] = state_doses
 
-# dates = dates[:-2]
-# doses = doses[:-2]
+# doses_by_state['aus'][-2:] += 40000
+# doses_by_state['aus'][-1:] += 40000
 
+doses_by_state['fed'] = doses_by_state['aus'] - sum(
+    doses_by_state[s] for s in STATES if s != 'aus'
+)
+
+
+doses = doses_by_state[state]
+
+# dates = dates[:-1]
+# doses = doses[:-1]
+
+# doses = np.append(doses, [doses[-1] + 85000])
+# dates = np.append(dates, [dates[-1] + 1])
+# doses = np.append(doses, [doses[-1] + 85000])
+# dates = np.append(dates, [dates[-1] + 1])
+
+# doses = np.append(doses, [doses[-1] + 90000])
+# dates = np.append(dates, [dates[-1] + 1])
+
+# doses = np.append(doses, [doses[-1] + 100000])
+# dates = np.append(dates, [dates[-1] + 1])
 
 smoothed_doses = gaussian_smoothing(np.diff(doses, prepend=0), 2).cumsum()
 
@@ -92,9 +116,10 @@ N_DAYS_PROJECT = 250
 days = (dates - dates[0]).astype(float)
 days_model = np.linspace(days[0], days[-1] + N_DAYS_PROJECT, 1000)
 
-fig1 = plt.figure()
+fig1 = plt.figure(figsize=(8, 6))
+
 plt.fill_between(
-        dates,
+        dates + 1,
         smoothed_doses / 1e6,
         label='Cumulative doses (smoothed)',
         step='pre',
@@ -137,8 +162,8 @@ if TREND:
 
 
 plt.axis(
-    xmin=dates[0].astype(int) - 0.5,
-    xmax=dates[0].astype(int) + 0.5 + 250,
+    xmin=dates[0].astype(int) + 1,
+    xmax=dates[0].astype(int) + 250,
     ymin=0,
     ymax=40,
 )
@@ -148,11 +173,11 @@ plt.ylabel('Cumulative doses (millions)')
 # plt.yscale('log')
 
 
-fig2 = plt.figure()
+fig2 = plt.figure(figsize=(8, 6))
 daily_doses = np.diff(smoothed_doses, prepend=0)
 
 plt.fill_between(
-        dates,
+        dates + 1,
         daily_doses / 1000,
         label='Daily doses (smoothed)',
         step='pre',
@@ -167,8 +192,7 @@ ax2 = plt.gca()
 plt.title(
     f'{state.upper()} daily doses. Latest rate: {daily_doses[-1] / 1000:.1f}k per day'
 )
-if state == 'aus':
-    plt.axhline(160, color='k', linestyle='--', label="Target")
+plt.axhline(160, color='k', linestyle='--', label="Target")
 
 if TREND:
     dt = days_model[1] - days_model[0]
@@ -189,11 +213,92 @@ if TREND:
         linewidth=0,
     )
 
-for ax in [ax1, ax2]:
+plt.axis(
+    xmin=dates[0].astype(int) + 1,
+    xmax=dates[0].astype(int) + 250,
+    ymin=0,
+    ymax=210,
+)
+plt.ylabel('Daily doses (thousands)')
+
+fig3 = plt.figure(figsize=(8, 6))
+
+# How many days out of date is federal data?
+FED_CLIP = 2
+
+cumsum = np.zeros(len(dates))
+colours = list(reversed([f'C{i}' for i in range(9)]))
+for i, state in enumerate(['nt', 'act', 'tas', 'sa', 'wa', 'qld', 'vic', 'nsw', 'fed']):
+    doses = doses_by_state[state]
+    if state == 'fed' and FED_CLIP:
+        smoothed_doses = gaussian_smoothing(np.diff(doses[:-FED_CLIP], prepend=0), 2).cumsum()
+        smoothed_doses = np.append(smoothed_doses, [smoothed_doses[-1]] * FED_CLIP)
+    else:
+        smoothed_doses = gaussian_smoothing(np.diff(doses, prepend=0), 2).cumsum()
+    
+    daily_doses = np.diff(smoothed_doses, prepend=0)
+    if state == 'fed' and FED_CLIP:
+        latest_daily_doses = daily_doses[-FED_CLIP - 1]
+    else:
+        latest_daily_doses = daily_doses[-1]
+
+    plt.fill_between(
+        dates + 1,
+        cumsum / 1e3,
+        (cumsum + daily_doses) / 1e3,
+        label=f'{state.upper()} ({latest_daily_doses / 1000:.1f}k/day)',
+        step='pre',
+        color=colours[i],
+        zorder=10,
+        linewidth=0,
+    )
+    if state == 'fed' and FED_CLIP:
+        plt.fill_between(
+            dates[-FED_CLIP - 1 :] + 1,
+            cumsum[-FED_CLIP - 1 :] / 1e3,
+            (cumsum[-FED_CLIP - 1 :] + latest_daily_doses) / 1e3,
+            label=f'{state.upper()} (projected)',
+            step='pre',
+            color=colours[i],
+            hatch="//////",
+            edgecolor='tab:cyan',
+            zorder=10,
+            linewidth=0,
+        )
+    cumsum += daily_doses
+
+latest_daily_doses = cumsum[-1]
+if FED_CLIP:
+    latest_daily_doses += daily_doses[-FED_CLIP - 1]
+
+plt.title(
+    f'Smoothed daily doses by state/territory. Latest national rate*: {latest_daily_doses / 1000:.1f}k/day'
+)
+
+text = plt.figtext(
+        0.575,
+        0.85,
+        "* Includes projected federally-administered doses",
+        fontsize='x-small',
+    )
+text.set_bbox(dict(facecolor='white', alpha=0.8, linewidth=0))
+
+plt.ylabel('Daily doses (thousands)')
+plt.axhline(160, color='k', linestyle='--', label="Target")
+
+plt.axis(
+    xmin=dates[0].astype(int) + 1,
+    xmax=dates[0].astype(int) + 250,
+    ymin=0,
+    ymax=200,
+)
+ax3 = plt.gca()
+
+for ax in [ax1, ax2, ax3]:
     ax.fill_betweenx(
         [0, 1e9],
-        2 * [START_DATE.astype(int) - 0.5],
-        2 * [PHASE_1B.astype(int) - 0.5],
+        2 * [START_DATE.astype(int)],
+        2 * [PHASE_1B.astype(int)],
         color='red',
         alpha=0.5,
         linewidth=0,
@@ -202,8 +307,8 @@ for ax in [ax1, ax2]:
 
     ax.fill_betweenx(
         [0, 1e9],
-        2 * [PHASE_1B.astype(int) - 0.5],
-        2 * [dates[-1].astype(int) + 30.5],
+        2 * [PHASE_1B.astype(int)],
+        2 * [dates[-1].astype(int) + 30],
         color='orange',
         alpha=0.5,
         linewidth=0,
@@ -213,24 +318,18 @@ for ax in [ax1, ax2]:
     for i in range(10):
         ax.fill_betweenx(
             [0, 1e9],
-            2 * [dates[-1].astype(int) + 30.5 + i],
-            2 * [dates[-1].astype(int) + 31.5 + i],
+            2 * [dates[-1].astype(int) + 30 + i],
+            2 * [dates[-1].astype(int) + 31 + i],
             color='orange',
             alpha=0.5 * (10 - i) / 10,
             linewidth=0,
         )
 
-plt.axis(
-    xmin=dates[0].astype(int) - 0.5,
-    xmax=dates[0].astype(int) + 0.5 + 250,
-    ymin=0,
-    ymax=210,
-)
-plt.ylabel('Daily doses (thousands)')
+
 # plt.gca().tick_params(axis='x', rotation=90)
 # plt.axis(
-#     xmin=dates[0].astype(int) - 0.5,
-#     xmax=dates[-1].astype(int) + 0.5,
+#     xmin=dates[0].astype(int),
+#     xmax=dates[-1].astype(int),
 #     ymin=0,
 #     ymax=30000,
 # )
@@ -254,7 +353,7 @@ ax2.legend(
     ncol=2,
 )
 
-for ax in [ax1, ax2]:
+for ax in [ax1, ax2, ax3]:
     ax.xaxis.set_major_locator(locator)
     ax.xaxis.set_major_formatter(formatter)
     ax.get_xaxis().get_major_formatter().show_offset = False
@@ -262,6 +361,7 @@ for ax in [ax1, ax2]:
     # ax.tick_params(axis='x', rotation=90)
 
 
+ax3.legend(loc='lower right')
 
 # plt.figure()
 
@@ -270,12 +370,16 @@ for ax in [ax1, ax2]:
 # plt.axis(ymin=0, ymax=100)
 # plt.ylabel('growth rate of doses (% / day)')
 # plt.gca().xaxis.set_major_locator(mdates.DayLocator([1]))
-# # plt.gca().tick_params(axis='x', rotation=90)
+# plt.gca().get_xaxis().get_major_formatter().show_offset = False
 # plt.axis(
-#     xmin=dates[0].astype(int) - 0.5,
-#     xmax=dates[0].astype(int) + 0.5 + 250,
+#     xmin=dates[0].astype(int),
+#     xmax=dates[0].astype(int) + 250,
 # )
-# plt.setp(plt.gca().get_xaxis().get_offset_text(), visible=False)
+
+
+
+
+
 
 # Update the date in the HTML
 html_file = 'aus_vaccinations.html'
@@ -288,9 +392,10 @@ Path(html_file).write_text('\n'.join(html_lines) + '\n')
 
 fig1.savefig('cumulative_doses.svg')
 fig2.savefig('daily_doses.svg')
+fig3.savefig('daily_doses_by_state.svg')
 
 fig1.savefig('cumulative_doses.png')
 fig2.savefig('daily_doses.png')
+fig3.savefig('daily_doses_by_state.png')
 
 plt.show()
-
