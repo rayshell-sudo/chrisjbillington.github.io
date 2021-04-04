@@ -63,9 +63,8 @@ def gaussian_smoothing(data, pts):
     from scipy.signal import convolve
     x = np.arange(-4 * pts, 4 * pts + 1, 1)
     kernel = np.exp(-(x ** 2) / (2 * pts ** 2))
-    smoothed = convolve(data, kernel, mode='same')
     normalisation = convolve(np.ones_like(data), kernel, mode='same')
-    return smoothed / normalisation
+    return convolve(data / normalisation, kernel, mode='same')
 
 
 TREND = False
@@ -83,8 +82,16 @@ for s in STATES:
     dates = dates[dates >= START_DATE]
     doses_by_state[s] = state_doses
 
-# doses_by_state['aus'][-2:] += 40000
-# doses_by_state['aus'][-1:] += 40000
+
+# Move back some late-announced data to the dates which it applies to:
+known_national_dailies = [
+    ['2021-04-01', 73979],
+    ['2021-04-02', 79283],
+    ['2021-04-03', 4435],
+]
+for date, daily_doses in known_national_dailies:
+    i = np.argwhere(dates == np.datetime64(date))[0, 0]
+    doses_by_state['aus'][i] = doses_by_state['aus'][i - 1] + daily_doses
 
 doses_by_state['fed'] = doses_by_state['aus'] - sum(
     doses_by_state[s] for s in STATES if s != 'aus'
@@ -223,8 +230,8 @@ plt.ylabel('Daily doses (thousands)')
 
 fig3 = plt.figure(figsize=(8, 6))
 
-# How many days out of date is federal data?
-FED_CLIP = 2
+MOST_RECENT_FED_UPDATE = np.datetime64('2021-04-04')
+FED_CLIP = len(dates) - 1 - np.argwhere(dates == MOST_RECENT_FED_UPDATE)[0, 0]
 
 cumsum = np.zeros(len(dates))
 colours = list(reversed([f'C{i}' for i in range(9)]))
@@ -271,17 +278,18 @@ latest_daily_doses = cumsum[-1]
 if FED_CLIP:
     latest_daily_doses += daily_doses[-FED_CLIP - 1]
 
+asterisk = '*' if FED_CLIP else ''
 plt.title(
-    f'Smoothed daily doses by state/territory. Latest national rate*: {latest_daily_doses / 1000:.1f}k/day'
+    f'Smoothed daily doses by state/territory. Latest national rate{asterisk}: {latest_daily_doses / 1000:.1f}k/day'
 )
-
-text = plt.figtext(
-        0.575,
-        0.85,
-        "* Includes projected federally-administered doses",
-        fontsize='x-small',
-    )
-text.set_bbox(dict(facecolor='white', alpha=0.8, linewidth=0))
+if FED_CLIP:
+    text = plt.figtext(
+            0.575,
+            0.85,
+            "* Includes projected federally-administered doses",
+            fontsize='x-small',
+        )
+    text.set_bbox(dict(facecolor='white', alpha=0.8, linewidth=0))
 
 plt.ylabel('Daily doses (thousands)')
 plt.axhline(160, color='k', linestyle='--', label="Target")
