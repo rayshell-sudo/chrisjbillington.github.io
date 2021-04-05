@@ -82,16 +82,15 @@ for s in STATES:
     dates = dates[dates >= START_DATE]
     doses_by_state[s] = state_doses
 
-
 # Move back some late-announced data to the dates which it applies to:
-known_national_dailies = [
-    ['2021-04-01', 73979],
-    ['2021-04-02', 79283],
-    ['2021-04-03', 4435],
-]
-for date, daily_doses in known_national_dailies:
-    i = np.argwhere(dates == np.datetime64(date))[0, 0]
-    doses_by_state['aus'][i] = doses_by_state['aus'][i - 1] + daily_doses
+# known_national_dailies = [
+#     ['2021-04-01', 73979],
+#     ['2021-04-02', 79283],
+#     ['2021-04-03', 4435],
+# ]
+# for date, daily_doses in known_national_dailies:
+#     i = np.argwhere(dates == np.datetime64(date))[0, 0]
+#     doses_by_state['aus'][i] = doses_by_state['aus'][i - 1] + daily_doses
 
 doses_by_state['fed'] = doses_by_state['aus'] - sum(
     doses_by_state[s] for s in STATES if s != 'aus'
