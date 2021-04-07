@@ -126,14 +126,12 @@ fig1 = plt.figure(figsize=(8, 6))
 
 plt.fill_between(
         dates + 1,
-        smoothed_doses / 1e6,
-        label='Cumulative doses (smoothed)',
+        doses / 1e6,
+        label='Cumulative doses',
         step='pre',
         color='C0',
         zorder=10
     )
-
-# plt.bar(dates, smoothed_doses / 1e6, width=1, label='Cumulative doses (smoothed)')
 
 ax1 = plt.gca()
 target = 160000 * days_model
