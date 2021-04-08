@@ -32,10 +32,9 @@ def gaussian_smoothing(data, pts):
     x = np.arange(-4 * pts, 4 * pts + 1, 1)
     kernel = np.exp(-(x ** 2) / (2 * pts ** 2))
     normalisation = convolve(np.ones_like(data), kernel, mode='same')
-    return convolve(data / normalisation, kernel, mode='same')
+    return convolve(data , kernel, mode='same') / normalisation
 
 
-TREND = False
 START_DATE = np.datetime64('2021-02-22')
 PHASE_1B = np.datetime64('2021-03-22')
 
@@ -57,8 +56,55 @@ doses_by_state['fed'] = doses_by_state['aus'] - sum(
     doses_by_state[s] for s in STATES if s != 'aus'
 )
 
-
 doses = doses_by_state['aus']
+
+
+pfizer_supply_data = """
+2021-02-21      142000
+2021-02-28      308000
+2021-03-07      443000
+2021-03-14      592000
+2021-03-28      751000
+2021-04-11      870000      
+""" 
+
+AZ_OS_supply_data = """
+2021-03-07      300000
+2021-03-21      700000
+"""
+
+AZ_local_supply_data = """
+2021-03-28      832000
+2021-04-11      1300000
+"""
+
+def unpack_data(s):
+    dates = []
+    values = []
+    for line in s.splitlines():
+        if line.strip():
+            date, value = line.split()
+            dates.append(np.datetime64(date))
+            values.append(float(value))
+    return np.array(dates), np.array(values)
+
+pfizer_supply_dates, pfizer_supply = unpack_data(pfizer_supply_data)
+AZ_OS_supply_dates, AZ_OS_suppy = unpack_data(AZ_OS_supply_data)
+AZ_local_supply_dates, AZ_local_supply = unpack_data(AZ_local_supply_data)
+
+pfizer_shipments = np.diff(pfizer_supply, prepend=0)
+AZ_shipments = np.diff(AZ_OS_suppy, prepend=0)
+AZ_production = np.diff(AZ_local_supply, prepend=0)
+
+# Calculate vaccine utilisation:
+
+first_doses = doses.astype(float)
+reserved = np.zeros_like(first_doses)
+available = np.zeros_like(reserved)
+
+available[0] = pfizer_shipments[0]
+for i, date in enumerate(dates):
+    pass
 
 
 N_DAYS_PROJECT = 250
@@ -95,7 +141,7 @@ plt.ylabel('Cumulative doses (millions)')
 
 fig2 = plt.figure(figsize=(8, 6))
 
-MOST_RECENT_FED_UPDATE = np.datetime64('2021-04-07')
+MOST_RECENT_FED_UPDATE = np.datetime64('2021-04-08')
 FED_CLIP = len(dates) - 1 - np.argwhere(dates == MOST_RECENT_FED_UPDATE)[0, 0]
 
 cumsum = np.zeros(len(dates))
@@ -169,9 +215,15 @@ plt.axis(
 )
 ax2 = plt.gca()
 
+
+# fig3 = plt.figure(figsize=(8, 6))
+
+
+
+
 for ax in [ax1, ax2]:
     ax.fill_betweenx(
-        [0, 1e9],
+        [0, ax.get_ylim()[1]],
         2 * [START_DATE.astype(int)],
         2 * [PHASE_1B.astype(int)],
         color='red',
@@ -181,7 +233,7 @@ for ax in [ax1, ax2]:
     )
 
     ax.fill_betweenx(
-        [0, 1e9],
+        [0, ax.get_ylim()[1]],
         2 * [PHASE_1B.astype(int)],
         2 * [dates[-1].astype(int) + 30],
         color='orange',
@@ -192,7 +244,7 @@ for ax in [ax1, ax2]:
 
     for i in range(10):
         ax.fill_betweenx(
-            [0, 1e9],
+            [0, ax.get_ylim()[1]],
             2 * [dates[-1].astype(int) + 30 + i],
             2 * [dates[-1].astype(int) + 31 + i],
             color='orange',
@@ -202,7 +254,7 @@ for ax in [ax1, ax2]:
 
 
 handles, labels = ax1.get_legend_handles_labels()
-order = [0, 1, 4, 3, 2] if TREND else [1, 0, 2, 3]
+order = [1, 0, 2, 3]
 ax1.legend(
     [handles[idx] for idx in order],
     [labels[idx] for idx in order],
