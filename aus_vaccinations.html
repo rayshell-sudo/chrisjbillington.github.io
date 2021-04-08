@@ -17,39 +17,74 @@
   <meta property="og:url" content="http://chrisbillington.net/COVID">
 
   <style type="text/css">
-    html * {
-      font-family: verdana, arial, sans-serif;
-    }
-  </style>
+  html * {
+    font-family: verdana, arial, sans-serif;
+  }
+  div.content { width: 960px; margin:0 auto; }
+</style>
 </head>
 <body>
-    Last updated: 2021-04-08-13:29 Melbourne time
-  <br>
-  <h1>
-    Australian COVID vaccination rollout
-  </h1>
-  <p>
-    Below are daily and cumulative COVID-19 vaccine doses administered in Australia, as
-    of the latest federal figures. These are compared to the average rate required for
-    40 million doses to be administered by the end of October, which is approximately
-    what Australia is targeting.
-  </p>
-  <img src="daily_doses_by_state.svg">
-  <img src="cumulative_doses.svg">
+  <div class="content">
 
-  <h3>Details</h3>
-  <ul>
-    <li>
-      Daily doses have been smoothed using 2-day Gaussian smoothing. This allows the
-      general trend to be more visible despite large day-to-day fluctuations in the
-      data.
-    </li>
-    <li>
-      If the federal government has not released data recently, the most recent daily
-      rate (after smoothing) from reported data is used to project the missing data.
-      This is shown separately in the daily doses plot. The plot of cumulative doses
-      does not include any projected numbers.
-    </li>
+    Last updated: 2021-04-08-19:54 Melbourne time
+    <br>
+    <h1>
+      Australian COVID vaccination rollout
+    </h1>
+    <h2>
+      Daily doses
+    </h2>
+
+    Below is a plot of daily vaccine doses administed in Australia, by state/territory.
+    These are compared to the average rate required for 40 million doses to be
+    administered by the end of October 160k doses per day, which is approximately what
+    Australia is targeting.
+
+    The data is smoothed using Gaussian smoothing with σ=2 days. If the federal
+    government has not released data recently, the most recent daily rate (after
+    smoothing) from reported data is used to project the missing data. If this is the
+    case, this will be indicated separately on the plot.
+    <br>
+      <img src="daily_doses_by_state.svg">
+    <h2>
+      Utilisation
+    </h2>
+    Below is a plot of the estimated status of each vaccine dose in Australia. How many
+    doses are in people's arms, in reserve, or available? This helps show whether
+    administration of doses is keeping up with supply. Since the government has not
+    published data to determine this exactly, this estimate is based on a number of
+    assumptions:
+    <ul>
+      <li>
+        That the number of Pfizer and Astrazeneca first doses administered on a given
+        day is in proportion to the number of available doses of each type of vaccine on
+        that day.
+      </li>
+      <li>
+        That for every first dose adminsiterd a second dose is held in reserve, and
+        administered exactly 3 weeks later for Pfizer, or 12 weeks later for
+        AstraZeneca.
+      </li>
+      <li>
+        That doses becoming available in a given week (supply data is only available at
+        the 1-week level) become available on the Wednesday of that week.
+      </li>
+    </ul>
+    This estimate ignores possible wastage of vaccines.
+    <br>
+    <img src="utilisation.svg">
+    <h2>
+      Cumulative doses
+    </h2>
+    Finally, here is a simply plot of cumulative doses in Australia over time, compared
+    to a hypothetical rollout at a constant rate toward the end of October target of 40M
+    doses.
+    <br>
+    <img src="cumulative_doses.svg">
+    <h3>Details</h3>
+    <p>
+      Source for vaccine supply: <a href="https://www.covid19data.com.au/vaccines">covid19data.com.au</a>
+    </p>
     <p>
       Source for dose numbers: <a href="https://covidlive.com.au">covidlive.com.au</a>
     </p>
@@ -57,7 +92,9 @@
       Plot by Chris Billington. Contact: <a href="mailto:chrisjbillington@gmail.com">chrisjbillington@gmail.com</a>
     </p>
     <p>
-      Python script for producing the plot can be found at <a href="https://github.com/chrisjbillington/chrisjbillington.github.io/blob/master/aus_vax.py">https://github.com/chrisjbillington/chrisjbillington.github.io/blob/master/aus_vax.py</a>.
+      Python script for producing the plots is available <a
+      href="https://github.com/chrisjbillington/chrisjbillington.github.io/blob/master/aus_vax.py">on GitHub</a>.
     </p>
-  </body>
-  </html>
+  </div>
+</body>
+</html>
