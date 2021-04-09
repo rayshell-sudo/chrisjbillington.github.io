@@ -62,7 +62,7 @@ pfizer_supply_data = """
 2021-03-07      443000
 2021-03-14      592000
 2021-03-28      751000
-2021-04-11      870000      
+2021-04-11      870000
 """ 
 
 AZ_OS_supply_data = """
@@ -149,7 +149,7 @@ days_model = np.linspace(days[0], days[-1] + N_DAYS_PROJECT, 1000)
 fig1 = plt.figure(figsize=(8, 6))
 
 plt.fill_between(
-    dates + 1, doses / 1e6, label='Cumulative doses', step='pre', color='C0', zorder=10
+    dates + 1, doses / 1e6, label='Cumulative doses', step='pre', color='C0',
 )
 
 ax1 = plt.gca()
@@ -203,7 +203,6 @@ for i, state in enumerate(['nt', 'act', 'tas', 'sa', 'wa', 'qld', 'vic', 'nsw', 
         label=f'{state.upper()} ({latest_daily_doses / 1000:.1f}k/day)',
         step='pre',
         color=colours[i],
-        zorder=10,
         linewidth=0,
     )
     if state == 'fed' and FED_CLIP:
@@ -216,7 +215,6 @@ for i, state in enumerate(['nt', 'act', 'tas', 'sa', 'wa', 'qld', 'vic', 'nsw', 
             color=colours[i],
             hatch="//////",
             edgecolor='tab:cyan',
-            zorder=10,
             linewidth=0,
         )
     cumsum += daily_doses
@@ -265,7 +263,6 @@ for arr, label, colour in [
         label=f'{label} ({arr[-1] / 1000:.0f}k doses)',
         step='pre',
         color=colour,
-        zorder=10,
         linewidth=0,
     )
     cumsum += arr
@@ -294,6 +291,7 @@ for ax in [ax1, ax2, ax3]:
         alpha=0.5,
         linewidth=0,
         label='Phase 1a',
+        zorder=-10,
     )
 
     ax.fill_betweenx(
@@ -304,6 +302,7 @@ for ax in [ax1, ax2, ax3]:
         alpha=0.5,
         linewidth=0,
         label='Phase 1b',
+        zorder=-10,
     )
 
     for i in range(10):
@@ -314,6 +313,7 @@ for ax in [ax1, ax2, ax3]:
             color='orange',
             alpha=0.5 * (10 - i) / 10,
             linewidth=0,
+            zorder=-10,
         )
 
 
@@ -327,7 +327,10 @@ ax1.legend(
 )
 
 handles, labels = ax2.get_legend_handles_labels()
-order = [9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 10, 11]
+if FED_CLIP:
+    order = [9, 10, 8, 7, 6, 5, 4, 3, 2, 1, 0, 11, 12]
+else:
+    order = [9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 10, 11]
 ax2.legend(
     [handles[idx] for idx in order],
     [labels[idx] for idx in order],
