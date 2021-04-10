@@ -26,7 +26,7 @@
 <body>
   <div class="content">
 
-    Last updated: 2021-04-09-13:49 Melbourne time
+    Last updated: 2021-04-10-15:26 Melbourne time
     <br>
     <h1>
       Australian COVID vaccination rollout
@@ -35,10 +35,10 @@
       Daily doses
     </h2>
 
-    Below is a plot of daily vaccine doses administed in Australia, by state/territory.
-    These are compared to the average rate required for 40 million doses to be
-    administered by the end of October 160k doses per day, which is approximately what
-    Australia is targeting.
+    Below is a plot of daily vaccine doses administered in Australia, by
+    state/territory. These are compared to the average rate required for 40 million
+    doses to be administered by the end of October 160k doses per day, which is
+    approximately what Australia is targeting.
 
     The data is smoothed using Gaussian smoothing with σ=2 days. If the federal
     government has not released data recently, the most recent daily rate (after
@@ -47,7 +47,7 @@
     <br>
       <img src="daily_doses_by_state.svg">
     <h2>
-      Utilisation
+      Estimated utilisation
     </h2>
     Below is a plot of the estimated status of each vaccine dose in Australia. How many
     doses are in people's arms, in reserve, or available? This helps show whether
@@ -73,10 +73,22 @@
     This estimate ignores possible wastage of vaccines.
     <br>
     <img src="utilisation.svg">
+
+    <h2>
+      Estimated utilisation by vaccine type
+    </h2>
+
+    Below is the same utilisation estimates as in the above plot, but separated by
+    vaccine type: AstraZeneca vs Pfizer.
+    <br>
+    <img src="pfizer_utilisation.svg">
+    <br>
+    <img src="az_utilisation.svg">
+
     <h2>
       Cumulative doses
     </h2>
-    Finally, here is a simply plot of cumulative doses in Australia over time, compared
+    Finally, here is a simple plot of cumulative doses in Australia over time, compared
     to a hypothetical rollout at a constant rate toward the end of October target of 40M
     doses.
     <br>

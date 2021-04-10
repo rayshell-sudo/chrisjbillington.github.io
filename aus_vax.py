@@ -95,10 +95,16 @@ AZ_production = np.diff(AZ_local_supply, prepend=0)
 
 # Calculate vaccine utilisation:
 first_doses = doses.astype(float)
-second_doses = np.zeros_like(first_doses)
-reserved = np.zeros_like(first_doses)
-pfizer_available = np.zeros_like(reserved)
-AZ_available = np.zeros_like(reserved)
+AZ_first_doses = np.zeros_like(first_doses)
+pfizer_first_doses = np.zeros_like(doses)
+AZ_first_doses = np.zeros_like(first_doses)
+pfizer_first_doses = np.zeros_like(first_doses)
+AZ_second_doses = np.zeros_like(first_doses)
+pfizer_second_doses = np.zeros_like(first_doses)
+AZ_reserved = np.zeros_like(first_doses)
+pfizer_reserved = np.zeros_like(first_doses)
+AZ_available = np.zeros_like(first_doses)
+pfizer_available = np.zeros_like(first_doses)
 
 tau_AZ = 84
 tau_pfizer = 21
@@ -125,17 +131,20 @@ for i, date in enumerate(dates):
     AZ_first_doses_today = AZ_frac * first_doses_today
     pfizer_first_doses_today = pfizer_frac * first_doses_today
 
+    AZ_first_doses[i:] += AZ_first_doses_today
+    pfizer_first_doses[i:] += pfizer_first_doses_today
+
     AZ_available[i:] -= 2 * AZ_first_doses_today
     pfizer_available[i:] -= 2 * pfizer_first_doses_today
 
-    reserved[i : i + tau_AZ] += AZ_first_doses_today
-    reserved[i : i + tau_pfizer] += pfizer_first_doses_today
+    AZ_reserved[i : i + tau_AZ] += AZ_first_doses_today
+    pfizer_reserved[i : i + tau_pfizer] += pfizer_first_doses_today
 
     first_doses[i + tau_AZ:] -= AZ_first_doses_today
     first_doses[i + tau_pfizer:] -= pfizer_first_doses_today
 
-    second_doses[i + tau_AZ:] += AZ_first_doses_today
-    second_doses[i + tau_pfizer:] += pfizer_first_doses_today
+    AZ_second_doses[i + tau_AZ:] += AZ_first_doses_today
+    pfizer_second_doses[i + tau_pfizer:] += pfizer_first_doses_today
 
 
 # plt.plot(dates, AZ_available + pfizer_available)
@@ -251,10 +260,10 @@ ax2 = plt.gca()
 fig3 = plt.figure(figsize=(8, 6))
 cumsum = np.zeros(len(dates))
 for arr, label, colour in [
-    (first_doses, 'First doses', 'C0'),
-    (second_doses, 'Second doses', 'C1'),
-    (reserved, 'Reserved', 'C3'),
-    (pfizer_available + AZ_available, 'Available', 'C2'),
+    (AZ_first_doses + pfizer_first_doses, 'First doses', 'C0'),
+    (AZ_second_doses + pfizer_second_doses, 'Second doses', 'C1'),
+    (AZ_reserved + pfizer_reserved, 'Reserved', 'C3'),
+    (AZ_available + pfizer_available, 'Available', 'C2'),
 ]:
     plt.fill_between(
         dates + 1,
@@ -267,7 +276,14 @@ for arr, label, colour in [
     )
     cumsum += arr
 
-used = first_doses[-1] + second_doses[-1] + reserved[-1]
+used = (
+    AZ_first_doses[-1]
+    + AZ_second_doses[-1]
+    + pfizer_second_doses[-1]
+    + AZ_reserved[-1]
+    + pfizer_reserved[-1]
+)
+
 unused = AZ_available[-1] + pfizer_available[-1]
 utilisation = 100 * used / (used + unused)
 plt.ylabel('Cumulative doses (thousands)')
@@ -282,7 +298,76 @@ ax3 = plt.gca()
 
 
 
-for ax in [ax1, ax2, ax3]:
+fig4 = plt.figure(figsize=(8, 6))
+cumsum = np.zeros(len(dates))
+for arr, label, colour in [
+    (AZ_first_doses, 'AZ first doses', 'C0'),
+    (AZ_second_doses, 'AZ second doses', 'C1'),
+    (AZ_reserved, 'AZ reserved', 'C3'),
+    (AZ_available, 'AZ available', 'C2'),
+]:
+    plt.fill_between(
+        dates + 1,
+        cumsum / 1e3,
+        (cumsum + arr) / 1e3,
+        label=f'{label} ({arr[-1] / 1000:.0f}k doses)',
+        step='pre',
+        color=colour,
+        linewidth=0,
+    )
+    cumsum += arr
+
+used = AZ_first_doses[-1] + AZ_second_doses[-1] + AZ_reserved[-1]
+
+unused = AZ_available[-1]
+utilisation = 100 * used / (used + unused)
+plt.ylabel('Cumulative doses (thousands)')
+plt.title(f"Estimated AZ vaccine utilisation: latest utilisation rate: {utilisation:.1f}%")
+plt.axis(
+    xmin=dates[0].astype(int) + 1,
+    xmax=dates[0].astype(int) + 125,
+    ymin=0,
+    ymax=5000,
+)
+ax4 = plt.gca()
+
+
+fig5 = plt.figure(figsize=(8, 6))
+cumsum = np.zeros(len(dates))
+for arr, label, colour in [
+    (pfizer_first_doses, 'Pfizer first doses', 'C0'),
+    (pfizer_second_doses, 'Pfizer second doses', 'C1'),
+    (pfizer_reserved, 'Pfizer reserved', 'C3'),
+    (pfizer_available, 'Pfizer available', 'C2'),
+]:
+    plt.fill_between(
+        dates + 1,
+        cumsum / 1e3,
+        (cumsum + arr) / 1e3,
+        label=f'{label} ({arr[-1] / 1000:.0f}k doses)',
+        step='pre',
+        color=colour,
+        linewidth=0,
+    )
+    cumsum += arr
+
+used = pfizer_first_doses[-1] + pfizer_second_doses[-1] + pfizer_reserved[-1]
+
+unused = pfizer_available[-1]
+utilisation = 100 * used / (used + unused)
+plt.ylabel('Cumulative doses (thousands)')
+plt.title(f"Estimated Pfizer vaccine utilisation: latest utilisation rate: {utilisation:.1f}%")
+plt.axis(
+    xmin=dates[0].astype(int) + 1,
+    xmax=dates[0].astype(int) + 125,
+    ymin=0,
+    ymax=5000,
+)
+ax5 = plt.gca()
+
+
+
+for ax in [ax1, ax2, ax3, ax4, ax5]:
     ax.fill_betweenx(
         [0, ax.get_ylim()[1]],
         2 * [START_DATE.astype(int)],
@@ -338,16 +423,17 @@ ax2.legend(
     # ncol=2,
 )
 
-handles, labels = ax3.get_legend_handles_labels()
-order = [3, 2, 1, 0, 4, 5]
-ax3.legend(
-    [handles[idx] for idx in order],
-    [labels[idx] for idx in order],
-    loc='lower right',
-    # ncol=2,
-)
+for ax in [ax3, ax4, ax5]:
+    handles, labels = ax.get_legend_handles_labels()
+    order = [3, 2, 1, 0, 4, 5]
+    ax.legend(
+        [handles[idx] for idx in order],
+        [labels[idx] for idx in order],
+        loc='lower right',
+        # ncol=2,
+    )
 
-for ax in [ax1, ax2, ax3]:
+for ax in [ax1, ax2, ax3, ax4, ax5]:
     locator = mdates.DayLocator([1])
     formatter = mdates.ConciseDateFormatter(locator)
     ax.xaxis.set_major_locator(locator)
@@ -366,12 +452,11 @@ for i, line in enumerate(html_lines):
         html_lines[i] = f'    Last updated: {now} Melbourne time'
 Path(html_file).write_text('\n'.join(html_lines) + '\n')
 
-fig1.savefig('cumulative_doses.svg')
-fig2.savefig('daily_doses_by_state.svg')
-fig3.savefig('utilisation.svg')
-
-fig1.savefig('cumulative_doses.png')
-fig2.savefig('daily_doses_by_state.png')
-fig3.savefig('utilisation.png')
+for extension in ['png', 'svg']:
+    fig1.savefig(f'cumulative_doses.{extension}')
+    fig2.savefig(f'daily_doses_by_state.{extension}')
+    fig3.savefig(f'utilisation.{extension}')
+    fig4.savefig(f'az_utilisation.{extension}')
+    fig5.savefig(f'pfizer_utilisation.{extension}')
 
 plt.show()
