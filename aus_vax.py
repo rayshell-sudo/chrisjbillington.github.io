@@ -81,6 +81,8 @@ AZ_local_supply_data = """
 2021-05-02      2_920_000
 """
 
+PROJECT = False
+
 def unpack_data(s):
     dates = []
     values = []
@@ -99,9 +101,11 @@ pfizer_shipments = np.diff(pfizer_supply, prepend=0)
 AZ_shipments = np.diff(AZ_OS_suppy, prepend=0)
 AZ_production = np.diff(AZ_local_supply, prepend=0)
 
-projection_dates = np.arange(dates[-1] + 1, np.datetime64('2021-05-05'))
-all_dates = dates # Disable projections for now
-# all_dates = np.concatenate((dates, projection_dates))
+if PROJECT:
+    projection_dates = np.arange(dates[-1] + 1, np.datetime64('2021-05-05'))
+    all_dates = np.concatenate((dates, projection_dates))
+else:
+    all_dates = dates
 
 # Calculate vaccine utilisation:
 first_doses = np.zeros(len(all_dates), dtype=float)
@@ -179,15 +183,15 @@ plt.fill_between(
     dates + 1, doses / 1e6, label='Cumulative doses', step='pre', color='C0',
 )
 
-# Show projection
-# plt.fill_between(
-#     all_dates[len(dates) - 1 :] + 1,
-#     proj_doses[len(dates) - 1 :] / 1e6,
-#     label='projected national doses',
-#     step='pre',
-#     color='cyan',
-#     linewidth=0,
-# )
+if PROJECT:
+    plt.fill_between(
+        all_dates[len(dates) - 1 :] + 1,
+        proj_doses[len(dates) - 1 :] / 1e6,
+        label='projected national doses',
+        step='pre',
+        color='cyan',
+        linewidth=0,
+    )
 
 ax1 = plt.gca()
 target = 160000 * days_model
@@ -256,16 +260,17 @@ for i, state in enumerate(['nt', 'act', 'tas', 'sa', 'wa', 'qld', 'vic', 'nsw', 
         )
     cumsum += daily_doses
 
-# # Show projection
-# daily_proj_doses = np.diff(proj_doses, prepend=0)
-# plt.fill_between(
-#     all_dates[len(dates) - 1 :] + 1,
-#     gaussian_smoothing(daily_proj_doses / 1e3, 2)[len(dates) - 1 :],
-#     label=f'projected national doses',
-#     step='pre',
-#     color='cyan',
-#     linewidth=0,
-# )
+
+if PROJECT:
+    daily_proj_doses = np.diff(proj_doses, prepend=0)
+    plt.fill_between(
+        all_dates[len(dates) - 1 :] + 1,
+        gaussian_smoothing(daily_proj_doses / 1e3, 2)[len(dates) - 1 :],
+        label=f'projected national doses',
+        step='pre',
+        color='cyan',
+        linewidth=0,
+)
 
 latest_daily_doses = cumsum[-1]
 if FED_CLIP:
