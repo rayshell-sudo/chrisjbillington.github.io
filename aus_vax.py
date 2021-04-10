@@ -184,7 +184,7 @@ plt.ylabel('Cumulative doses (millions)')
 
 fig2 = plt.figure(figsize=(8, 6))
 
-MOST_RECENT_FED_UPDATE = np.datetime64('2021-04-09')
+MOST_RECENT_FED_UPDATE = np.datetime64('2021-04-10')
 FED_CLIP = len(dates) - 1 - np.argwhere(dates == MOST_RECENT_FED_UPDATE)[0, 0]
 
 cumsum = np.zeros(len(dates))
