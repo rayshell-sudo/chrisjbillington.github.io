@@ -57,22 +57,28 @@ doses = doses_by_state['aus']
 
 
 pfizer_supply_data = """
-2021-02-21      142000
-2021-02-28      308000
-2021-03-07      443000
-2021-03-14      592000
-2021-03-28      751000
-2021-04-11      870000
+2021-02-21      142_000
+2021-02-28      308_000
+2021-03-07      443_000
+2021-03-14      592_000
+2021-03-28      751_000
+2021-04-11      870_000
+2021-04-18      1_000_000
+2021-04-25      1_130_000
+2021-05-02      1_300_000  
 """ 
 
 AZ_OS_supply_data = """
-2021-03-07      300000
-2021-03-21      700000
+2021-03-07      300_000
+2021-03-21      700_000
 """
 
 AZ_local_supply_data = """
-2021-03-28      832000
-2021-04-11      1300000
+2021-03-28        832_000
+2021-04-11      1_300_000
+2021-04-18      1_770_000
+2021-04-25      2_250_000
+2021-05-02      2_920_000
 """
 
 def unpack_data(s):
@@ -93,10 +99,14 @@ pfizer_shipments = np.diff(pfizer_supply, prepend=0)
 AZ_shipments = np.diff(AZ_OS_suppy, prepend=0)
 AZ_production = np.diff(AZ_local_supply, prepend=0)
 
+projection_dates = np.arange(dates[-1] + 1, np.datetime64('2021-05-05'))
+all_dates = dates # Disable projections for now
+# all_dates = np.concatenate((dates, projection_dates))
+
 # Calculate vaccine utilisation:
-first_doses = doses.astype(float)
-AZ_first_doses = np.zeros_like(first_doses)
-pfizer_first_doses = np.zeros_like(doses)
+first_doses = np.zeros(len(all_dates), dtype=float)
+first_doses[:len(doses)] = doses
+first_doses[len(doses):] = doses[-1]
 AZ_first_doses = np.zeros_like(first_doses)
 pfizer_first_doses = np.zeros_like(first_doses)
 AZ_second_doses = np.zeros_like(first_doses)
@@ -113,17 +123,26 @@ pfizer_available += pfizer_shipments[pfizer_supply_dates < dates[0]].sum()
 AZ_available += AZ_shipments[AZ_OS_supply_dates < dates[0]].sum()
 AZ_available += AZ_production[AZ_local_supply_dates < dates[0]].sum()
 
-for i, date in enumerate(dates):
+
+
+for i, date in enumerate(all_dates):
     if date in pfizer_supply_dates:
         pfizer_available[i:] += pfizer_shipments[pfizer_supply_dates == date][0]
     if date in AZ_OS_supply_dates:
         AZ_available[i:] += AZ_shipments[AZ_OS_supply_dates == date][0]
     if date in AZ_local_supply_dates:
         AZ_available[i:] += AZ_production[AZ_local_supply_dates == date][0]
-    if i:
+    if i == 0:
+        first_doses_today = first_doses[i]
+    elif i < len(dates):
         first_doses_today = first_doses[i] - first_doses[i-1]
     else:
-        first_doses_today = first_doses[i]
+        # This is the assumption for projecting based on expected supply. That we use 5%
+        # of available doses each day on first doses. Since a dose will be reserved as
+        # well, this means we're always 10 days away from running out of vaccine at the
+        # current rate - which is approximately what we see in the data.
+        first_doses_today = 0.05 * (pfizer_available[i] + AZ_available[i])
+        first_doses[i:] += first_doses_today
 
     AZ_frac = AZ_available[i] / (AZ_available[i] + pfizer_available[i])
     pfizer_frac = pfizer_available[i] / (AZ_available[i] + pfizer_available[i])
@@ -147,19 +166,28 @@ for i, date in enumerate(dates):
     pfizer_second_doses[i + tau_pfizer:] += pfizer_first_doses_today
 
 
-# plt.plot(dates, AZ_available + pfizer_available)
-# plt.show()
+proj_doses = AZ_first_doses + AZ_second_doses + pfizer_first_doses + pfizer_second_doses
 
-N_DAYS_PROJECT = 250
+N_DAYS_TARGET = 250
 
 days = (dates - dates[0]).astype(float)
-days_model = np.linspace(days[0], days[-1] + N_DAYS_PROJECT, 1000)
+days_model = np.linspace(days[0], days[-1] + N_DAYS_TARGET, 1000)
 
 fig1 = plt.figure(figsize=(8, 6))
 
 plt.fill_between(
     dates + 1, doses / 1e6, label='Cumulative doses', step='pre', color='C0',
 )
+
+# Show projection
+# plt.fill_between(
+#     all_dates[len(dates) - 1 :] + 1,
+#     proj_doses[len(dates) - 1 :] / 1e6,
+#     label='projected national doses',
+#     step='pre',
+#     color='cyan',
+#     linewidth=0,
+# )
 
 ax1 = plt.gca()
 target = 160000 * days_model
@@ -228,6 +256,17 @@ for i, state in enumerate(['nt', 'act', 'tas', 'sa', 'wa', 'qld', 'vic', 'nsw', 
         )
     cumsum += daily_doses
 
+# # Show projection
+# daily_proj_doses = np.diff(proj_doses, prepend=0)
+# plt.fill_between(
+#     all_dates[len(dates) - 1 :] + 1,
+#     gaussian_smoothing(daily_proj_doses / 1e3, 2)[len(dates) - 1 :],
+#     label=f'projected national doses',
+#     step='pre',
+#     color='cyan',
+#     linewidth=0,
+# )
+
 latest_daily_doses = cumsum[-1]
 if FED_CLIP:
     latest_daily_doses += daily_doses[-FED_CLIP - 1]
@@ -258,7 +297,7 @@ ax2 = plt.gca()
 
 
 fig3 = plt.figure(figsize=(8, 6))
-cumsum = np.zeros(len(dates))
+cumsum = np.zeros(len(all_dates))
 for arr, label, colour in [
     (AZ_first_doses + pfizer_first_doses, 'First doses', 'C0'),
     (AZ_second_doses + pfizer_second_doses, 'Second doses', 'C1'),
@@ -266,7 +305,7 @@ for arr, label, colour in [
     (AZ_available + pfizer_available, 'Available', 'C2'),
 ]:
     plt.fill_between(
-        dates + 1,
+        all_dates + 1,
         cumsum / 1e3,
         (cumsum + arr) / 1e3,
         label=f'{label} ({arr[-1] / 1000:.0f}k doses)',
@@ -299,7 +338,7 @@ ax3 = plt.gca()
 
 
 fig4 = plt.figure(figsize=(8, 6))
-cumsum = np.zeros(len(dates))
+cumsum = np.zeros(len(all_dates))
 for arr, label, colour in [
     (AZ_first_doses, 'AZ first doses', 'C0'),
     (AZ_second_doses, 'AZ second doses', 'C1'),
@@ -307,7 +346,7 @@ for arr, label, colour in [
     (AZ_available, 'AZ available', 'C2'),
 ]:
     plt.fill_between(
-        dates + 1,
+        all_dates + 1,
         cumsum / 1e3,
         (cumsum + arr) / 1e3,
         label=f'{label} ({arr[-1] / 1000:.0f}k doses)',
@@ -333,7 +372,7 @@ ax4 = plt.gca()
 
 
 fig5 = plt.figure(figsize=(8, 6))
-cumsum = np.zeros(len(dates))
+cumsum = np.zeros(len(all_dates))
 for arr, label, colour in [
     (pfizer_first_doses, 'Pfizer first doses', 'C0'),
     (pfizer_second_doses, 'Pfizer second doses', 'C1'),
@@ -341,7 +380,7 @@ for arr, label, colour in [
     (pfizer_available, 'Pfizer available', 'C2'),
 ]:
     plt.fill_between(
-        dates + 1,
+        all_dates + 1,
         cumsum / 1e3,
         (cumsum + arr) / 1e3,
         label=f'{label} ({arr[-1] / 1000:.0f}k doses)',
