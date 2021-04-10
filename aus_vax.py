@@ -187,7 +187,7 @@ if PROJECT:
     plt.fill_between(
         all_dates[len(dates) - 1 :] + 1,
         proj_doses[len(dates) - 1 :] / 1e6,
-        label='projected national doses',
+        label='Projected',
         step='pre',
         color='cyan',
         linewidth=0,
@@ -216,48 +216,23 @@ plt.ylabel('Cumulative doses (millions)')
 
 fig2 = plt.figure(figsize=(8, 6))
 
-MOST_RECENT_FED_UPDATE = np.datetime64('2021-04-10')
-FED_CLIP = len(dates) - 1 - np.argwhere(dates == MOST_RECENT_FED_UPDATE)[0, 0]
-
 cumsum = np.zeros(len(dates))
 colours = list(reversed([f'C{i}' for i in range(9)]))
 for i, state in enumerate(['nt', 'act', 'tas', 'sa', 'wa', 'qld', 'vic', 'nsw', 'fed']):
     doses = doses_by_state[state]
-    if state == 'fed' and FED_CLIP:
-        smoothed_doses = gaussian_smoothing(
-            np.diff(doses[:-FED_CLIP], prepend=0), 2
-        ).cumsum()
-        smoothed_doses = np.append(smoothed_doses, [smoothed_doses[-1]] * FED_CLIP)
-    else:
-        smoothed_doses = gaussian_smoothing(np.diff(doses, prepend=0), 2).cumsum()
-
+    smoothed_doses = gaussian_smoothing(np.diff(doses, prepend=0), 2).cumsum()
     daily_doses = np.diff(smoothed_doses, prepend=0)
-    if state == 'fed' and FED_CLIP:
-        latest_daily_doses = daily_doses[-FED_CLIP - 1]
-    else:
-        latest_daily_doses = daily_doses[-1]
+    latest_daily_doses = daily_doses[-1]
 
     plt.fill_between(
         dates + 1,
         cumsum / 1e3,
         (cumsum + daily_doses) / 1e3,
-        label=f'{state.upper()} ({latest_daily_doses / 1000:.1f}k/day)',
+        label=f'{state.upper()} ({daily_doses[-1] / 1000:.1f}k/day)',
         step='pre',
         color=colours[i],
         linewidth=0,
     )
-    if state == 'fed' and FED_CLIP:
-        plt.fill_between(
-            dates[-FED_CLIP - 1 :] + 1,
-            cumsum[-FED_CLIP - 1 :] / 1e3,
-            (cumsum[-FED_CLIP - 1 :] + latest_daily_doses) / 1e3,
-            label=f'{state.upper()} (projected)',
-            step='pre',
-            color=colours[i],
-            hatch="//////",
-            edgecolor='tab:cyan',
-            linewidth=0,
-        )
     cumsum += daily_doses
 
 
@@ -266,28 +241,17 @@ if PROJECT:
     plt.fill_between(
         all_dates[len(dates) - 1 :] + 1,
         gaussian_smoothing(daily_proj_doses / 1e3, 2)[len(dates) - 1 :],
-        label=f'projected national doses',
+        label='Projected',
         step='pre',
         color='cyan',
         linewidth=0,
 )
 
 latest_daily_doses = cumsum[-1]
-if FED_CLIP:
-    latest_daily_doses += daily_doses[-FED_CLIP - 1]
 
-asterisk = '*' if FED_CLIP else ''
 plt.title(
-    f'Smoothed daily doses by state/territory. Latest national rate{asterisk}: {latest_daily_doses / 1000:.1f}k/day'
+    f'Smoothed daily doses by state/territory. Latest national rate: {latest_daily_doses / 1000:.1f}k/day'
 )
-if FED_CLIP:
-    text = plt.figtext(
-        0.575,
-        0.85,
-        "* Includes projected federally-administered doses",
-        fontsize='x-small',
-    )
-    text.set_bbox(dict(facecolor='white', alpha=0.8, linewidth=0))
 
 plt.ylabel('Daily doses (thousands)')
 plt.axhline(160, color='k', linestyle='--', label="Target")
@@ -456,10 +420,7 @@ ax1.legend(
 )
 
 handles, labels = ax2.get_legend_handles_labels()
-if FED_CLIP:
-    order = [9, 10, 8, 7, 6, 5, 4, 3, 2, 1, 0, 11, 12]
-else:
-    order = [9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 10, 11]
+order = [9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 10, 11]
 ax2.legend(
     [handles[idx] for idx in order],
     [labels[idx] for idx in order],
