@@ -289,7 +289,7 @@ for arr, label, colour in [
         all_dates[: len(dates)] + 1,
         cumsum[: len(dates)] / 1e3,
         (cumsum + arr)[: len(dates)] / 1e3,
-        label=f'{label} ({arr[-1] / 1000:.0f}k doses)',
+        label=f'{label} ({arr[len(dates)-1] / 1000:.0f}k doses)',
         step='pre',
         color=colour,
         linewidth=0,
@@ -299,8 +299,9 @@ for arr, label, colour in [
 used = (
     AZ_first_doses[len(dates) - 1]
     + AZ_second_doses[len(dates) - 1]
-    + pfizer_second_doses[len(dates) - 1]
     + AZ_reserved[len(dates) - 1]
+    + pfizer_first_doses[len(dates) - 1]
+    + pfizer_second_doses[len(dates) - 1]
     + pfizer_reserved[len(dates) - 1]
 )
 
@@ -329,7 +330,7 @@ for arr, label, colour in [
         all_dates[: len(dates)] + 1,
         cumsum[: len(dates)] / 1e3,
         (cumsum + arr)[: len(dates)] / 1e3,
-        label=f'{label} ({arr[-1] / 1000:.0f}k doses)',
+        label=f'{label} ({arr[len(dates)-1] / 1000:.0f}k doses)',
         step='pre',
         color=colour,
         linewidth=0,
@@ -369,7 +370,7 @@ for arr, label, colour in [
         all_dates[: len(dates)] + 1,
         cumsum[: len(dates)] / 1e3,
         (cumsum + arr)[: len(dates)] / 1e3,
-        label=f'{label} ({arr[-1] / 1000:.0f}k doses)',
+        label=f'{label} ({arr[len(dates)-1] / 1000:.0f}k doses)',
         step='pre',
         color=colour,
         linewidth=0,
