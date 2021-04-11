@@ -46,8 +46,8 @@ for s in STATES:
     )
 
     # Only use data as of yesterday:
-    state_doses = state_doses[:-1]
-    dates = dates[:-1]
+    # state_doses = state_doses[:-1]
+    # dates = dates[:-1]
 
     state_doses = state_doses[dates >= START_DATE]
     dates = dates[dates >= START_DATE]
