@@ -29,7 +29,7 @@ def gaussian_smoothing(data, pts):
     x = np.arange(-4 * pts, 4 * pts + 1, 1)
     kernel = np.exp(-(x ** 2) / (2 * pts ** 2))
     normalisation = convolve(np.ones_like(data), kernel, mode='same')
-    return convolve(data , kernel, mode='same') / normalisation
+    return convolve(data, kernel, mode='same') / normalisation
 
 
 START_DATE = np.datetime64('2021-02-22')
@@ -44,6 +44,11 @@ for s in STATES:
     dates = np.array(
         [np.datetime64(datetime.strptime(d, '%d %b %y'), 'D') for d in dates]
     )
+
+    # Only use data as of yesterday:
+    state_doses = state_doses[:-1]
+    dates = dates[:-1]
+
     state_doses = state_doses[dates >= START_DATE]
     dates = dates[dates >= START_DATE]
     doses_by_state[s] = state_doses
@@ -66,7 +71,7 @@ pfizer_supply_data = """
 2021-04-18      1_000_000
 2021-04-25      1_130_000
 2021-05-02      1_300_000  
-""" 
+"""
 
 AZ_OS_supply_data = """
 2021-03-07      300_000
@@ -81,7 +86,8 @@ AZ_local_supply_data = """
 2021-05-02      2_920_000
 """
 
-PROJECT = False
+PROJECT = True
+
 
 def unpack_data(s):
     dates = []
@@ -92,6 +98,7 @@ def unpack_data(s):
             dates.append(np.datetime64(date))
             values.append(float(value))
     return np.array(dates) - 4, np.array(values)
+
 
 pfizer_supply_dates, pfizer_supply = unpack_data(pfizer_supply_data)
 AZ_OS_supply_dates, AZ_OS_suppy = unpack_data(AZ_OS_supply_data)
@@ -109,8 +116,8 @@ else:
 
 # Calculate vaccine utilisation:
 first_doses = np.zeros(len(all_dates), dtype=float)
-first_doses[:len(doses)] = doses
-first_doses[len(doses):] = doses[-1]
+first_doses[: len(doses)] = doses
+first_doses[len(doses) :] = doses[-1]
 AZ_first_doses = np.zeros_like(first_doses)
 pfizer_first_doses = np.zeros_like(first_doses)
 AZ_second_doses = np.zeros_like(first_doses)
@@ -128,7 +135,6 @@ AZ_available += AZ_shipments[AZ_OS_supply_dates < dates[0]].sum()
 AZ_available += AZ_production[AZ_local_supply_dates < dates[0]].sum()
 
 
-
 for i, date in enumerate(all_dates):
     if date in pfizer_supply_dates:
         pfizer_available[i:] += pfizer_shipments[pfizer_supply_dates == date][0]
@@ -139,7 +145,7 @@ for i, date in enumerate(all_dates):
     if i == 0:
         first_doses_today = first_doses[i]
     elif i < len(dates):
-        first_doses_today = first_doses[i] - first_doses[i-1]
+        first_doses_today = first_doses[i] - first_doses[i - 1]
     else:
         # This is the assumption for projecting based on expected supply. That we use 5%
         # of available doses each day on first doses. Since a dose will be reserved as
@@ -163,11 +169,11 @@ for i, date in enumerate(all_dates):
     AZ_reserved[i : i + tau_AZ] += AZ_first_doses_today
     pfizer_reserved[i : i + tau_pfizer] += pfizer_first_doses_today
 
-    first_doses[i + tau_AZ:] -= AZ_first_doses_today
-    first_doses[i + tau_pfizer:] -= pfizer_first_doses_today
+    first_doses[i + tau_AZ :] -= AZ_first_doses_today
+    first_doses[i + tau_pfizer :] -= pfizer_first_doses_today
 
-    AZ_second_doses[i + tau_AZ:] += AZ_first_doses_today
-    pfizer_second_doses[i + tau_pfizer:] += pfizer_first_doses_today
+    AZ_second_doses[i + tau_AZ :] += AZ_first_doses_today
+    pfizer_second_doses[i + tau_pfizer :] += pfizer_first_doses_today
 
 
 proj_doses = AZ_first_doses + AZ_second_doses + pfizer_first_doses + pfizer_second_doses
@@ -180,7 +186,11 @@ days_model = np.linspace(days[0], days[-1] + N_DAYS_TARGET, 1000)
 fig1 = plt.figure(figsize=(8, 6))
 
 plt.fill_between(
-    dates + 1, doses / 1e6, label='Cumulative doses', step='pre', color='C0',
+    dates + 1,
+    doses / 1e6,
+    label='Cumulative doses',
+    step='pre',
+    color='C0',
 )
 
 if PROJECT:
@@ -190,6 +200,7 @@ if PROJECT:
         label='Projected',
         step='pre',
         color='cyan',
+        alpha=0.5,
         linewidth=0,
     )
 
@@ -241,11 +252,12 @@ if PROJECT:
     plt.fill_between(
         all_dates[len(dates) - 1 :] + 1,
         gaussian_smoothing(daily_proj_doses / 1e3, 2)[len(dates) - 1 :],
-        label='Projected',
+        label='Projected (national)',
         step='pre',
         color='cyan',
+        alpha=0.5,
         linewidth=0,
-)
+    )
 
 latest_daily_doses = cumsum[-1]
 
@@ -274,9 +286,9 @@ for arr, label, colour in [
     (AZ_available + pfizer_available, 'Available', 'C2'),
 ]:
     plt.fill_between(
-        all_dates + 1,
-        cumsum / 1e3,
-        (cumsum + arr) / 1e3,
+        all_dates[: len(dates)] + 1,
+        cumsum[: len(dates)] / 1e3,
+        (cumsum + arr)[: len(dates)] / 1e3,
         label=f'{label} ({arr[-1] / 1000:.0f}k doses)',
         step='pre',
         color=colour,
@@ -285,14 +297,14 @@ for arr, label, colour in [
     cumsum += arr
 
 used = (
-    AZ_first_doses[-1]
-    + AZ_second_doses[-1]
-    + pfizer_second_doses[-1]
-    + AZ_reserved[-1]
-    + pfizer_reserved[-1]
+    AZ_first_doses[len(dates) - 1]
+    + AZ_second_doses[len(dates) - 1]
+    + pfizer_second_doses[len(dates) - 1]
+    + AZ_reserved[len(dates) - 1]
+    + pfizer_reserved[len(dates) - 1]
 )
 
-unused = AZ_available[-1] + pfizer_available[-1]
+unused = AZ_available[len(dates) - 1] + pfizer_available[len(dates) - 1]
 utilisation = 100 * used / (used + unused)
 plt.ylabel('Cumulative doses (thousands)')
 plt.title(f"Estimated vaccine utilisation: latest utilisation rate: {utilisation:.1f}%")
@@ -305,7 +317,6 @@ plt.axis(
 ax3 = plt.gca()
 
 
-
 fig4 = plt.figure(figsize=(8, 6))
 cumsum = np.zeros(len(all_dates))
 for arr, label, colour in [
@@ -315,9 +326,9 @@ for arr, label, colour in [
     (AZ_available, 'AZ available', 'C2'),
 ]:
     plt.fill_between(
-        all_dates + 1,
-        cumsum / 1e3,
-        (cumsum + arr) / 1e3,
+        all_dates[: len(dates)] + 1,
+        cumsum[: len(dates)] / 1e3,
+        (cumsum + arr)[: len(dates)] / 1e3,
         label=f'{label} ({arr[-1] / 1000:.0f}k doses)',
         step='pre',
         color=colour,
@@ -325,12 +336,18 @@ for arr, label, colour in [
     )
     cumsum += arr
 
-used = AZ_first_doses[-1] + AZ_second_doses[-1] + AZ_reserved[-1]
+used = (
+    AZ_first_doses[len(dates) - 1]
+    + AZ_second_doses[len(dates) - 1]
+    + AZ_reserved[len(dates) - 1]
+)
 
-unused = AZ_available[-1]
+unused = AZ_available[len(dates) - 1]
 utilisation = 100 * used / (used + unused)
 plt.ylabel('Cumulative doses (thousands)')
-plt.title(f"Estimated AZ vaccine utilisation: latest utilisation rate: {utilisation:.1f}%")
+plt.title(
+    f"Estimated AZ vaccine utilisation: latest utilisation rate: {utilisation:.1f}%"
+)
 plt.axis(
     xmin=dates[0].astype(int) + 1,
     xmax=dates[0].astype(int) + 125,
@@ -349,9 +366,9 @@ for arr, label, colour in [
     (pfizer_available, 'Pfizer available', 'C2'),
 ]:
     plt.fill_between(
-        all_dates + 1,
-        cumsum / 1e3,
-        (cumsum + arr) / 1e3,
+        all_dates[: len(dates)] + 1,
+        cumsum[: len(dates)] / 1e3,
+        (cumsum + arr)[: len(dates)] / 1e3,
         label=f'{label} ({arr[-1] / 1000:.0f}k doses)',
         step='pre',
         color=colour,
@@ -359,12 +376,18 @@ for arr, label, colour in [
     )
     cumsum += arr
 
-used = pfizer_first_doses[-1] + pfizer_second_doses[-1] + pfizer_reserved[-1]
+used = (
+    pfizer_first_doses[len(dates) - 1]
+    + pfizer_second_doses[len(dates) - 1]
+    + pfizer_reserved[len(dates) - 1]
+)
 
-unused = pfizer_available[-1]
+unused = pfizer_available[len(dates) - 1]
 utilisation = 100 * used / (used + unused)
 plt.ylabel('Cumulative doses (thousands)')
-plt.title(f"Estimated Pfizer vaccine utilisation: latest utilisation rate: {utilisation:.1f}%")
+plt.title(
+    f"Estimated Pfizer vaccine utilisation: latest utilisation rate: {utilisation:.1f}%"
+)
 plt.axis(
     xmin=dates[0].astype(int) + 1,
     xmax=dates[0].astype(int) + 125,
@@ -372,7 +395,6 @@ plt.axis(
     ymax=5000,
 )
 ax5 = plt.gca()
-
 
 
 for ax in [ax1, ax2, ax3, ax4, ax5]:
@@ -411,7 +433,10 @@ for ax in [ax1, ax2, ax3, ax4, ax5]:
 
 
 handles, labels = ax1.get_legend_handles_labels()
-order = [1, 0, 2, 3]
+if PROJECT:
+    order = [1, 2, 0, 3, 4]
+else:
+    order = [1, 0, 2, 3]
 ax1.legend(
     [handles[idx] for idx in order],
     [labels[idx] for idx in order],
@@ -420,7 +445,10 @@ ax1.legend(
 )
 
 handles, labels = ax2.get_legend_handles_labels()
-order = [9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 10, 11]
+if PROJECT:
+    order = [9, 8, 7, 6, 5, 4, 3, 2, 1, 10, 0, 11, 12]
+else:
+    order = [9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 10, 11]
 ax2.legend(
     [handles[idx] for idx in order],
     [labels[idx] for idx in order],
@@ -445,7 +473,6 @@ for ax in [ax1, ax2, ax3, ax4, ax5]:
     ax.xaxis.set_major_formatter(formatter)
     ax.get_xaxis().get_major_formatter().show_offset = False
     ax.grid(True, linestyle=":", color='k')
-
 
 
 # Update the date in the HTML

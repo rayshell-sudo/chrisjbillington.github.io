@@ -27,7 +27,7 @@
 <body>
   <div class="content">
 
-    Last updated: 2021-04-10-21:42 Melbourne time
+    Last updated: 2021-04-11-12:04 Melbourne time
     <br>
     <h1>
       Australian COVID vaccination rollout
@@ -35,50 +35,59 @@
     <h2>
       Daily doses
     </h2>
-
-    Below is a plot of daily vaccine doses administered in Australia, by
-    state/territory. These are compared to the average rate required for 40 million
-    doses to be administered by the end of October 160k doses per day, which is
-    approximately what Australia is targeting.
-
-    The data is smoothed using Gaussian smoothing with σ=2 days.
-    <br>
+    <p>
+      Below is a plot of daily vaccine doses administered in Australia, by
+      state/territory. These are compared to the average rate required for 40 million
+      doses to be administered by the end of October 160k doses per day, which is
+      approximately what Australia is targeting (though recent developments make it likely
+      that this target will be revised).
+    </p>
+    <p>
+      The data is smoothed using Gaussian smoothing with σ=2 days to better show the
+      trend.
+    </p>
+    <p>
+      Projected national doses are based on expected supply and an assumed utilisation
+      rate of 10% of available doses per day—that is, that we are always about 10 days
+      away from exhausting available doses. This reflects current supply expectations
+      and is subject to change.
+    </p>
     <img src="daily_doses_by_state.svg">
     <h2>
       Estimated utilisation
     </h2>
-    Below is a plot of the estimated status of each vaccine dose in Australia. How many
-    doses are in people's arms, in reserve, or available? This helps show whether
-    administration of doses is keeping up with supply. Since the government has not
-    published data to determine this exactly, this estimate is based on a number of
-    assumptions:
-    <ul>
-      <li>
-        That the number of Pfizer and AstraZeneca first doses administered on a given
-        day is in proportion to the number of available doses of each type of vaccine on
-        that day.
-      </li>
-      <li>
-        That for every first dose administered a second dose is held in reserve, and
-        administered exactly 3 weeks later for Pfizer, or 12 weeks later for
-        AstraZeneca.
-      </li>
-      <li>
-        That doses becoming available in a given week (supply data is only available at
-        the 1-week level) become available on the Wednesday of that week.
-      </li>
-    </ul>
-    This estimate ignores possible wastage of vaccines.
-    <br>
+    <p>
+      Below is a plot of the estimated status of each vaccine dose in Australia. How many
+      doses are in people's arms, in reserve, or available? This helps show whether
+      administration of doses is keeping up with supply. Since the government has not
+      published data to determine this exactly, this estimate is based on a number of
+      assumptions:
+      <ul>
+        <li>
+          That the number of Pfizer and AstraZeneca first doses administered on a given
+          day is in proportion to the number of available doses of each type of vaccine on
+          that day.
+        </li>
+        <li>
+          That for every first dose administered a second dose is held in reserve, and
+          administered exactly 3 weeks later for Pfizer, or 12 weeks later for
+          AstraZeneca.
+        </li>
+        <li>
+          That doses becoming available in a given week (supply data is only available at
+          the 1-week level) become available on the Wednesday of that week.
+        </li>
+      </ul>
+      This estimate ignores possible wastage of vaccines.
+    </p>
     <img src="utilisation.svg">
-
     <h2>
       Estimated utilisation by vaccine type
     </h2>
-
-    Below is the same utilisation estimates as in the above plot, but separated by
-    vaccine type: AstraZeneca vs Pfizer.
-    <br>
+    <p>
+      Below is the same utilisation estimates as in the above plot, but separated by
+      vaccine type: AstraZeneca vs Pfizer.
+    </p>
     <img src="pfizer_utilisation.svg">
     <br>
     <img src="az_utilisation.svg">
@@ -86,14 +95,22 @@
     <h2>
       Cumulative doses
     </h2>
-    Finally, here is a simple plot of cumulative doses in Australia over time, compared
-    to a hypothetical rollout at a constant rate toward the end of October target of 40M
-    doses.
+    <p>
+      Finally, here is a simple plot of cumulative doses in Australia over time,
+      compared to a hypothetical rollout at a constant rate toward the end of October
+      target of 40M doses.
+    </p>
+    <p>
+      Projected doses are based on expected supply and an assumed utilisation
+      rate of 10% of available doses per day—that is, that we are always about 10 days
+      away from exhausting available doses. This reflects current supply expectations
+      and is subject to change.
+    </p>
     <br>
     <img src="cumulative_doses.svg">
     <h3>Details</h3>
     <p>
-      Source for vaccine supply: <a href="https://www.covid19data.com.au/vaccines">covid19data.com.au</a>
+      Source for vaccine supply and expected supply: <a href="https://www.covid19data.com.au/vaccines">covid19data.com.au</a>
     </p>
     <p>
       Source for dose numbers: <a href="https://covidlive.com.au">covidlive.com.au</a>
