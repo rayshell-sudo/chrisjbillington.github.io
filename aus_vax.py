@@ -137,11 +137,14 @@ AZ_available += AZ_production[AZ_local_supply_dates < dates[0]].sum()
 
 for i, date in enumerate(all_dates):
     if date in pfizer_supply_dates:
-        pfizer_available[i:] += pfizer_shipments[pfizer_supply_dates == date][0]
+        pfizer_available[i:] += 0.5 * pfizer_shipments[pfizer_supply_dates == date][0]
+        pfizer_reserved[i:] += 0.5 * pfizer_shipments[pfizer_supply_dates == date][0]
     if date in AZ_OS_supply_dates:
-        AZ_available[i:] += AZ_shipments[AZ_OS_supply_dates == date][0]
+        AZ_available[i:] += 0.5 * AZ_shipments[AZ_OS_supply_dates == date][0]
+        AZ_reserved[i:] += 0.5 * AZ_shipments[AZ_OS_supply_dates == date][0]
     if date in AZ_local_supply_dates:
-        AZ_available[i:] += AZ_production[AZ_local_supply_dates == date][0]
+        AZ_available[i:] += 0.5 * AZ_production[AZ_local_supply_dates == date][0]
+        AZ_reserved[i:] += 0.5 * AZ_production[AZ_local_supply_dates == date][0]
     if i == 0:
         first_doses_today = first_doses[i]
     elif i < len(dates):
@@ -151,7 +154,7 @@ for i, date in enumerate(all_dates):
         # of available doses each day on first doses. Since a dose will be reserved as
         # well, this means we're always 10 days away from running out of vaccine at the
         # current rate - which is approximately what we see in the data.
-        first_doses_today = 0.05 * (pfizer_available[i] + AZ_available[i])
+        first_doses_today = 0.1 * (pfizer_available[i] + AZ_available[i])
         first_doses[i:] += first_doses_today
 
     AZ_frac = AZ_available[i] / (AZ_available[i] + pfizer_available[i])
@@ -163,11 +166,11 @@ for i, date in enumerate(all_dates):
     AZ_first_doses[i:] += AZ_first_doses_today
     pfizer_first_doses[i:] += pfizer_first_doses_today
 
-    AZ_available[i:] -= 2 * AZ_first_doses_today
-    pfizer_available[i:] -= 2 * pfizer_first_doses_today
+    AZ_available[i:] -= AZ_first_doses_today
+    pfizer_available[i:] -= pfizer_first_doses_today
 
-    AZ_reserved[i : i + tau_AZ] += AZ_first_doses_today
-    pfizer_reserved[i : i + tau_pfizer] += pfizer_first_doses_today
+    AZ_reserved[i + tau_AZ:] -= AZ_first_doses_today
+    pfizer_reserved[i + tau_pfizer:] -= pfizer_first_doses_today
 
     first_doses[i + tau_AZ :] -= AZ_first_doses_today
     first_doses[i + tau_pfizer :] -= pfizer_first_doses_today
@@ -280,35 +283,27 @@ ax2 = plt.gca()
 fig3 = plt.figure(figsize=(8, 6))
 cumsum = np.zeros(len(all_dates))
 for arr, label, colour in [
-    (AZ_first_doses + pfizer_first_doses, 'First doses', 'C0'),
-    (AZ_second_doses + pfizer_second_doses, 'Second doses', 'C1'),
-    (AZ_reserved + pfizer_reserved, 'Reserved', 'C3'),
-    (AZ_available + pfizer_available, 'Available', 'C2'),
+    (AZ_first_doses + pfizer_first_doses, 'Administered first doses', 'C0'),
+    (AZ_available + pfizer_available, 'Available for first doses', 'C2'),
+    (AZ_second_doses + pfizer_second_doses, 'Administered second doses', 'C1'),
+    (AZ_reserved + pfizer_reserved, 'Reserved for second doses', 'C3'),
 ]:
     plt.fill_between(
         all_dates[: len(dates)] + 1,
         cumsum[: len(dates)] / 1e3,
         (cumsum + arr)[: len(dates)] / 1e3,
-        label=f'{label} ({arr[len(dates)-1] / 1000:.0f}k doses)',
+        label=f'{label} ({arr[len(dates)-1] / 1000:.0f}k)',
         step='pre',
         color=colour,
         linewidth=0,
     )
     cumsum += arr
 
-used = (
-    AZ_first_doses[len(dates) - 1]
-    + AZ_second_doses[len(dates) - 1]
-    + AZ_reserved[len(dates) - 1]
-    + pfizer_first_doses[len(dates) - 1]
-    + pfizer_second_doses[len(dates) - 1]
-    + pfizer_reserved[len(dates) - 1]
-)
-
+used = AZ_first_doses[len(dates) - 1] + pfizer_first_doses[len(dates) - 1]
 unused = AZ_available[len(dates) - 1] + pfizer_available[len(dates) - 1]
 utilisation = 100 * used / (used + unused)
 plt.ylabel('Cumulative doses (thousands)')
-plt.title(f"Estimated vaccine utilisation: latest utilisation rate: {utilisation:.1f}%")
+plt.title(f"Estimated vaccine utilisation: first dose utilisation rate: {utilisation:.1f}%")
 plt.axis(
     xmin=dates[0].astype(int) + 1,
     xmax=dates[0].astype(int) + 125,
@@ -321,33 +316,28 @@ ax3 = plt.gca()
 fig4 = plt.figure(figsize=(8, 6))
 cumsum = np.zeros(len(all_dates))
 for arr, label, colour in [
-    (AZ_first_doses, 'AZ first doses', 'C0'),
-    (AZ_second_doses, 'AZ second doses', 'C1'),
-    (AZ_reserved, 'AZ reserved', 'C3'),
-    (AZ_available, 'AZ available', 'C2'),
+    (AZ_first_doses, 'AZ administered first doses', 'C0'),
+    (AZ_available, 'AZ available for first doses', 'C2'),
+    (AZ_second_doses, 'AZ administered second doses', 'C1'),
+    (AZ_reserved, 'AZ reserved for second doses', 'C3'),
 ]:
     plt.fill_between(
         all_dates[: len(dates)] + 1,
         cumsum[: len(dates)] / 1e3,
         (cumsum + arr)[: len(dates)] / 1e3,
-        label=f'{label} ({arr[len(dates)-1] / 1000:.0f}k doses)',
+        label=f'{label} ({arr[len(dates)-1] / 1000:.0f}k)',
         step='pre',
         color=colour,
         linewidth=0,
     )
     cumsum += arr
 
-used = (
-    AZ_first_doses[len(dates) - 1]
-    + AZ_second_doses[len(dates) - 1]
-    + AZ_reserved[len(dates) - 1]
-)
-
+used = AZ_first_doses[len(dates) - 1]
 unused = AZ_available[len(dates) - 1]
 utilisation = 100 * used / (used + unused)
 plt.ylabel('Cumulative doses (thousands)')
 plt.title(
-    f"Estimated AZ vaccine utilisation: latest utilisation rate: {utilisation:.1f}%"
+    f"Estimated AZ vaccine utilisation: first dose utilisation rate: {utilisation:.1f}%"
 )
 plt.axis(
     xmin=dates[0].astype(int) + 1,
@@ -361,33 +351,28 @@ ax4 = plt.gca()
 fig5 = plt.figure(figsize=(8, 6))
 cumsum = np.zeros(len(all_dates))
 for arr, label, colour in [
-    (pfizer_first_doses, 'Pfizer first doses', 'C0'),
-    (pfizer_second_doses, 'Pfizer second doses', 'C1'),
-    (pfizer_reserved, 'Pfizer reserved', 'C3'),
-    (pfizer_available, 'Pfizer available', 'C2'),
+    (pfizer_first_doses, 'Pfizer administered first doses', 'C0'),
+    (pfizer_available, 'Pfizer available for first doses', 'C2'),
+    (pfizer_second_doses, 'Pfizer administered second doses', 'C1'),
+    (pfizer_reserved, 'Pfizer reserved for second doses', 'C3'),
 ]:
     plt.fill_between(
         all_dates[: len(dates)] + 1,
         cumsum[: len(dates)] / 1e3,
         (cumsum + arr)[: len(dates)] / 1e3,
-        label=f'{label} ({arr[len(dates)-1] / 1000:.0f}k doses)',
+        label=f'{label} ({arr[len(dates)-1] / 1000:.0f}k)',
         step='pre',
         color=colour,
         linewidth=0,
     )
     cumsum += arr
 
-used = (
-    pfizer_first_doses[len(dates) - 1]
-    + pfizer_second_doses[len(dates) - 1]
-    + pfizer_reserved[len(dates) - 1]
-)
-
+used = pfizer_first_doses[len(dates) - 1]
 unused = pfizer_available[len(dates) - 1]
 utilisation = 100 * used / (used + unused)
 plt.ylabel('Cumulative doses (thousands)')
 plt.title(
-    f"Estimated Pfizer vaccine utilisation: latest utilisation rate: {utilisation:.1f}%"
+    f"Estimated Pfizer vaccine utilisation: first dose utilisation rate: {utilisation:.1f}%"
 )
 plt.axis(
     xmin=dates[0].astype(int) + 1,
