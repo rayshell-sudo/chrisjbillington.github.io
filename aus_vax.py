@@ -62,15 +62,16 @@ doses = doses_by_state['aus']
 
 
 pfizer_supply_data = """
-2021-02-21      142_000
-2021-02-28      308_000
-2021-03-07      443_000
-2021-03-14      592_000
-2021-03-28      751_000
-2021-04-11      870_000
-2021-04-18      1_000_000
-2021-04-25      1_130_000
-2021-05-02      1_300_000  
+2021-02-21        142_000
+2021-02-28        308_000
+2021-03-07        443_000
+2021-03-14        592_000
+2021-03-28        751_000
+2021-04-11        870_000
+2021-04-18      1_172_000 # Greg Hunt Apr 13 "We have received 1.172 million doses"
+2021-04-18      1_303_000
+2021-04-25      1_433_000
+2021-05-02      1_603_000
 """
 
 AZ_OS_supply_data = """
@@ -86,6 +87,8 @@ AZ_local_supply_data = """
 2021-05-02      2_920_000
 """
 
+PLOT_END_DATE = np.datetime64('2022-01-01')
+
 PROJECT = True
 
 
@@ -94,7 +97,7 @@ def unpack_data(s):
     values = []
     for line in s.splitlines():
         if line.strip():
-            date, value = line.split()
+            date, value, *_ = line.split()
             dates.append(np.datetime64(date))
             values.append(float(value))
     return np.array(dates) - 4, np.array(values)
@@ -109,7 +112,7 @@ AZ_shipments = np.diff(AZ_OS_suppy, prepend=0)
 AZ_production = np.diff(AZ_local_supply, prepend=0)
 
 if PROJECT:
-    projection_dates = np.arange(dates[-1] + 1, np.datetime64('2021-05-05'))
+    projection_dates = np.arange(dates[-1] + 1, np.datetime64('2021-05-02'))
     all_dates = np.concatenate((dates, projection_dates))
 else:
     all_dates = dates
@@ -155,6 +158,8 @@ for i, date in enumerate(all_dates):
         # well, this means we're always 10 days away from running out of vaccine at the
         # current rate - which is approximately what we see in the data.
         first_doses_today = 0.1 * (pfizer_available[i] + AZ_available[i])
+        total_first_doses = AZ_first_doses[i] + pfizer_first_doses[i]
+        first_doses_today = max(0, min(20000000 - total_first_doses, first_doses_today))
         first_doses[i:] += first_doses_today
 
     AZ_frac = AZ_available[i] / (AZ_available[i] + pfizer_available[i])
@@ -181,10 +186,8 @@ for i, date in enumerate(all_dates):
 
 proj_doses = AZ_first_doses + AZ_second_doses + pfizer_first_doses + pfizer_second_doses
 
-N_DAYS_TARGET = 250
 
 days = (dates - dates[0]).astype(float)
-days_model = np.linspace(days[0], days[-1] + N_DAYS_TARGET, 1000)
 
 fig1 = plt.figure(figsize=(8, 6))
 
@@ -194,6 +197,7 @@ plt.fill_between(
     label='Cumulative doses',
     step='pre',
     color='C0',
+    linewidth=0,
 )
 
 if PROJECT:
@@ -208,18 +212,10 @@ if PROJECT:
     )
 
 ax1 = plt.gca()
-target = 160000 * days_model
-plt.plot(
-    days_model + dates[0].astype(int),
-    target / 1e6,
-    'k--',
-    label='Target',
-)
-
 
 plt.axis(
     xmin=dates[0].astype(int) + 1,
-    xmax=dates[0].astype(int) + 250,
+    xmax=PLOT_END_DATE,
     ymin=0,
     ymax=40,
 )
@@ -269,11 +265,10 @@ plt.title(
 )
 
 plt.ylabel('Daily doses (thousands)')
-plt.axhline(160, color='k', linestyle='--', label="Target")
 
 plt.axis(
     xmin=dates[0].astype(int) + 1,
-    xmax=dates[0].astype(int) + 250,
+    xmax=PLOT_END_DATE,
     ymin=0,
     ymax=200,
 )
@@ -420,26 +415,26 @@ for ax in [ax1, ax2, ax3, ax4, ax5]:
 
 handles, labels = ax1.get_legend_handles_labels()
 if PROJECT:
-    order = [1, 2, 0, 3, 4]
+    order = [0, 1, 2, 3]
 else:
-    order = [1, 0, 2, 3]
+    order = [0, 1, 2]
 ax1.legend(
     [handles[idx] for idx in order],
     [labels[idx] for idx in order],
-    loc='lower right',
-    # ncol=2,
+    loc='upper left',
+    ncol=2,
 )
 
 handles, labels = ax2.get_legend_handles_labels()
 if PROJECT:
-    order = [9, 8, 7, 6, 5, 4, 3, 2, 1, 10, 0, 11, 12]
+    order = [8, 7, 6, 5, 4, 3, 2, 1, 0, 9, 10, 11]
 else:
-    order = [9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 10, 11]
+    order = [8, 7, 6, 5, 4, 3, 2, 1, 0, 9, 10]
 ax2.legend(
     [handles[idx] for idx in order],
     [labels[idx] for idx in order],
-    loc='lower right',
-    # ncol=2,
+    loc='upper left',
+    ncol=2,
 )
 
 for ax in [ax3, ax4, ax5]:
@@ -448,7 +443,7 @@ for ax in [ax3, ax4, ax5]:
     ax.legend(
         [handles[idx] for idx in order],
         [labels[idx] for idx in order],
-        loc='lower right',
+        loc='upper left',
         # ncol=2,
     )
 

@@ -55,21 +55,16 @@
       <p class="toc_title">Contents</p>
       <!-- <ul class="toc_list"> -->
         <li><a href="#daily">Daily doses by state/territory</a></li>
+        <li><a href="#cumulative">Cumulative doses</a></li>
         <li><a href="#utilisation">Estimated utilisation</a></li>
         <li><a href="#utilisation_by_type">Estimated utilisation by vaccine type</a></li>
-        <li><a href="#cumulative">Cumulative doses</a></li>
         <li><a href="#details">Details</a></li>
       <!-- </ul> -->
     </div>
     <h2 id="daily">Daily doses by state/territory</h2>
     <p>
       Below is a plot of daily vaccine doses administered in Australia, by
-      state/territory. These are compared to the average rate required for 40 million
-      doses to be administered by the end of October (160k doses per day), which is
-      approximately what Australia is targeting (though recent developments make it likely
-      that this target will be revised).
-    </p>
-    <p>
+      state/territory.
       The data is smoothed using Gaussian smoothing with σ=2 days to better show the
       trend.
     </p>
@@ -82,6 +77,20 @@
       supply expectations and is subject to change.
     </p>
     <img src="daily_doses_by_state.svg">
+    <h2 id="cumulative">Cumulative doses</h2>
+    <p>
+      Below is a simple plot of cumulative doses in Australia over time. Australia aims to vaccinate all 20M adults (requiring 40M doses) by the end of 2021.
+    </p>
+    <p>
+      Projected doses are based on expected supply, the assumptions in the <a
+      href="#utilisation">Estimated utilisation</a> section below, and the assumption
+      that 10% of available doses each day are utilised: administered as first doses or
+      reserved for second doses. That is in effect assuming that we will always be about
+      10 days away from exhausting available doses. This projection reflects current
+      supply expectations and is subject to change.
+    </p>
+    <br>
+    <img src="cumulative_doses.svg">
     <h2 id="utilisation">Estimated utilisation</h2>
     <p>
       Below is a plot of the estimated status of each vaccine dose in Australia. How many
@@ -114,22 +123,6 @@
     <img src="pfizer_utilisation.svg">
     <br>
     <img src="az_utilisation.svg">
-    <h2 id="cumulative">Cumulative doses</h2>
-    <p>
-      Finally, here is a simple plot of cumulative doses in Australia over time,
-      compared to a hypothetical rollout at a constant rate toward the end of October
-      target of 40M doses.
-    </p>
-    <p>
-      Projected doses are based on expected supply, the assumptions in the <a
-      href="#utilisation">Estimated utilisation</a> section above, and the assumption
-      that 10% of available doses each day are utilised: administered as first doses or
-      reserved for second doses. That is in effect assuming that we will always be about
-      10 days away from exhausting available doses. This projection reflects current
-      supply expectations and is subject to change.
-    </p>
-    <br>
-    <img src="cumulative_doses.svg">
     <h3 id="details">Details</h3>
     <p>
       Source for vaccine supply and expected supply: <a href="https://www.covid19data.com.au/vaccines">covid19data.com.au</a>
