@@ -74,6 +74,55 @@ pfizer_supply_data = """
 2021-05-02      1_603_000
 """
 
+LONGPROJECT = False
+
+if LONGPROJECT:
+    pfizer_supply_data = """
+    2021-02-21        142_000
+    2021-02-28        308_000
+    2021-03-07        443_000
+    2021-03-14        592_000
+    2021-03-28        751_000
+    2021-04-11        870_000
+    2021-04-18      1_172_000
+    2021-04-25 1342_000
+    2021-05-02 1532_000
+    2021-05-09 1742_000
+    2021-05-16 1972_000
+    2021-05-23 2222_000
+    2021-05-30 2492_000
+    2021-06-06 2762_000
+    2021-06-13 3032_000
+    2021-06-20 3302_000
+    2021-06-27 3922_000
+    2021-07-04 4542_000
+    2021-07-11 5162_000
+    2021-07-18 5782_000
+    2021-07-25 6402_000
+    2021-08-01 7022_000
+    2021-08-08 7642_000
+    2021-08-15 8262_000
+    2021-08-22 8882_000
+    2021-08-29 9502_000
+    2021-09-05 10122_000
+    2021-09-12 10742_000
+    2021-09-19 11362_000
+    2021-09-26 11982_000
+    2021-10-03 14140_000
+    2021-10-10 16298_000
+    2021-10-17 18457_000
+    2021-10-24 20615_000
+    2021-10-31 22774_000
+    2021-11-07 24932_000
+    2021-11-14 27091_000
+    2021-11-21 29249_000
+    2021-11-28 31408_000
+    2021-12-05 33566_000
+    2021-12-12 35725_000
+    2021-12-19 37883_000
+    2021-12-26 40042_000
+    """
+
 AZ_OS_supply_data = """
 2021-03-07      300_000
 2021-03-21      700_000
@@ -86,8 +135,20 @@ AZ_local_supply_data = """
 2021-04-25      2_250_000
 2021-05-02      2_920_000
 """
+if LONGPROJECT:
+    AZ_local_supply_data += """
+        2021-05-09      3_590_000
+        2021-05-16      4_260_000
+        2021-05-23      4_930_000
+        2021-05-30      5_600_000
+        2021-06-06      6_270_000
+        2021-06-13      6_940_000
+        2021-06-20      7_610_000
+        2021-06-27      8_280_000
+        """
 
-PLOT_END_DATE = np.datetime64('2022-01-01')
+
+PLOT_END_DATE = np.datetime64('2021-12-31')
 
 PROJECT = True
 
@@ -112,7 +173,11 @@ AZ_shipments = np.diff(AZ_OS_suppy, prepend=0)
 AZ_production = np.diff(AZ_local_supply, prepend=0)
 
 if PROJECT:
-    projection_dates = np.arange(dates[-1] + 1, np.datetime64('2021-05-02'))
+    if LONGPROJECT:
+        projection_end = np.datetime64('2021-12-31')
+    else:
+        projection_end = np.datetime64('2021-05-02')
+    projection_dates = np.arange(dates[-1] + 1, projection_end)
     all_dates = np.concatenate((dates, projection_dates))
 else:
     all_dates = dates
@@ -217,7 +282,7 @@ plt.axis(
     xmin=dates[0].astype(int) + 1,
     xmax=PLOT_END_DATE,
     ymin=0,
-    ymax=40,
+    ymax=40 if LONGPROJECT else 10,
 )
 
 plt.title(f'AUS cumulative doses. Total to date: {doses[-1]/1e3:.1f}k')
@@ -270,7 +335,7 @@ plt.axis(
     xmin=dates[0].astype(int) + 1,
     xmax=PLOT_END_DATE,
     ymin=0,
-    ymax=200,
+    ymax=350 if LONGPROJECT else 150,
 )
 ax2 = plt.gca()
 
