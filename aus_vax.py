@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.units as munits
 import matplotlib.dates as mdates
+import matplotlib.ticker as ticker
 from pathlib import Path
 from pytz import timezone
 
@@ -350,8 +351,8 @@ for arr, label, colour in [
 ]:
     plt.fill_between(
         all_dates[: len(dates)] + 1,
-        cumsum[: len(dates)] / 1e3,
-        (cumsum + arr)[: len(dates)] / 1e3,
+        cumsum[: len(dates)] / 1e6,
+        (cumsum + arr)[: len(dates)] / 1e6,
         label=f'{label} ({arr[len(dates)-1] / 1000:.0f}k)',
         step='pre',
         color=colour,
@@ -362,13 +363,13 @@ for arr, label, colour in [
 used = AZ_first_doses[len(dates) - 1] + pfizer_first_doses[len(dates) - 1]
 unused = AZ_available[len(dates) - 1] + pfizer_available[len(dates) - 1]
 utilisation = 100 * used / (used + unused)
-plt.ylabel('Cumulative doses (thousands)')
+plt.ylabel('Cumulative doses (millions)')
 plt.title(f"Estimated vaccine utilisation: first dose utilisation rate: {utilisation:.1f}%")
 plt.axis(
     xmin=dates[0].astype(int) + 1,
-    xmax=dates[0].astype(int) + 125,
+    xmax=PLOT_END_DATE,
     ymin=0,
-    ymax=5000,
+    ymax=10,
 )
 ax3 = plt.gca()
 
@@ -383,8 +384,8 @@ for arr, label, colour in [
 ]:
     plt.fill_between(
         all_dates[: len(dates)] + 1,
-        cumsum[: len(dates)] / 1e3,
-        (cumsum + arr)[: len(dates)] / 1e3,
+        cumsum[: len(dates)] / 1e6,
+        (cumsum + arr)[: len(dates)] / 1e6,
         label=f'{label} ({arr[len(dates)-1] / 1000:.0f}k)',
         step='pre',
         color=colour,
@@ -395,15 +396,15 @@ for arr, label, colour in [
 used = AZ_first_doses[len(dates) - 1]
 unused = AZ_available[len(dates) - 1]
 utilisation = 100 * used / (used + unused)
-plt.ylabel('Cumulative doses (thousands)')
+plt.ylabel('Cumulative doses (millions)')
 plt.title(
     f"Estimated AZ vaccine utilisation: first dose utilisation rate: {utilisation:.1f}%"
 )
 plt.axis(
     xmin=dates[0].astype(int) + 1,
-    xmax=dates[0].astype(int) + 125,
+    xmax=PLOT_END_DATE,
     ymin=0,
-    ymax=5000,
+    ymax=10,
 )
 ax4 = plt.gca()
 
@@ -418,8 +419,8 @@ for arr, label, colour in [
 ]:
     plt.fill_between(
         all_dates[: len(dates)] + 1,
-        cumsum[: len(dates)] / 1e3,
-        (cumsum + arr)[: len(dates)] / 1e3,
+        cumsum[: len(dates)] / 1e6,
+        (cumsum + arr)[: len(dates)] / 1e6,
         label=f'{label} ({arr[len(dates)-1] / 1000:.0f}k)',
         step='pre',
         color=colour,
@@ -430,15 +431,15 @@ for arr, label, colour in [
 used = pfizer_first_doses[len(dates) - 1]
 unused = pfizer_available[len(dates) - 1]
 utilisation = 100 * used / (used + unused)
-plt.ylabel('Cumulative doses (thousands)')
+plt.ylabel('Cumulative doses (millions)')
 plt.title(
     f"Estimated Pfizer vaccine utilisation: first dose utilisation rate: {utilisation:.1f}%"
 )
 plt.axis(
     xmin=dates[0].astype(int) + 1,
-    xmax=dates[0].astype(int) + 125,
+    xmax=PLOT_END_DATE,
     ymin=0,
-    ymax=5000,
+    ymax=10,
 )
 ax5 = plt.gca()
 
@@ -489,6 +490,8 @@ ax1.legend(
     loc='upper left',
     ncol=2,
 )
+ax1.yaxis.set_major_locator(ticker.MultipleLocator(1))
+
 
 handles, labels = ax2.get_legend_handles_labels()
 if PROJECT:
@@ -502,7 +505,9 @@ ax2.legend(
     ncol=2,
 )
 
+
 for ax in [ax3, ax4, ax5]:
+    ax.yaxis.set_major_locator(ticker.MultipleLocator(1))
     handles, labels = ax.get_legend_handles_labels()
     order = [3, 2, 1, 0, 4, 5]
     ax.legend(
