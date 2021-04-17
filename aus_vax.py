@@ -54,6 +54,10 @@ for s in STATES:
     dates = dates[dates >= START_DATE]
     doses_by_state[s] = state_doses
 
+# Data not yet on covidlive
+# doses_by_state['aus'][-1] = 1474558
+# doses_by_state['nt'][-1] = 12753
+# doses_by_state['tas'][-1] = 28630
 
 doses_by_state['fed'] = doses_by_state['aus'] - sum(
     doses_by_state[s] for s in STATES if s != 'aus'
@@ -283,7 +287,7 @@ plt.axis(
     xmin=dates[0].astype(int) + 1,
     xmax=PLOT_END_DATE,
     ymin=0,
-    ymax=40 if LONGPROJECT else 10,
+    ymax=40 if LONGPROJECT else 8,
 )
 
 plt.title(f'AUS cumulative doses. Total to date: {doses[-1]/1e3:.1f}k')
@@ -369,7 +373,7 @@ plt.axis(
     xmin=dates[0].astype(int) + 1,
     xmax=PLOT_END_DATE,
     ymin=0,
-    ymax=10,
+    ymax=8,
 )
 ax3 = plt.gca()
 
@@ -404,7 +408,7 @@ plt.axis(
     xmin=dates[0].astype(int) + 1,
     xmax=PLOT_END_DATE,
     ymin=0,
-    ymax=10,
+    ymax=8,
 )
 ax4 = plt.gca()
 
@@ -439,7 +443,7 @@ plt.axis(
     xmin=dates[0].astype(int) + 1,
     xmax=PLOT_END_DATE,
     ymin=0,
-    ymax=10,
+    ymax=8,
 )
 ax5 = plt.gca()
 
