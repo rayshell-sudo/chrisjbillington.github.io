@@ -55,9 +55,8 @@ for s in STATES:
     doses_by_state[s] = state_doses
 
 # Data not yet on covidlive
-# doses_by_state['aus'][-1] = 1474558
-# doses_by_state['nt'][-1] = 12753
-# doses_by_state['tas'][-1] = 28630
+doses_by_state['aus'][-1] = 1496608
+doses_by_state['tas'][-1] = 28721
 
 doses_by_state['fed'] = doses_by_state['aus'] - sum(
     doses_by_state[s] for s in STATES if s != 'aus'
@@ -136,20 +135,21 @@ AZ_OS_supply_data = """
 AZ_local_supply_data = """
 2021-03-28        832_000
 2021-04-11      1_300_000
-2021-04-18      1_770_000
-2021-04-25      2_250_000
-2021-05-02      2_920_000
+2021-04-18      1_770_000 - 470_000 # No confirmation that we got this shipment yet
+2021-04-25      2_250_000 - 470_000
+2021-05-02      2_920_000 - 470_000
 """
 if LONGPROJECT:
     AZ_local_supply_data += """
-        2021-05-09      3_590_000
-        2021-05-16      4_260_000
-        2021-05-23      4_930_000
-        2021-05-30      5_600_000
-        2021-06-06      6_270_000
-        2021-06-13      6_940_000
-        2021-06-20      7_610_000
-        2021-06-27      8_280_000
+        2021-05-09      3_590_000 - 470_000
+        2021-05-16      4_260_000 - 470_000
+        2021-05-23      4_930_000 - 470_000
+        2021-05-30      5_600_000 - 470_000
+        2021-06-06      6_270_000 - 470_000
+        2021-06-13      6_940_000 - 470_000
+        2021-06-20      7_610_000 - 470_000
+        2021-06-27      8_280_000 - 470_000
+        2021-06-27      8_000_000
         """
 
 
@@ -162,11 +162,14 @@ def unpack_data(s):
     dates = []
     values = []
     for line in s.splitlines():
-        if line.strip():
-            date, value, *_ = line.split()
+        if line.strip() and not line.strip().startswith('#'):
+            date, value = line.split(maxsplit=1)
             dates.append(np.datetime64(date))
-            values.append(float(value))
-    return np.array(dates) - 4, np.array(values)
+            try:
+                values.append(eval(value))
+            except:
+                import embed
+    return np.array(dates), np.array(values)
 
 
 pfizer_supply_dates, pfizer_supply = unpack_data(pfizer_supply_data)
@@ -320,7 +323,7 @@ if PROJECT:
     daily_proj_doses = np.diff(proj_doses, prepend=0)
     plt.fill_between(
         all_dates[len(dates) - 1 :] + 1,
-        gaussian_smoothing(daily_proj_doses / 1e3, 2)[len(dates) - 1 :],
+        gaussian_smoothing(daily_proj_doses / 1e3, 4)[len(dates) - 1 :],
         label='Projected (national)',
         step='pre',
         color='cyan',
@@ -494,7 +497,7 @@ ax1.legend(
     loc='upper left',
     ncol=2,
 )
-ax1.yaxis.set_major_locator(ticker.MultipleLocator(1))
+ax1.yaxis.set_major_locator(ticker.MultipleLocator(5 if LONGPROJECT else 1))
 
 
 handles, labels = ax2.get_legend_handles_labels()
