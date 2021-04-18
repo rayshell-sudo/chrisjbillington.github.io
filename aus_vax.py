@@ -135,9 +135,9 @@ AZ_OS_supply_data = """
 AZ_local_supply_data = """
 2021-03-28        832_000
 2021-04-11      1_300_000
-2021-04-18      1_770_000 - 470_000 # No confirmation that we got this shipment yet
-2021-04-25      2_250_000 - 470_000
-2021-05-02      2_920_000 - 470_000
+2021-04-18      1_770_000 # - 470_000 # No confirmation that we got this shipment yet
+2021-04-25      2_250_000 # - 470_000
+2021-05-02      2_920_000 # - 470_000
 """
 if LONGPROJECT:
     AZ_local_supply_data += """
@@ -165,10 +165,7 @@ def unpack_data(s):
         if line.strip() and not line.strip().startswith('#'):
             date, value = line.split(maxsplit=1)
             dates.append(np.datetime64(date))
-            try:
-                values.append(eval(value))
-            except:
-                import embed
+            values.append(eval(value))
     return np.array(dates), np.array(values)
 
 
@@ -293,7 +290,7 @@ plt.axis(
     ymax=40 if LONGPROJECT else 8,
 )
 
-plt.title(f'AUS cumulative doses. Total to date: {doses[-1]/1e3:.1f}k')
+plt.title(f'AUS cumulative doses. Total to date: {doses[-1]/1e6:.2f}M')
 plt.ylabel('Cumulative doses (millions)')
 
 
@@ -323,7 +320,7 @@ if PROJECT:
     daily_proj_doses = np.diff(proj_doses, prepend=0)
     plt.fill_between(
         all_dates[len(dates) - 1 :] + 1,
-        gaussian_smoothing(daily_proj_doses / 1e3, 4)[len(dates) - 1 :],
+        gaussian_smoothing(daily_proj_doses / 1e3, 2)[len(dates) - 1 :],
         label='Projected (national)',
         step='pre',
         color='cyan',
