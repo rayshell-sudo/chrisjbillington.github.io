@@ -1,3 +1,4 @@
+import sys
 import pandas as pd
 from datetime import datetime
 import numpy as np
@@ -80,7 +81,7 @@ pfizer_supply_data = """
 2021-05-02      1_603_000
 """
 
-LONGPROJECT = False
+LONGPROJECT = False or 'project' in sys.argv
 
 if LONGPROJECT:
     pfizer_supply_data = """
@@ -137,26 +138,38 @@ AZ_OS_supply_data = """
 AZ_local_supply_data = """
 2021-03-28        832_000
 2021-04-11      1_300_000
-2021-04-18      1_770_000 # - 470_000 # No confirmation that we got this shipment yet
-2021-04-25      2_250_000 # - 470_000
-2021-05-02      2_920_000 # - 470_000
+2021-04-18      1_770_000
+2021-04-25      2_250_000
+2021-05-02      2_920_000
 """
 if LONGPROJECT:
     AZ_local_supply_data += """
-        2021-05-09      3_590_000 # - 470_000
-        2021-05-16      4_260_000 # - 470_000
-        2021-05-23      4_930_000 # - 470_000
-        2021-05-30      5_600_000 # - 470_000
-        2021-06-06      6_270_000 # - 470_000
-        2021-06-13      6_940_000 # - 470_000
-        2021-06-20      7_610_000 # - 470_000
-        2021-06-27      8_280_000 # - 470_000
-        2021-06-27      8_000_000
+        2021-05-09      3_590_000
+        2021-05-16      4_260_000
+        2021-05-23      4_930_000
+        2021-05-30      5_600_000
+        2021-06-06      6_270_000
+        2021-06-13      6_940_000
+        2021-06-20      7_610_000
+        2021-06-27      8_280_000
+        2021-06-27      9_040_000
+        2021-07-03      9_800_000
+        2021-07-10     10_560_000
+        2021-07-17     11_320_000
+        2021-07-24     12_080_000
+        2021-07-31     12_840_000
+        2021-08-07     13_600_000
+        2021-08-14     14_360_000
+        2021-08-21     15_120_000
+        2021-08-28     15_880_000
+        2021-09-04     16_000_000
         """
 
 
-PLOT_END_DATE = np.datetime64('2021-05-31')
-CUMULATIVE_YMAX = 4 # million
+PLOT_END_DATE = (
+    np.datetime64('2021-12-31') if LONGPROJECT else np.datetime64('2021-05-31')
+)
+CUMULATIVE_YMAX = 4  # million
 
 PROJECT = True
 
@@ -331,7 +344,7 @@ if PROJECT:
     daily_proj_doses = np.diff(proj_doses, prepend=0)
     plt.fill_between(
         all_dates[len(dates) - 1 :] + 1,
-        gaussian_smoothing(daily_proj_doses / 1e3, 2)[len(dates) - 1 :],
+        gaussian_smoothing(daily_proj_doses / 1e3, 3)[len(dates) - 1 :],
         label='Projected',
         step='pre',
         color='cyan',
@@ -551,10 +564,14 @@ for i, line in enumerate(html_lines):
 Path(html_file).write_text('\n'.join(html_lines) + '\n')
 
 for extension in ['png', 'svg']:
-    fig1.savefig(f'cumulative_doses.{extension}')
-    fig2.savefig(f'daily_doses_by_state.{extension}')
-    fig3.savefig(f'utilisation.{extension}')
-    fig4.savefig(f'az_utilisation.{extension}')
-    fig5.savefig(f'pfizer_utilisation.{extension}')
+    if LONGPROJECT:
+        fig1.savefig(f'cumulative_doses_longproject.{extension}')
+        fig2.savefig(f'daily_doses_by_state_longproject.{extension}')
+    else:
+        fig1.savefig(f'cumulative_doses.{extension}')
+        fig2.savefig(f'daily_doses_by_state.{extension}')
+        fig3.savefig(f'utilisation.{extension}')
+        fig4.savefig(f'az_utilisation.{extension}')
+        fig5.savefig(f'pfizer_utilisation.{extension}')
 
 plt.show()
