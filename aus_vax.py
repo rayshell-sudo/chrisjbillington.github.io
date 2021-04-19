@@ -155,7 +155,8 @@ if LONGPROJECT:
         """
 
 
-PLOT_END_DATE = np.datetime64('2021-12-31')
+PLOT_END_DATE = np.datetime64('2021-05-31')
+CUMULATIVE_YMAX = 4 # million
 
 PROJECT = True
 
@@ -297,7 +298,7 @@ plt.axis(
     xmin=dates[0].astype(int) + 1,
     xmax=PLOT_END_DATE,
     ymin=0,
-    ymax=40 if LONGPROJECT else 6,
+    ymax=40 if LONGPROJECT else CUMULATIVE_YMAX,
 )
 
 plt.title(f'AUS cumulative doses. Total to date: {doses[-1]/1e6:.2f}M')
@@ -350,7 +351,7 @@ plt.axis(
     xmin=dates[0].astype(int) + 1,
     xmax=PLOT_END_DATE,
     ymin=0,
-    ymax=350 if LONGPROJECT else 150,
+    ymax=350 if LONGPROJECT else 100,
 )
 ax2 = plt.gca()
 
@@ -383,7 +384,7 @@ plt.axis(
     xmin=dates[0].astype(int) + 1,
     xmax=PLOT_END_DATE,
     ymin=0,
-    ymax=6,
+    ymax=CUMULATIVE_YMAX,
 )
 ax3 = plt.gca()
 
@@ -418,7 +419,7 @@ plt.axis(
     xmin=dates[0].astype(int) + 1,
     xmax=PLOT_END_DATE,
     ymin=0,
-    ymax=6,
+    ymax=CUMULATIVE_YMAX,
 )
 ax4 = plt.gca()
 
@@ -453,7 +454,7 @@ plt.axis(
     xmin=dates[0].astype(int) + 1,
     xmax=PLOT_END_DATE,
     ymin=0,
-    ymax=6,
+    ymax=CUMULATIVE_YMAX,
 )
 ax5 = plt.gca()
 
