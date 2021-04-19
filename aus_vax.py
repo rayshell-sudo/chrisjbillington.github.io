@@ -263,14 +263,22 @@ days = (dates - dates[0]).astype(float)
 
 fig1 = plt.figure(figsize=(8, 6))
 
-plt.fill_between(
-    dates + 1,
-    doses / 1e6,
-    label='Cumulative doses',
-    step='pre',
-    color='C0',
-    linewidth=0,
-)
+cumsum = np.zeros(len(dates))
+colours = list(reversed([f'C{i}' for i in range(9)]))
+for i, state in enumerate(['nt', 'act', 'tas', 'sa', 'wa', 'qld', 'vic', 'nsw', 'fed']):
+    doses = doses_by_state[state]
+    latest_doses = doses[-1]
+
+    plt.fill_between(
+        dates + 1,
+        cumsum / 1e6,
+        (cumsum + doses) / 1e6,
+        label=f'{state.upper()} ({doses[-1] / 1000:.1f}k)',
+        step='pre',
+        color=colours[i],
+        linewidth=0,
+    )
+    cumsum += doses
 
 if PROJECT:
     plt.fill_between(
@@ -289,7 +297,7 @@ plt.axis(
     xmin=dates[0].astype(int) + 1,
     xmax=PLOT_END_DATE,
     ymin=0,
-    ymax=40 if LONGPROJECT else 8,
+    ymax=40 if LONGPROJECT else 6,
 )
 
 plt.title(f'AUS cumulative doses. Total to date: {doses[-1]/1e6:.2f}M')
@@ -323,7 +331,7 @@ if PROJECT:
     plt.fill_between(
         all_dates[len(dates) - 1 :] + 1,
         gaussian_smoothing(daily_proj_doses / 1e3, 2)[len(dates) - 1 :],
-        label='Projected (national)',
+        label='Projected',
         step='pre',
         color='cyan',
         alpha=0.5,
@@ -375,7 +383,7 @@ plt.axis(
     xmin=dates[0].astype(int) + 1,
     xmax=PLOT_END_DATE,
     ymin=0,
-    ymax=8,
+    ymax=6,
 )
 ax3 = plt.gca()
 
@@ -410,7 +418,7 @@ plt.axis(
     xmin=dates[0].astype(int) + 1,
     xmax=PLOT_END_DATE,
     ymin=0,
-    ymax=8,
+    ymax=6,
 )
 ax4 = plt.gca()
 
@@ -445,7 +453,7 @@ plt.axis(
     xmin=dates[0].astype(int) + 1,
     xmax=PLOT_END_DATE,
     ymin=0,
-    ymax=8,
+    ymax=6,
 )
 ax5 = plt.gca()
 
@@ -487,9 +495,9 @@ for ax in [ax1, ax2, ax3, ax4, ax5]:
 
 handles, labels = ax1.get_legend_handles_labels()
 if PROJECT:
-    order = [0, 1, 2, 3]
+    order = [8, 7, 6, 5, 4, 3, 2, 1, 0, 9, 10, 11]
 else:
-    order = [0, 1, 2]
+    order = [8, 7, 6, 5, 4, 3, 2, 1, 0, 9, 10]
 ax1.legend(
     [handles[idx] for idx in order],
     [labels[idx] for idx in order],
