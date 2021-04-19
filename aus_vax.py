@@ -314,7 +314,10 @@ plt.axis(
     ymax=40 if LONGPROJECT else CUMULATIVE_YMAX,
 )
 
-plt.title(f'AUS cumulative doses. Total to date: {doses[-1]/1e6:.2f}M')
+if LONGPROJECT:
+    plt.title("Projected cumulative doses")
+else:
+    plt.title(f'AUS cumulative doses. Total to date: {doses_by_state["aus"][-1]/1e6:.2f}M')
 plt.ylabel('Cumulative doses (millions)')
 
 
@@ -354,9 +357,13 @@ if PROJECT:
 
 latest_daily_doses = cumsum[-1]
 
-plt.title(
-    f'Smoothed daily doses by state/territory. Latest national rate: {latest_daily_doses / 1000:.1f}k/day'
-)
+if LONGPROJECT:
+    plt.title("Projected daily doses")
+else:
+    plt.title(
+        'Smoothed daily doses by state/territory. '
+        + f'Latest national rate: {latest_daily_doses / 1000:.1f}k/day'
+    )
 
 plt.ylabel('Daily doses (thousands)')
 
