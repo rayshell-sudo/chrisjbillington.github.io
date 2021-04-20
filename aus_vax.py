@@ -73,62 +73,16 @@ pfizer_supply_data = """
 2021-02-28        308_000
 2021-03-07        443_000
 2021-03-14        592_000
+2021-03-21        592_000
 2021-03-28        751_000
+2021-04-04        751_000
 2021-04-11        870_000
-2021-04-18      1_172_000 # Greg Hunt Apr 13 "We have received 1.172 million doses"
-2021-04-18      1_303_000
-2021-04-25      1_433_000
-2021-05-02      1_603_000
+2021-04-18      1_172_000
+2021-04-25      1_345_000
+2021-05-02      1_515_000
 """
 
 LONGPROJECT = False or 'project' in sys.argv
-
-if LONGPROJECT:
-    pfizer_supply_data = """
-    2021-02-21        142_000
-    2021-02-28        308_000
-    2021-03-07        443_000
-    2021-03-14        592_000
-    2021-03-28        751_000
-    2021-04-11        870_000
-    2021-04-18      1_172_000
-    2021-04-25 1342_000
-    2021-05-02 1532_000
-    2021-05-09 1742_000
-    2021-05-16 1972_000
-    2021-05-23 2222_000
-    2021-05-30 2492_000
-    2021-06-06 2762_000
-    2021-06-13 3032_000
-    2021-06-20 3302_000
-    2021-06-27 3922_000
-    2021-07-04 4542_000
-    2021-07-11 5162_000
-    2021-07-18 5782_000
-    2021-07-25 6402_000
-    2021-08-01 7022_000
-    2021-08-08 7642_000
-    2021-08-15 8262_000
-    2021-08-22 8882_000
-    2021-08-29 9502_000
-    2021-09-05 10122_000
-    2021-09-12 10742_000
-    2021-09-19 11362_000
-    2021-09-26 11982_000
-    2021-10-03 14140_000
-    2021-10-10 16298_000
-    2021-10-17 18457_000
-    2021-10-24 20615_000
-    2021-10-31 22774_000
-    2021-11-07 24932_000
-    2021-11-14 27091_000
-    2021-11-21 29249_000
-    2021-11-28 31408_000
-    2021-12-05 33566_000
-    2021-12-12 35725_000
-    2021-12-19 37883_000
-    2021-12-26 40042_000
-    """
 
 AZ_OS_supply_data = """
 2021-03-07      300_000
@@ -137,37 +91,23 @@ AZ_OS_supply_data = """
 
 AZ_local_supply_data = """
 2021-03-28        832_000
+# 2021-04-04        832_000
 2021-04-11      1_300_000
-2021-04-18      1_770_000
-2021-04-25      2_250_000
-2021-05-02      2_920_000
+# 2021-04-18      1_300_000
+2021-04-25      1_768_000
+2021-05-02      2_438_000
 """
-if LONGPROJECT:
-    AZ_local_supply_data += """
-        2021-05-09      3_590_000
-        2021-05-16      4_260_000
-        2021-05-23      4_930_000
-        2021-05-30      5_600_000
-        2021-06-06      6_270_000
-        2021-06-13      6_940_000
-        2021-06-20      7_610_000
-        2021-06-27      8_280_000
-        2021-06-27      9_040_000
-        2021-07-03      9_800_000
-        2021-07-10     10_560_000
-        2021-07-17     11_320_000
-        2021-07-24     12_080_000
-        2021-07-31     12_840_000
-        2021-08-07     13_600_000
-        2021-08-14     14_360_000
-        2021-08-21     15_120_000
-        2021-08-28     15_880_000
-        2021-09-04     16_000_000
-        """
 
+# Doses distributed by the feds (scroll to weekly updates):
+# https://www.health.gov.au/resources/collections/covid-19-vaccine-rollout-updates
+#distributed_doses_data = """
+#2021-04-04  1_905_294
+#2021-04-11  2_447_865
+#2021-04-18  3_005_852 
+#"""
 
 PLOT_END_DATE = (
-    np.datetime64('2021-12-31') if LONGPROJECT else np.datetime64('2021-05-31')
+    np.datetime64('2021-12-31') if LONGPROJECT else dates[-1] + 50 #np.datetime64('2021-05-31')
 )
 CUMULATIVE_YMAX = 4  # million
 
@@ -188,6 +128,39 @@ def unpack_data(s):
 pfizer_supply_dates, pfizer_supply = unpack_data(pfizer_supply_data)
 AZ_OS_supply_dates, AZ_OS_suppy = unpack_data(AZ_OS_supply_data)
 AZ_local_supply_dates, AZ_local_supply = unpack_data(AZ_local_supply_data)
+#distributed_doses_dates, distributed_doses = unpack_data(distributed_doses_data)
+
+# Estimated AZ supply. Assume 670k per week locally-produced AZ up to 16M:
+n_weeks = int((16e6 - AZ_local_supply[-1]) // 670000) + 1
+AZ_local_supply_dates = np.append(
+    AZ_local_supply_dates,
+    [AZ_local_supply_dates[-1] + 7 * (i + 1) for i in range(n_weeks)],
+)
+AZ_local_supply = np.append(
+    AZ_local_supply, [AZ_local_supply[-1] + 670000 * (i + 1) for i in range(n_weeks)]
+)
+AZ_local_supply[-1] = 16e6
+
+
+# Estimated Pfizer supply. 170k per week until mid-May, then 250k per week until July.
+# Then 600k per week until Oct, then whatever weekly rate is required to get to 40M by
+# EOY.
+MID_MAY = np.datetime64('2021-05-16')
+JULY = np.datetime64('2021-07-04')
+OCTOBER = np.datetime64('2021-10-03')
+while pfizer_supply_dates[-1] <= MID_MAY:
+    pfizer_supply_dates = np.append(pfizer_supply_dates, [pfizer_supply_dates[-1] + 7])
+    pfizer_supply = np.append(pfizer_supply, [pfizer_supply[-1] + 170000])
+while pfizer_supply_dates[-1] <= JULY:
+    pfizer_supply_dates = np.append(pfizer_supply_dates, [pfizer_supply_dates[-1] + 7])
+    pfizer_supply = np.append(pfizer_supply, [pfizer_supply[-1] + 250000])
+while pfizer_supply_dates[-1] <= OCTOBER:
+    pfizer_supply_dates = np.append(pfizer_supply_dates, [pfizer_supply_dates[-1] + 7])
+    pfizer_supply = np.append(pfizer_supply, [pfizer_supply[-1] + 600000])
+remaining_per_week = (40e6 - pfizer_supply[-1]) / 12
+for i in range(12):
+    pfizer_supply_dates = np.append(pfizer_supply_dates, [pfizer_supply_dates[-1] + 7])
+    pfizer_supply = np.append(pfizer_supply, [pfizer_supply[-1] + remaining_per_week])
 
 pfizer_shipments = np.diff(pfizer_supply, prepend=0)
 AZ_shipments = np.diff(AZ_OS_suppy, prepend=0)
@@ -197,7 +170,7 @@ if PROJECT:
     if LONGPROJECT:
         projection_end = np.datetime64('2021-12-31')
     else:
-        projection_end = np.datetime64('2021-05-02')
+        projection_end = np.datetime64('2021-12-31')
     projection_dates = np.arange(dates[-1] + 1, projection_end)
     all_dates = np.concatenate((dates, projection_dates))
 else:
@@ -232,8 +205,21 @@ for i, date in enumerate(all_dates):
         AZ_available[i:] += 0.5 * AZ_shipments[AZ_OS_supply_dates == date][0]
         AZ_reserved[i:] += 0.5 * AZ_shipments[AZ_OS_supply_dates == date][0]
     if date in AZ_local_supply_dates:
-        AZ_available[i:] += 0.5 * AZ_production[AZ_local_supply_dates == date][0]
-        AZ_reserved[i:] += 0.5 * AZ_production[AZ_local_supply_dates == date][0]
+        if date < np.datetime64('2021-04-11'):
+            AZ_available[i:] += 0.5 * AZ_production[AZ_local_supply_dates == date][0]
+            AZ_reserved[i:] += 0.5 * AZ_production[AZ_local_supply_dates == date][0]
+        else:
+            outstanding_AZ_second_doses = AZ_first_doses[i] - AZ_second_doses[i]
+            reserve_allocation = 0.5 * outstanding_AZ_second_doses - AZ_reserved[i]
+            this_shipment = AZ_production[AZ_local_supply_dates == date][0]
+            AZ_available[i:] += this_shipment - reserve_allocation
+            AZ_reserved[i:] += reserve_allocation
+            # Once we're finished our 8M local (plus 350k imported) AZ first doses, all
+            # remaining supply is reserved for 2nd doses:
+            if AZ_available[i] + AZ_first_doses[i] > 8.35e6:
+                excess = AZ_first_doses[i] + AZ_available[i] - 8.35e6
+                AZ_available[i:] -= excess
+                AZ_reserved[i:] += excess
     if i == 0:
         first_doses_today = first_doses[i]
     elif i < len(dates):
@@ -253,6 +239,15 @@ for i, date in enumerate(all_dates):
 
     AZ_first_doses_today = AZ_frac * first_doses_today
     pfizer_first_doses_today = pfizer_frac * first_doses_today
+
+    # Once we're finished our 8M local (plus 350k imported) AZ first doses, all
+    # remaining supply is reserved for 2nd doses:
+    # if AZ_first_doses[i] + AZ_first_doses_today > 8.35e6:
+    #     excess = AZ_first_doses[i] + AZ_first_doses_today - 8.35e6
+    #     AZ_first_doses_today -= excess
+    #     pfizer_first_doses_today += excess
+    #     AZ_reserved[i:] += AZ_available[i:]
+    #     AZ_available[i:] = 0
 
     AZ_first_doses[i:] += AZ_first_doses_today
     pfizer_first_doses[i:] += pfizer_first_doses_today
@@ -494,7 +489,7 @@ for ax in [ax1, ax2, ax3, ax4, ax5]:
     ax.fill_betweenx(
         [0, ax.get_ylim()[1]],
         2 * [PHASE_1B.astype(int)],
-        2 * [dates[-1].astype(int) + 30],
+        2 * [dates[-1].astype(int) + 20],
         color='orange',
         alpha=0.5,
         linewidth=0,
@@ -505,8 +500,8 @@ for ax in [ax1, ax2, ax3, ax4, ax5]:
     for i in range(10):
         ax.fill_betweenx(
             [0, ax.get_ylim()[1]],
-            2 * [dates[-1].astype(int) + 30 + i],
-            2 * [dates[-1].astype(int) + 31 + i],
+            2 * [dates[-1].astype(int) + 20 + i],
+            2 * [dates[-1].astype(int) + 21 + i],
             color='orange',
             alpha=0.5 * (10 - i) / 10,
             linewidth=0,
@@ -524,6 +519,7 @@ ax1.legend(
     [labels[idx] for idx in order],
     loc='upper left',
     ncol=2,
+    fontsize="small"
 )
 ax1.yaxis.set_major_locator(ticker.MultipleLocator(5 if LONGPROJECT else 1))
 
@@ -538,6 +534,7 @@ ax2.legend(
     [labels[idx] for idx in order],
     loc='upper left',
     ncol=2,
+    fontsize="small"
 )
 
 
@@ -550,6 +547,7 @@ for ax in [ax3, ax4, ax5]:
         [labels[idx] for idx in order],
         loc='upper left',
         # ncol=2,
+        fontsize="small"
     )
 
 for ax in [ax1, ax2, ax3, ax4, ax5]:
