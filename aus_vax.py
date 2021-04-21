@@ -145,9 +145,9 @@ AZ_local_supply[-1] = 16e6
 # Estimated Pfizer supply. 170k per week until mid-May, then 250k per week until July.
 # Then 600k per week until Oct, then whatever weekly rate is required to get to 40M by
 # EOY.
-MID_MAY = np.datetime64('2021-05-16')
-JULY = np.datetime64('2021-07-04')
-OCTOBER = np.datetime64('2021-10-03')
+MID_MAY = np.datetime64('2021-05-15')
+JULY = np.datetime64('2021-07-01')
+OCTOBER = np.datetime64('2021-10-01')
 while pfizer_supply_dates[-1] <= MID_MAY:
     pfizer_supply_dates = np.append(pfizer_supply_dates, [pfizer_supply_dates[-1] + 7])
     pfizer_supply = np.append(pfizer_supply, [pfizer_supply[-1] + 170000])
@@ -342,7 +342,7 @@ if PROJECT:
     daily_proj_doses = np.diff(proj_doses, prepend=0)
     plt.fill_between(
         all_dates[len(dates) - 1 :] + 1,
-        gaussian_smoothing(daily_proj_doses / 1e3, 3)[len(dates) - 1 :],
+        gaussian_smoothing(daily_proj_doses / 1e3, 4)[len(dates) - 1 :],
         label='Projected',
         step='pre',
         color='cyan',
