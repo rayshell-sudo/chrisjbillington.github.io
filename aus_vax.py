@@ -36,6 +36,7 @@ def gaussian_smoothing(data, pts):
 
 START_DATE = np.datetime64('2021-02-22')
 PHASE_1B = np.datetime64('2021-03-22')
+PHASE_2A = np.datetime64('2021-05-03')
 
 doses_by_state = {}
 for s in STATES:
@@ -56,9 +57,11 @@ for s in STATES:
     doses_by_state[s] = state_doses
 
 # Data not yet on covidlive
-doses_by_state['aus'][-1] = 1_785_698
-doses_by_state['sa'][-1] = 50_674
-doses_by_state['nt'][-1] = 13_984
+doses_by_state['aus'][-1] = 1_855_601
+doses_by_state['sa'][-1] = 52_129
+doses_by_state['nt'][-1] = 14_617
+doses_by_state['act'][-1] = 23_624
+doses_by_state['tas'][-1] = 32698
 
 doses_by_state['fed'] = doses_by_state['aus'] - sum(
     doses_by_state[s] for s in STATES if s != 'aus'
@@ -479,7 +482,7 @@ for ax in [ax1, ax2, ax3, ax4, ax5]:
         2 * [START_DATE.astype(int)],
         2 * [PHASE_1B.astype(int)],
         color='red',
-        alpha=0.5,
+        alpha=0.35,
         linewidth=0,
         label='Phase 1a',
         zorder=-10,
@@ -488,21 +491,32 @@ for ax in [ax1, ax2, ax3, ax4, ax5]:
     ax.fill_betweenx(
         [0, ax.get_ylim()[1]],
         2 * [PHASE_1B.astype(int)],
-        2 * [dates[-1].astype(int) + 20],
+        2 * [PHASE_2A.astype(int)],
         color='orange',
-        alpha=0.5,
+        alpha=0.35,
         linewidth=0,
         label='Phase 1b',
+        zorder=-10,
+    )
+
+    ax.fill_betweenx(
+        [0, ax.get_ylim()[1]],
+        2 * [PHASE_2A.astype(int)],
+        2 * [max(dates[-1], PHASE_2A).astype(int) + 20],
+        color='yellow',
+        alpha=0.35,
+        linewidth=0,
+        label='Phase 2a',
         zorder=-10,
     )
 
     for i in range(10):
         ax.fill_betweenx(
             [0, ax.get_ylim()[1]],
-            2 * [dates[-1].astype(int) + 20 + i],
-            2 * [dates[-1].astype(int) + 21 + i],
-            color='orange',
-            alpha=0.5 * (10 - i) / 10,
+            2 * [max(dates[-1], PHASE_2A).astype(int) + 20 + i],
+            2 * [max(dates[-1], PHASE_2A).astype(int) + 21 + i],
+            color='yellow',
+            alpha=0.3 * (10 - i) / 10,
             linewidth=0,
             zorder=-10,
         )
@@ -510,9 +524,9 @@ for ax in [ax1, ax2, ax3, ax4, ax5]:
 
 handles, labels = ax1.get_legend_handles_labels()
 if PROJECT:
-    order = [8, 7, 6, 5, 4, 3, 2, 1, 0, 9, 10, 11]
+    order = [8, 7, 6, 5, 4, 3, 2, 1, 0, 9, 10, 11, 12]
 else:
-    order = [8, 7, 6, 5, 4, 3, 2, 1, 0, 9, 10]
+    order = [8, 7, 6, 5, 4, 3, 2, 1, 0, 9, 10, 11]
 ax1.legend(
     [handles[idx] for idx in order],
     [labels[idx] for idx in order],
@@ -525,9 +539,9 @@ ax1.yaxis.set_major_locator(ticker.MultipleLocator(5 if LONGPROJECT else 1))
 
 handles, labels = ax2.get_legend_handles_labels()
 if PROJECT:
-    order = [8, 7, 6, 5, 4, 3, 2, 1, 0, 9, 10, 11]
+    order = [8, 7, 6, 5, 4, 3, 2, 1, 0, 9, 10, 11, 12]
 else:
-    order = [8, 7, 6, 5, 4, 3, 2, 1, 0, 9, 10]
+    order = [8, 7, 6, 5, 4, 3, 2, 1, 0, 9, 10, 11]
 ax2.legend(
     [handles[idx] for idx in order],
     [labels[idx] for idx in order],
@@ -540,7 +554,7 @@ ax2.legend(
 for ax in [ax3, ax4, ax5]:
     ax.yaxis.set_major_locator(ticker.MultipleLocator(1))
     handles, labels = ax.get_legend_handles_labels()
-    order = [3, 2, 1, 0, 4, 5]
+    order = [3, 2, 1, 0, 4, 5, 6]
     ax.legend(
         [handles[idx] for idx in order],
         [labels[idx] for idx in order],
