@@ -57,11 +57,15 @@ for s in STATES:
     doses_by_state[s] = state_doses
 
 # Data not yet on covidlive
-# doses_by_state['aus'][-1] = 1_855_601
-# doses_by_state['sa'][-1] = 52_129
-# doses_by_state['nt'][-1] = 14_617
-# doses_by_state['act'][-1] = 23_624
-# doses_by_state['tas'][-1] = 32698
+doses_by_state['aus'][-1] = 1_914_047
+doses_by_state['vic'][-1] = 185_535
+doses_by_state['qld'][-1] = 136_196
+doses_by_state['wa'][-1] = 87_645
+doses_by_state['tas'][-1] = 33_305
+doses_by_state['sa'][-1] = 53_146
+doses_by_state['act'][-1] = 24_290
+doses_by_state['nt'][-1] = 15_042
+
 
 doses_by_state['fed'] = doses_by_state['aus'] - sum(
     doses_by_state[s] for s in STATES if s != 'aus'
@@ -295,7 +299,7 @@ if PROJECT:
     plt.fill_between(
         all_dates[len(dates) - 1 :] + 1,
         proj_doses[len(dates) - 1 :] / 1e6,
-        label='Projected',
+        label='Projection',
         step='pre',
         color='cyan',
         alpha=0.5,
@@ -345,7 +349,7 @@ if PROJECT:
     plt.fill_between(
         all_dates[len(dates) - 1 :] + 1,
         gaussian_smoothing(daily_proj_doses / 1e3, 4)[len(dates) - 1 :],
-        label='Projected',
+        label='Projection',
         step='pre',
         color='cyan',
         alpha=0.5,
@@ -373,6 +377,11 @@ plt.axis(
 ax2 = plt.gca()
 
 
+if LONGPROJECT:
+    endindex = len(all_dates)
+else:
+    endindex = len(dates)
+    
 fig3 = plt.figure(figsize=(8, 6))
 cumsum = np.zeros(len(all_dates))
 for arr, label, colour in [
@@ -382,9 +391,9 @@ for arr, label, colour in [
     (AZ_reserved + pfizer_reserved, 'Reserved for second doses', 'C3'),
 ]:
     plt.fill_between(
-        all_dates[: len(dates)] + 1,
-        cumsum[: len(dates)] / 1e6,
-        (cumsum + arr)[: len(dates)] / 1e6,
+        all_dates[: endindex] + 1,
+        cumsum[: endindex] / 1e6,
+        (cumsum + arr)[: endindex] / 1e6,
         label=f'{label} ({arr[len(dates)-1] / 1000:.0f}k)',
         step='pre',
         color=colour,
@@ -401,7 +410,7 @@ plt.axis(
     xmin=dates[0].astype(int) + 1,
     xmax=PLOT_END_DATE,
     ymin=0,
-    ymax=CUMULATIVE_YMAX,
+    ymax=40 if LONGPROJECT else CUMULATIVE_YMAX,
 )
 ax3 = plt.gca()
 
@@ -415,9 +424,9 @@ for arr, label, colour in [
     (AZ_reserved, 'AZ reserved for second doses', 'C3'),
 ]:
     plt.fill_between(
-        all_dates[: len(dates)] + 1,
-        cumsum[: len(dates)] / 1e6,
-        (cumsum + arr)[: len(dates)] / 1e6,
+        all_dates[: endindex] + 1,
+        cumsum[: endindex] / 1e6,
+        (cumsum + arr)[: endindex] / 1e6,
         label=f'{label} ({arr[len(dates)-1] / 1000:.0f}k)',
         step='pre',
         color=colour,
@@ -436,7 +445,7 @@ plt.axis(
     xmin=dates[0].astype(int) + 1,
     xmax=PLOT_END_DATE,
     ymin=0,
-    ymax=CUMULATIVE_YMAX,
+    ymax=40 if LONGPROJECT else CUMULATIVE_YMAX,
 )
 ax4 = plt.gca()
 
@@ -450,9 +459,9 @@ for arr, label, colour in [
     (pfizer_reserved, 'Pfizer reserved for second doses', 'C3'),
 ]:
     plt.fill_between(
-        all_dates[: len(dates)] + 1,
-        cumsum[: len(dates)] / 1e6,
-        (cumsum + arr)[: len(dates)] / 1e6,
+        all_dates[: endindex] + 1,
+        cumsum[: endindex] / 1e6,
+        (cumsum + arr)[: endindex] / 1e6,
         label=f'{label} ({arr[len(dates)-1] / 1000:.0f}k)',
         step='pre',
         color=colour,
@@ -471,7 +480,7 @@ plt.axis(
     xmin=dates[0].astype(int) + 1,
     xmax=PLOT_END_DATE,
     ymin=0,
-    ymax=CUMULATIVE_YMAX,
+    ymax=40 if LONGPROJECT else CUMULATIVE_YMAX,
 )
 ax5 = plt.gca()
 
@@ -552,7 +561,7 @@ ax2.legend(
 
 
 for ax in [ax3, ax4, ax5]:
-    ax.yaxis.set_major_locator(ticker.MultipleLocator(1))
+    ax.yaxis.set_major_locator(ticker.MultipleLocator(5 if LONGPROJECT else 1))
     handles, labels = ax.get_legend_handles_labels()
     order = [3, 2, 1, 0, 4, 5, 6]
     ax.legend(
@@ -564,7 +573,7 @@ for ax in [ax3, ax4, ax5]:
     )
 
 for ax in [ax1, ax2, ax3, ax4, ax5]:
-    locator = mdates.DayLocator([1])
+    locator = mdates.DayLocator([1] if LONGPROJECT else [1, 15])
     formatter = mdates.ConciseDateFormatter(locator)
     ax.xaxis.set_major_locator(locator)
     ax.xaxis.set_major_formatter(formatter)
