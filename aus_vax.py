@@ -57,13 +57,14 @@ for s in STATES:
     doses_by_state[s] = state_doses
 
 # Data not yet on covidlive
-doses_by_state['aus'][-1] = 1_933_892
-doses_by_state['vic'][-1] = 187_743
+doses_by_state['aus'][-1] = 1_937_300
+doses_by_state['nsw'][-1] = 192_336
+doses_by_state['vic'][-1] = 188_259
 doses_by_state['qld'][-1] = 136_196
-doses_by_state['wa'][-1] = 87_961
+doses_by_state['wa'][-1] = 88_361
 doses_by_state['tas'][-1] = 33_633
-doses_by_state['sa'][-1] = 53_620
-doses_by_state['act'][-1] = 24_831
+doses_by_state['sa'][-1] = 53_871
+doses_by_state['act'][-1] = 25_334
 doses_by_state['nt'][-1] = 15_042
 
 
@@ -235,7 +236,7 @@ for i, date in enumerate(all_dates):
         # of available doses each day on first doses. Since a dose will be reserved as
         # well, this means we're always 10 days away from running out of vaccine at the
         # current rate - which is approximately what we see in the data.
-        first_doses_today = 0.1 * (pfizer_available[i] + AZ_available[i])
+        first_doses_today = 1 / 14 * (pfizer_available[i] + AZ_available[i])
         total_first_doses = AZ_first_doses[i] + pfizer_first_doses[i]
         first_doses_today = max(0, min(20000000 - total_first_doses, first_doses_today))
         first_doses[i:] += first_doses_today
