@@ -33,6 +33,22 @@ def gaussian_smoothing(data, pts):
     normalisation = convolve(np.ones_like(data), kernel, mode='same')
     return convolve(data, kernel, mode='same') / normalisation
 
+def padded_gaussian_smoothing(data, pts, pad_avg=7):
+    """gaussian smooth an array by given number of points, with padding at the edges
+    equal to the pad_avg-point average at each edge"""
+    from scipy.signal import convolve
+
+    x = np.arange(-4 * pts, 4 * pts + 1, 1)
+    kernel = np.exp(-(x ** 2) / (2 * pts ** 2))
+    kernel /= kernel.sum()
+    padded_data = np.concatenate(
+        [
+            np.full(4 * pts, data[:pad_avg].mean()),
+            data,
+            np.full(4 * pts, data[-pad_avg:].mean()),
+        ]
+    )
+    return convolve(padded_data, kernel, mode='same')[4 * pts : -4 * pts]
 
 START_DATE = np.datetime64('2021-02-22')
 PHASE_1B = np.datetime64('2021-03-22')
@@ -329,7 +345,8 @@ cumsum = np.zeros(len(dates))
 colours = list(reversed([f'C{i}' for i in range(9)]))
 for i, state in enumerate(['nt', 'act', 'tas', 'sa', 'wa', 'qld', 'vic', 'nsw', 'fed']):
     doses = doses_by_state[state]
-    smoothed_doses = gaussian_smoothing(np.diff(doses, prepend=0), 2).cumsum()
+    # smoothed_doses = gaussian_smoothing(np.diff(doses, prepend=0), 2).cumsum()
+    smoothed_doses = padded_gaussian_smoothing(np.diff(doses, prepend=0), 2).cumsum()
     daily_doses = np.diff(smoothed_doses, prepend=0)
     latest_daily_doses = daily_doses[-1]
 
@@ -349,7 +366,8 @@ if PROJECT:
     daily_proj_doses = np.diff(proj_doses, prepend=0)
     plt.fill_between(
         all_dates[len(dates) - 1 :] + 1,
-        gaussian_smoothing(daily_proj_doses / 1e3, 4)[len(dates) - 1 :],
+        # gaussian_smoothing(daily_proj_doses / 1e3, 4)[len(dates) - 1 :],
+        padded_gaussian_smoothing(daily_proj_doses / 1e3, 4)[len(dates) - 1 :],
         label='Projection',
         step='pre',
         color='cyan',
