@@ -73,15 +73,15 @@ for s in STATES:
     doses_by_state[s] = state_doses
 
 # Data not yet on covidlive
-doses_by_state['aus'][-1] = 2_179_544
-doses_by_state['nsw'][-1] = 206_320
-doses_by_state['vic'][-1] = 206_798
-doses_by_state['qld'][-1] = 144_228
-doses_by_state['wa'][-1] = 96_508
-doses_by_state['tas'][-1] = 37_126
-doses_by_state['sa'][-1] = 57_964
-doses_by_state['act'][-1] = 27_853
-doses_by_state['nt'][-1] = 16_260
+doses_by_state['aus'][-1] = 2_234_844
+doses_by_state['nsw'][-1] = 210_376
+doses_by_state['vic'][-1] = 210_242
+doses_by_state['qld'][-1] = 146_497
+doses_by_state['wa'][-1] = 98_895
+doses_by_state['tas'][-1] = 38_100
+doses_by_state['sa'][-1] = 59_442
+doses_by_state['act'][-1] = 28_547
+doses_by_state['nt'][-1] = 16_820
 
 
 doses_by_state['fed'] = doses_by_state['aus'] - sum(
@@ -293,6 +293,14 @@ proj_doses = AZ_first_doses + AZ_second_doses + pfizer_first_doses + pfizer_seco
 
 days = (dates - dates[0]).astype(float)
 
+
+def state_label(state):
+    if state == 'fed':
+        return 'GPs/fed. care'
+    else:
+        return f"{state.upper()} clinics"
+
+
 fig1 = plt.figure(figsize=(8, 6))
 
 cumsum = np.zeros(len(dates))
@@ -305,7 +313,7 @@ for i, state in enumerate(['nt', 'act', 'tas', 'sa', 'wa', 'qld', 'vic', 'nsw', 
         dates + 1,
         cumsum / 1e6,
         (cumsum + doses) / 1e6,
-        label=f'{state.upper()} ({doses[-1] / 1000:.1f}k)',
+        label=f'{state_label(state)} ({doses[-1] / 1000:.1f}k)',
         step='pre',
         color=colours[i],
         linewidth=0,
@@ -354,7 +362,7 @@ for i, state in enumerate(['nt', 'act', 'tas', 'sa', 'wa', 'qld', 'vic', 'nsw', 
         dates + 1,
         cumsum / 1e3,
         (cumsum + daily_doses) / 1e3,
-        label=f'{state.upper()} ({daily_doses[-1] / 1000:.1f}k/day)',
+        label=f'{state_label(state)} ({daily_doses[-1] / 1000:.1f}k/day)',
         step='pre',
         color=colours[i],
         linewidth=0,
@@ -381,7 +389,7 @@ if LONGPROJECT:
     plt.title("Projected daily doses")
 else:
     plt.title(
-        'Smoothed daily doses by state/territory. '
+        'Smoothed daily doses by administration channel\n'
         + f'Latest national rate: {latest_daily_doses / 1000:.1f}k/day'
     )
 

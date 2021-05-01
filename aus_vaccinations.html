@@ -15,7 +15,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:image" content="http://chrisbillington.net/aus_vax_social_preview.png">
   <meta property="og:title" content="Australian vaccination rollout plots"/>
-  <meta property="og:description" content="Plots of daily and cumulative COVID-19 vaccinations in Australia, by state/territory, with projections and utilisation estimates."/>
+  <meta property="og:description" content="Plots of daily and cumulative COVID-19 vaccinations in Australia, by administration channel, with projections and utilisation estimates."/>
   <meta property="og:url" content="http://chrisbillington.net/aus_vaccinations.html">
 
   <style type="text/css">
@@ -49,23 +49,23 @@
   <div class="content">
     <h1>Australian COVID-19 vaccination rollout</h1>
     <p>
-    Last updated: 2021-04-30-14:26 Melbourne time
+    Last updated: 2021-05-01-13:51 Melbourne time
     </p>
     <div id="toc_container">
       <p class="toc_title">Contents</p>
-      <li><a href="#daily">Daily doses by state/territory</a></li>
+      <li><a href="#daily">Daily doses by administration channel</a></li>
       <li><a href="#cumulative">Cumulative doses</a></li>
       <li><a href="#longproject">Longer-term projections</a></li>
       <li><a href="#utilisation">Estimated utilisation</a></li>
       <li><a href="#utilisation_by_type">Estimated utilisation by vaccine type</a></li>
       <li><a href="#details">Details</a></li>
     </div>
-    <h2 id="daily">Daily doses by state/territory</h2>
+    <h2 id="daily">Daily doses by administration channel</h2>
     <p>
-      Below is a plot of daily vaccine doses administered in Australia, by
-      state/territory.
-      The data is smoothed using Gaussian smoothing with σ=2 days to better show the
-      trend.
+      Below is a plot of daily vaccine doses administered in Australia by administration
+      channel, showing the daily number of doses administered by state vaccination
+      clinics, and by GPs and in federally operated aged and disability care. The data
+      is smoothed using Gaussian smoothing with σ=2 days to better show the trend.
     </p>
     <p>
       Projected doses are based on expected supply, the assumptions in the <a
@@ -78,7 +78,11 @@
     <img src="daily_doses_by_state.svg">
     <h2 id="cumulative">Cumulative doses</h2>
     <p>
-      Below is a simple plot of cumulative doses in Australia over time. Australia aims to vaccinate all 20M adults (requiring 40M doses) by the end of 2021.
+      Below is a simple plot of cumulative doses in Australia over time by
+      administration channel, showing the cumulative number of doses administered by
+      state vaccination clinics, and by GPs and in federally operated aged and
+      disability care. Australia aims to vaccinate all 20M adults (requiring 40M doses)
+      by the end of 2021.
     </p>
     <p>
       Projected doses are based on expected supply, the assumptions in the <a
