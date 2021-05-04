@@ -73,15 +73,15 @@ for s in STATES:
     doses_by_state[s] = state_doses
 
 # Data not yet on covidlive
-# doses_by_state['aus'][-1] = 2_254_074
-# doses_by_state['nsw'][-1] = 211_022
-# doses_by_state['vic'][-1] = 211_522
-# doses_by_state['qld'][-1] = 146_737
-# doses_by_state['wa'][-1] = 99_870
-# doses_by_state['tas'][-1] = 38_405
-# doses_by_state['sa'][-1] = 60_139
-# doses_by_state['act'][-1] = 28_943
-# doses_by_state['nt'][-1] = 16_820
+doses_by_state['aus'][-1] = 2_316_969
+doses_by_state['nsw'][-1] = 215_006
+doses_by_state['vic'][-1] = 220_133
+doses_by_state['qld'][-1] = 147_216
+doses_by_state['wa'][-1] = 102_554
+doses_by_state['tas'][-1] = 39_736
+doses_by_state['sa'][-1] = 62_094
+doses_by_state['act'][-1] = 30_011
+doses_by_state['nt'][-1] = 16_820
 
 
 doses_by_state['fed'] = doses_by_state['aus'] - sum(
@@ -103,6 +103,7 @@ pfizer_supply_data = """
 2021-04-18      1_172_000
 2021-04-25      1_345_000
 2021-05-02      1_518_000
+2021-05-09      1_518_000 + 351_000
 """
 
 LONGPROJECT = False or 'project' in sys.argv
@@ -119,6 +120,7 @@ AZ_local_supply_data = """
 # 2021-04-18      1_300_000
 2021-04-25      1_768_000
 2021-05-02      2_475_000
+2021-05-09      2_475_000 + 736_900
 """
 
 # Doses distributed by the feds (scroll to weekly updates):
