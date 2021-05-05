@@ -68,20 +68,25 @@ for s in STATES:
     # state_doses = state_doses[:-1]
     # dates = dates[:-1]
 
+    # Extrapolate one day
+    # for _ in range(2):
+    #     dates = np.append(dates, [dates[-1] + 1])
+    #     state_doses = np.append(state_doses, [2 * state_doses[-1] - state_doses[-2]])
+
     state_doses = state_doses[dates >= START_DATE]
     dates = dates[dates >= START_DATE]
     doses_by_state[s] = state_doses
 
 # Data not yet on covidlive
-doses_by_state['aus'][-1] = 2_316_969
-doses_by_state['nsw'][-1] = 215_006
-doses_by_state['vic'][-1] = 220_133
-doses_by_state['qld'][-1] = 147_216
-doses_by_state['wa'][-1] = 102_554
-doses_by_state['tas'][-1] = 39_736
-doses_by_state['sa'][-1] = 62_094
-doses_by_state['act'][-1] = 30_011
-doses_by_state['nt'][-1] = 16_820
+doses_by_state['aus'][-1] = 2_396_314
+doses_by_state['nsw'][-1] = 219_594
+doses_by_state['vic'][-1] = 230_404
+doses_by_state['qld'][-1] = 149_885
+doses_by_state['wa'][-1] = 105_415
+doses_by_state['tas'][-1] = 40_885
+doses_by_state['sa'][-1] = 63_790
+doses_by_state['act'][-1] = 30_733
+doses_by_state['nt'][-1] = 17_395
 
 
 doses_by_state['fed'] = doses_by_state['aus'] - sum(
