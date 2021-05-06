@@ -50,6 +50,18 @@ def padded_gaussian_smoothing(data, pts, pad_avg=7):
     )
     return convolve(padded_data, kernel, mode='same')[4 * pts : -4 * pts]
 
+
+def exponential_smoothing(data, pts):
+    """exponentially smooth an array by given number of points"""
+    from scipy.signal import convolve
+
+    x = np.arange(-4 * pts, 4 * pts + 1, 1)
+    kernel = np.exp(-x / pts)
+    kernel[x < 0] = 0
+    normalisation = convolve(np.ones_like(data), kernel, mode='same')
+    return convolve(data, kernel, mode='same') / normalisation
+
+
 START_DATE = np.datetime64('2021-02-22')
 PHASE_1B = np.datetime64('2021-03-22')
 PHASE_2A = np.datetime64('2021-05-03')
@@ -78,15 +90,15 @@ for s in STATES:
     doses_by_state[s] = state_doses
 
 # Data not yet on covidlive
-doses_by_state['aus'][-1] = 2_396_314
-doses_by_state['nsw'][-1] = 219_594
-doses_by_state['vic'][-1] = 230_404
-doses_by_state['qld'][-1] = 149_885
-doses_by_state['wa'][-1] = 105_415
-doses_by_state['tas'][-1] = 40_885
-doses_by_state['sa'][-1] = 63_790
-doses_by_state['act'][-1] = 30_733
-doses_by_state['nt'][-1] = 17_395
+doses_by_state['aus'][-1] = 2_473_529
+doses_by_state['nsw'][-1] = 224_076
+doses_by_state['vic'][-1] = 239_468
+doses_by_state['qld'][-1] = 152_111
+doses_by_state['wa'][-1] = 107_834
+doses_by_state['tas'][-1] = 41_664
+doses_by_state['sa'][-1] = 65_453
+doses_by_state['act'][-1] = 31_544
+doses_by_state['nt'][-1] = 18_049
 
 
 doses_by_state['fed'] = doses_by_state['aus'] - sum(
@@ -218,6 +230,7 @@ AZ_reserved = np.zeros_like(first_doses)
 pfizer_reserved = np.zeros_like(first_doses)
 AZ_available = np.zeros_like(first_doses)
 pfizer_available = np.zeros_like(first_doses)
+wasted = np.zeros_like(first_doses)
 
 tau_AZ = 84
 tau_pfizer = 21
@@ -226,24 +239,31 @@ pfizer_available += pfizer_shipments[pfizer_supply_dates < dates[0]].sum()
 AZ_available += AZ_shipments[AZ_OS_supply_dates < dates[0]].sum()
 AZ_available += AZ_production[AZ_local_supply_dates < dates[0]].sum()
 
+WASTAGE = 0.1
 
 for i, date in enumerate(all_dates):
     if date in pfizer_supply_dates:
-        pfizer_available[i:] += 0.5 * pfizer_shipments[pfizer_supply_dates == date][0]
-        pfizer_reserved[i:] += 0.5 * pfizer_shipments[pfizer_supply_dates == date][0]
+        pfizer_lot = pfizer_shipments[pfizer_supply_dates == date][0]
+        pfizer_available[i:] +=  0.5 * (1 - WASTAGE) * pfizer_lot
+        pfizer_reserved[i:] += 0.5 * (1 - WASTAGE) * pfizer_lot
+        wasted[i:] += WASTAGE * pfizer_lot
     if date in AZ_OS_supply_dates:
-        AZ_available[i:] += 0.5 * AZ_shipments[AZ_OS_supply_dates == date][0]
-        AZ_reserved[i:] += 0.5 * AZ_shipments[AZ_OS_supply_dates == date][0]
+        AZ_lot = AZ_shipments[AZ_OS_supply_dates == date][0]
+        AZ_available[i:] += 0.5 * (1 - WASTAGE) * AZ_lot
+        AZ_reserved[i:] += 0.5 * (1 - WASTAGE) * AZ_lot
+        wasted[i:] += WASTAGE * AZ_lot
     if date in AZ_local_supply_dates:
         if date < np.datetime64('2021-04-11'):
-            AZ_available[i:] += 0.5 * AZ_production[AZ_local_supply_dates == date][0]
-            AZ_reserved[i:] += 0.5 * AZ_production[AZ_local_supply_dates == date][0]
+            AZ_lot = AZ_production[AZ_local_supply_dates == date][0]
+            AZ_available[i:] += 0.5 * (1 - WASTAGE) * AZ_lot
+            AZ_reserved[i:] += 0.5 * (1 - WASTAGE) * AZ_lot
         else:
             outstanding_AZ_second_doses = AZ_first_doses[i] - AZ_second_doses[i]
             reserve_allocation = 0.5 * outstanding_AZ_second_doses - AZ_reserved[i]
-            this_shipment = AZ_production[AZ_local_supply_dates == date][0]
-            AZ_available[i:] += this_shipment - reserve_allocation
+            AZ_lot = AZ_production[AZ_local_supply_dates == date][0]
+            AZ_available[i:] += (1 - WASTAGE) * AZ_lot - reserve_allocation
             AZ_reserved[i:] += reserve_allocation
+            wasted[i:] += WASTAGE * AZ_lot
             # Once we're finished our 8M local (plus 350k imported) AZ first doses, all
             # remaining supply is reserved for 2nd doses:
             if AZ_available[i] + AZ_first_doses[i] > 8.35e6:
@@ -301,6 +321,31 @@ proj_doses = AZ_first_doses + AZ_second_doses + pfizer_first_doses + pfizer_seco
 days = (dates - dates[0]).astype(float)
 
 
+# Model of projected dosage rate:
+all_nonreserved = (
+    AZ_first_doses
+    + AZ_second_doses
+    + AZ_available
+    # + AZ_reserved
+    + pfizer_first_doses
+    + pfizer_second_doses
+    + pfizer_available
+    # + pfizer_reserved
+)
+
+nonreserved_rate = np.diff(all_nonreserved, prepend=0)
+# Smooth over the next 3 weeks:
+nonreserved_rate_smoothed = exponential_smoothing(nonreserved_rate, 21)
+# Gaussian smooth an extra week:
+nonreserved_rate_smoothed = gaussian_smoothing(nonreserved_rate, 7)
+# Delay by a week:
+tmp = np.zeros_like(nonreserved_rate_smoothed)
+tmp[7:] = nonreserved_rate_smoothed[:-7]
+nonreserved_rate_smoothed = tmp
+# plt.plot(all_dates + 14, nonreserved_rate_smoothed)
+# plt.show()
+
+
 def state_label(state):
     if state == 'fed':
         return 'GPs/fed. care'
@@ -330,9 +375,14 @@ for i, state in enumerate(['nt', 'act', 'tas', 'sa', 'wa', 'qld', 'vic', 'nsw', 
 if PROJECT:
     plt.fill_between(
         all_dates[len(dates) - 1 :] + 1,
-        proj_doses[len(dates) - 1 :] / 1e6,
+        (
+            doses_by_state["aus"][-1]
+            + nonreserved_rate_smoothed[len(dates) - 1 :].cumsum()
+        )
+        / 1e6,
+        # proj_doses[len(dates) - 1 :] / 1e6,
         label='Projection',
-        step='pre',
+        step='post',
         color='cyan',
         alpha=0.5,
         linewidth=0,
@@ -360,8 +410,9 @@ cumsum = np.zeros(len(dates))
 colours = list(reversed([f'C{i}' for i in range(9)]))
 for i, state in enumerate(['nt', 'act', 'tas', 'sa', 'wa', 'qld', 'vic', 'nsw', 'fed']):
     doses = doses_by_state[state]
-    # smoothed_doses = gaussian_smoothing(np.diff(doses, prepend=0), 2).cumsum()
-    smoothed_doses = padded_gaussian_smoothing(np.diff(doses, prepend=0), 2).cumsum()
+    smoothed_doses = gaussian_smoothing(np.diff(doses, prepend=0), 2).cumsum()
+    # smoothed_doses = padded_gaussian_smoothing(np.diff(doses, prepend=0), 2).cumsum()
+    # smoothed_doses = n_day_average(np.diff(doses, prepend=0), 2).cumsum()
     daily_doses = np.diff(smoothed_doses, prepend=0)
     latest_daily_doses = daily_doses[-1]
 
@@ -381,10 +432,11 @@ if PROJECT:
     daily_proj_doses = np.diff(proj_doses, prepend=0)
     plt.fill_between(
         all_dates[len(dates) - 1 :] + 1,
+        nonreserved_rate_smoothed[len(dates) - 1 :] / 1e3,
         # gaussian_smoothing(daily_proj_doses / 1e3, 4)[len(dates) - 1 :],
-        padded_gaussian_smoothing(daily_proj_doses / 1e3, 4)[len(dates) - 1 :],
+        # padded_gaussian_smoothing(daily_proj_doses / 1e3, 4)[len(dates) - 1 :],
         label='Projection',
-        step='pre',
+        step='post',
         color='cyan',
         alpha=0.5,
         linewidth=0,
@@ -406,7 +458,7 @@ plt.axis(
     xmin=dates[0].astype(int) + 1,
     xmax=PLOT_END_DATE,
     ymin=0,
-    ymax=350 if LONGPROJECT else 100,
+    ymax=350 if LONGPROJECT else 120,
 )
 ax2 = plt.gca()
 
@@ -423,6 +475,7 @@ for arr, label, colour in [
     (AZ_available + pfizer_available, 'Available for first doses', 'C2'),
     (AZ_second_doses + pfizer_second_doses, 'Administered second doses', 'C1'),
     (AZ_reserved + pfizer_reserved, 'Reserved for second doses', 'C3'),
+    # (wasted, 'Wasted', 'C4'),
 ]:
     plt.fill_between(
         all_dates[: endindex] + 1,

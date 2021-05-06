@@ -49,7 +49,7 @@
   <div class="content">
     <h1>Australian COVID-19 vaccination rollout</h1>
     <p>
-    Last updated: 2021-05-05-14:05 Melbourne time
+    Last updated: 2021-05-06-16:15 Melbourne time
     </p>
     <div id="toc_container">
       <p class="toc_title">Contents</p>
@@ -68,12 +68,10 @@
       is smoothed using Gaussian smoothing with σ=2 days to better show the trend.
     </p>
     <p>
-      Projected doses are based on expected supply, the assumptions in the <a
-      href="#utilisation">Estimated utilisation</a> section below, and the assumption
-      that 1 / 14 of available first doses each day are administered. That is in effect
-      assuming that we will always be about 14 days away from exhausting available first
-      doses. This projection reflects current supply expectations and is subject to
-      change.
+      Projected doses are based on expected supply smoothed over several weeks after
+      supply becomes available, that second doses are reserved and administered on time
+      as described in the <a href="#utilisation">Estimated utilisation</a> section, and
+      allowing for 10% wastage.
     </p>
     <img src="daily_doses_by_state.svg">
     <h2 id="cumulative">Cumulative doses</h2>
@@ -85,21 +83,27 @@
       by the end of 2021.
     </p>
     <p>
-      Projected doses are based on expected supply, the assumptions in the <a
-      href="#utilisation">Estimated utilisation</a> section below, and the assumption
-      that 1 / 14 of available first doses each day are administered. That is in effect
-      assuming that we will always be about 14 days away from exhausting available first
-      doses. This projection reflects current supply expectations and is subject to
-      change.
+      Projected doses are based on expected supply smoothed over several weeks after
+      supply becomes available, that second doses are reserved and administered on time
+      as described in the <a href="#utilisation">Estimated utilisation</a> section, and
+      allowing for 10% wastage.
     </p>
     <img src="cumulative_doses.svg">
     <h2 id="longproject">Longer-term projections</h2>
     <p>
       Below is a possible scenario for the vaccination program over the course of the
-      year. This assumes that we keep up with supply, administering 1 / 14 of available
-      first-doses per day until 20M people have been vaccinated, with a maximum of 8M
-      people receiving the AstraZeneca vaccine. Expected supply of the Pfizer vaccine is
-      40M doses over the year, arriving according to a schedule hinted at in <a
+      year. This assumes that we keep up with supply, administering doses in the weeks
+      following them becoming available until 20M people have been vaccinated, with a
+      maximum of 8M people receiving the AstraZeneca vaccine.
+    </p>
+    <p>
+      This assumes second doses are reserved and administered on time as described in
+      the <a href="#utilisation">Estimated utilisation</a> section, and allows for 10%
+      wastage.
+    </p>
+    <p>
+      Expected supply of the Pfizer vaccine is 40M doses over the year, arriving
+      according to a schedule hinted at in <a
       href="https://youtu.be/NnwVpSmFh2k?t=1830">comments from Greg Hunt</a>, which
       whilst not very specific, are enough to get a rough idea of how things might
       proceed over the year. Supply of the AstraZeneca vaccine is assumed to be 670k per
@@ -138,6 +142,9 @@
         <li>
           That doses becoming available in a given week (supply data is only available
           at the 1-week level) become available at the end of that week.
+        </li>
+        <li>
+          That 10% of doses are wasted.
         </li>
       </ul>
     </p>
