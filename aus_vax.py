@@ -90,15 +90,15 @@ for s in STATES:
     doses_by_state[s] = state_doses
 
 # Data not yet on covidlive
-# doses_by_state['aus'][-1] = 2_473_529
-# doses_by_state['nsw'][-1] = 224_076
-# doses_by_state['vic'][-1] = 239_468
-# doses_by_state['qld'][-1] = 152_111
-# doses_by_state['wa'][-1] = 107_834
-# doses_by_state['tas'][-1] = 41_664
-# doses_by_state['sa'][-1] = 65_453
-# doses_by_state['act'][-1] = 31_544
-# doses_by_state['nt'][-1] = 18_049
+doses_by_state['aus'][-1] = 2_627_725
+doses_by_state['nsw'][-1] = 234_725
+doses_by_state['vic'][-1] = 257_475
+doses_by_state['qld'][-1] = 156_847
+doses_by_state['wa'][-1] = 112_605
+doses_by_state['tas'][-1] = 43_155
+doses_by_state['sa'][-1] = 68_846
+doses_by_state['act'][-1] = 33_240
+doses_by_state['nt'][-1] = 19_405
 
 
 doses_by_state['fed'] = doses_by_state['aus'] - sum(
@@ -412,7 +412,7 @@ for i, state in enumerate(['nt', 'act', 'tas', 'sa', 'wa', 'qld', 'vic', 'nsw', 
     doses = doses_by_state[state]
     smoothed_doses = gaussian_smoothing(np.diff(doses, prepend=0), 2).cumsum()
     # smoothed_doses = padded_gaussian_smoothing(np.diff(doses, prepend=0), 2).cumsum()
-    # smoothed_doses = n_day_average(np.diff(doses, prepend=0), 2).cumsum()
+    # smoothed_doses = n_day_average(np.diff(doses, prepend=0), 7).cumsum()
     daily_doses = np.diff(smoothed_doses, prepend=0)
     latest_daily_doses = daily_doses[-1]
 
