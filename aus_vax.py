@@ -90,14 +90,14 @@ for s in STATES:
     doses_by_state[s] = state_doses
 
 # Data not yet on covidlive
-doses_by_state['aus'][-1] = 2_627_725
-doses_by_state['nsw'][-1] = 234_725
-doses_by_state['vic'][-1] = 257_475
-doses_by_state['qld'][-1] = 156_847
-doses_by_state['wa'][-1] = 112_605
-doses_by_state['tas'][-1] = 43_155
-doses_by_state['sa'][-1] = 68_846
-doses_by_state['act'][-1] = 33_240
+doses_by_state['aus'][-1] = 2_654_338
+doses_by_state['nsw'][-1] = 235_852
+doses_by_state['vic'][-1] = 261_152
+doses_by_state['qld'][-1] = 157_164
+doses_by_state['wa'][-1] = 113_624
+doses_by_state['tas'][-1] = 43_620
+doses_by_state['sa'][-1] = 69_780
+doses_by_state['act'][-1] = 33_627
 doses_by_state['nt'][-1] = 19_405
 
 
@@ -151,7 +151,7 @@ AZ_local_supply_data = """
 PLOT_END_DATE = (
     np.datetime64('2021-12-31') if LONGPROJECT else dates[-1] + 50 #np.datetime64('2021-05-31')
 )
-CUMULATIVE_YMAX = 5  # million
+CUMULATIVE_YMAX = 6  # million
 
 PROJECT = True
 
