@@ -162,7 +162,10 @@ AZ_local_supply_data = """
 #distributed_doses_data = """
 #2021-04-04  1_905_294
 #2021-04-11  2_447_865
-#2021-04-18  3_005_852 
+#2021-04-18  3_025_852 
+#2021-04-25  3_601_029
+#2021-05-02  4_086_946
+#2021-05-09  4_620_108
 #"""
 
 PLOT_END_DATE = (
@@ -194,13 +197,13 @@ WASTAGE = 0.1
 # Estimated AZ supply. Assume 670k per week locally-produced AZ up to 16M (plus
 # wastage):
 AZ_MAX_DOSES = 16e6 / (1 - WASTAGE)
-n_weeks = int((AZ_MAX_DOSES - AZ_local_supply[-1]) // 670000) + 1
+n_weeks = int((AZ_MAX_DOSES - AZ_local_supply[-1]) // 1000000) + 1
 AZ_local_supply_dates = np.append(
     AZ_local_supply_dates,
     [AZ_local_supply_dates[-1] + 7 * (i + 1) for i in range(n_weeks)],
 )
 AZ_local_supply = np.append(
-    AZ_local_supply, [AZ_local_supply[-1] + 670000 * (i + 1) for i in range(n_weeks)]
+    AZ_local_supply, [AZ_local_supply[-1] + 1000000 * (i + 1) for i in range(n_weeks)]
 )
 AZ_local_supply[-1] = AZ_MAX_DOSES
 
@@ -216,7 +219,7 @@ while pfizer_supply_dates[-1] <= MID_MAY:
     pfizer_supply = np.append(pfizer_supply, [pfizer_supply[-1] + 170000])
 while pfizer_supply_dates[-1] <= JULY:
     pfizer_supply_dates = np.append(pfizer_supply_dates, [pfizer_supply_dates[-1] + 7])
-    pfizer_supply = np.append(pfizer_supply, [pfizer_supply[-1] + 250000])
+    pfizer_supply = np.append(pfizer_supply, [pfizer_supply[-1] + 350000])
 while pfizer_supply_dates[-1] <= OCTOBER:
     pfizer_supply_dates = np.append(pfizer_supply_dates, [pfizer_supply_dates[-1] + 7])
     pfizer_supply = np.append(pfizer_supply, [pfizer_supply[-1] + 600000])
@@ -354,16 +357,23 @@ all_nonreserved = (
 )
 
 nonreserved_rate = np.diff(all_nonreserved, prepend=0)
-# Smooth over the next 3 weeks:
-nonreserved_rate_smoothed = exponential_smoothing(nonreserved_rate, 21)
-# Gaussian smooth an extra week:
+# # Smooth over the next 3 weeks:
+# nonreserved_rate_smoothed = exponential_smoothing(nonreserved_rate, 21)
+# # Gaussian smooth an extra week:
+# nonreserved_rate_smoothed = gaussian_smoothing(nonreserved_rate, 7)
+# # Delay by a week:
+# tmp = np.zeros_like(nonreserved_rate_smoothed)
+# tmp[7:] = nonreserved_rate_smoothed[:-7]
+# nonreserved_rate_smoothed = tmp
+
+# Delay by 4 weeks:
+tmp = np.zeros_like(nonreserved_rate)
+tmp[28:] = nonreserved_rate[:-28]
+nonreserved_rate = tmp
+# 7-day average:
+nonreserved_rate = n_day_average(nonreserved_rate, 7)
+# Gaussian smooth 1 week:
 nonreserved_rate_smoothed = gaussian_smoothing(nonreserved_rate, 7)
-# Delay by a week:
-tmp = np.zeros_like(nonreserved_rate_smoothed)
-tmp[7:] = nonreserved_rate_smoothed[:-7]
-nonreserved_rate_smoothed = tmp
-# plt.plot(all_dates + 14, nonreserved_rate_smoothed)
-# plt.show()
 
 
 def state_label(state):
