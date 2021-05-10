@@ -71,7 +71,7 @@ for s in STATES:
     print(f"getting data for {s}")
     df = pd.read_html(f"https://covidlive.com.au/report/daily-vaccinations/{s}")[1]
     dates = np.array(df['DATE'][::-1])
-    state_doses = np.array(df['DOSES'][::-1])
+    state_doses = np.array(df['DOSES'][::-1], dtype=float)
     dates = np.array(
         [np.datetime64(datetime.strptime(d, '%d %b %y'), 'D') for d in dates]
     )
@@ -90,20 +90,35 @@ for s in STATES:
     doses_by_state[s] = state_doses
 
 # Data not yet on covidlive
-doses_by_state['aus'][-1] = 2_654_338
+doses_by_state['aus'][-1] = 2_663_221
 doses_by_state['nsw'][-1] = 235_852
-doses_by_state['vic'][-1] = 261_152
+doses_by_state['vic'][-1] = 263_065
 doses_by_state['qld'][-1] = 157_164
-doses_by_state['wa'][-1] = 113_624
-doses_by_state['tas'][-1] = 43_620
-doses_by_state['sa'][-1] = 69_780
-doses_by_state['act'][-1] = 33_627
-doses_by_state['nt'][-1] = 19_405
+doses_by_state['wa'][-1] = 114_506
+doses_by_state['tas'][-1] = 43_727
+doses_by_state['sa'][-1] = 70_310
+doses_by_state['act'][-1] = 33_873
+doses_by_state['nt'][-1] = 19_441
 
 
 doses_by_state['fed'] = doses_by_state['aus'] - sum(
     doses_by_state[s] for s in STATES if s != 'aus'
 )
+
+
+# 80560 doses were reported on April 19th that actually were administered "prior to
+# April 17". We don't know how much prior, so we'll spread these doses out proportional
+# to each day's doses from the start of phase 1b until April 16.
+LATE_REPORTED_GP_DOSES = 80560
+daily_fed_doses = np.diff(doses_by_state['fed'], prepend=0)
+reportedix = np.where(dates == np.datetime64('2021-04-19'))[0][0]
+backdates = (PHASE_1B <= dates) & (dates <= np.datetime64('2021-04-17'))
+daily_fed_doses[reportedix] -= LATE_REPORTED_GP_DOSES
+total_in_backdate_period = daily_fed_doses[backdates].sum()
+daily_fed_doses[backdates] *= 1 + LATE_REPORTED_GP_DOSES / total_in_backdate_period
+doses_by_state['fed'] = daily_fed_doses.cumsum()
+
+
 
 doses = doses_by_state['aus']
 
@@ -410,9 +425,10 @@ cumsum = np.zeros(len(dates))
 colours = list(reversed([f'C{i}' for i in range(9)]))
 for i, state in enumerate(['nt', 'act', 'tas', 'sa', 'wa', 'qld', 'vic', 'nsw', 'fed']):
     doses = doses_by_state[state]
-    smoothed_doses = gaussian_smoothing(np.diff(doses, prepend=0), 2).cumsum()
+    # smoothed_doses = gaussian_smoothing(np.diff(doses, prepend=0), 2).cumsum()
     # smoothed_doses = padded_gaussian_smoothing(np.diff(doses, prepend=0), 2).cumsum()
-    # smoothed_doses = n_day_average(np.diff(doses, prepend=0), 7).cumsum()
+    smoothed_doses = n_day_average(np.diff(doses, prepend=0), 7).cumsum()
+    smoothed_doses = gaussian_smoothing(np.diff(smoothed_doses, prepend=0), 1).cumsum()
     daily_doses = np.diff(smoothed_doses, prepend=0)
     latest_daily_doses = daily_doses[-1]
 
@@ -448,7 +464,7 @@ if LONGPROJECT:
     plt.title("Projected daily doses")
 else:
     plt.title(
-        'Smoothed daily doses by administration channel\n'
+        '7-day average daily doses by administration channel\n'
         + f'Latest national rate: {latest_daily_doses / 1000:.1f}k/day'
     )
 

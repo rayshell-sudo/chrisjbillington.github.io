@@ -49,7 +49,7 @@
   <div class="content">
     <h1>Australian COVID-19 vaccination rollout</h1>
     <p>
-    Last updated: 2021-05-09-13:46 Melbourne time
+    Last updated: 2021-05-10-14:28 Melbourne time
     </p>
     <div id="toc_container">
       <p class="toc_title">Contents</p>
@@ -62,16 +62,23 @@
     </div>
     <h2 id="daily">Daily doses by administration channel</h2>
     <p>
-      Below is a plot of daily vaccine doses administered in Australia by administration
-      channel, showing the daily number of doses administered by state vaccination
-      clinics, and by GPs and in federally operated aged and disability care. The data
-      is smoothed using Gaussian smoothing with σ=2 days to better show the trend.
+      Below is a plot of 7-day average of daily vaccine doses administered in Australia
+      by administration channel, showing the daily number of doses administered by state
+      vaccination clinics, and by GPs and in federally operated aged and disability
+      care. The 7-day average is further smoothed to remove day-to-day random
+      fluctuations using Gaussian smoothing with σ=1 days.
     </p>
     <p>
       Projected doses are based on expected supply smoothed over several weeks after
-      supply becomes available, that second doses are reserved and administered on time
-      as described in the <a href="#utilisation">Estimated utilisation</a> section, and
-      allowing for 10% wastage.
+      supply becomes available, the asumption that second doses are reserved and
+      administered on time as described in the <a href="#utilisation">Estimated
+      utilisation</a> section, and allowing for 10% wastage.
+    </p>
+    <p>
+     Data note: 80,560 GP-administered doses were reported on April 19th that were
+     administered "prior to April 17". These have been incorporated into the data by
+     spreading them over the period from March 22nd (start of phase 1b) to April 16th in
+     proportion to the daily rate of GP-adminsitered doses on each day.
     </p>
     <img src="daily_doses_by_state.svg">
     <h2 id="cumulative">Cumulative doses</h2>
@@ -84,9 +91,9 @@
     </p>
     <p>
       Projected doses are based on expected supply smoothed over several weeks after
-      supply becomes available, that second doses are reserved and administered on time
-      as described in the <a href="#utilisation">Estimated utilisation</a> section, and
-      allowing for 10% wastage.
+      supply becomes available, the assumption that second doses are reserved and
+      administered on time as described in the <a href="#utilisation">Estimated
+      utilisation</a> section, and allowing for 10% wastage.
     </p>
     <img src="cumulative_doses.svg">
     <h2 id="longproject">Longer-term projections</h2>
