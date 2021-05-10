@@ -136,6 +136,7 @@ pfizer_supply_data = """
 2021-04-25      1_345_000
 2021-05-02      1_518_000
 2021-05-09      1_869_000
+2021-05-16      2_220_000
 """
 
 LONGPROJECT = False or 'project' in sys.argv
@@ -153,6 +154,7 @@ AZ_local_supply_data = """
 2021-04-25      2_238_000
 2021-05-02      2_920_000
 2021-05-09      3_681_900
+2021-05-09      4_681_900
 """
 
 # Doses distributed by the feds (scroll to weekly updates):
@@ -187,8 +189,12 @@ AZ_OS_supply_dates, AZ_OS_suppy = unpack_data(AZ_OS_supply_data)
 AZ_local_supply_dates, AZ_local_supply = unpack_data(AZ_local_supply_data)
 #distributed_doses_dates, distributed_doses = unpack_data(distributed_doses_data)
 
-# Estimated AZ supply. Assume 670k per week locally-produced AZ up to 16M:
-n_weeks = int((16e6 - AZ_local_supply[-1]) // 670000) + 1
+WASTAGE = 0.1
+
+# Estimated AZ supply. Assume 670k per week locally-produced AZ up to 16M (plus
+# wastage):
+AZ_MAX_DOSES = 16e6 / (1 - WASTAGE)
+n_weeks = int((AZ_MAX_DOSES - AZ_local_supply[-1]) // 670000) + 1
 AZ_local_supply_dates = np.append(
     AZ_local_supply_dates,
     [AZ_local_supply_dates[-1] + 7 * (i + 1) for i in range(n_weeks)],
@@ -196,7 +202,7 @@ AZ_local_supply_dates = np.append(
 AZ_local_supply = np.append(
     AZ_local_supply, [AZ_local_supply[-1] + 670000 * (i + 1) for i in range(n_weeks)]
 )
-AZ_local_supply[-1] = 16e6
+AZ_local_supply[-1] = AZ_MAX_DOSES
 
 
 # Estimated Pfizer supply. 170k per week until mid-May, then 250k per week until July.
@@ -254,7 +260,6 @@ pfizer_available += pfizer_shipments[pfizer_supply_dates < dates[0]].sum()
 AZ_available += AZ_shipments[AZ_OS_supply_dates < dates[0]].sum()
 AZ_available += AZ_production[AZ_local_supply_dates < dates[0]].sum()
 
-WASTAGE = 0.1
 
 for i, date in enumerate(all_dates):
     if date in pfizer_supply_dates:
