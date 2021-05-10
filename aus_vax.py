@@ -154,7 +154,7 @@ AZ_local_supply_data = """
 2021-04-25      2_238_000
 2021-05-02      2_920_000
 2021-05-09      3_681_900
-2021-05-09      4_681_900
+2021-05-16      4_681_900
 """
 
 # Doses distributed by the feds (scroll to weekly updates):
