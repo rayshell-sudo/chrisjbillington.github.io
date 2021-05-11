@@ -90,15 +90,15 @@ for s in STATES:
     doses_by_state[s] = state_doses
 
 # Data not yet on covidlive
-doses_by_state['aus'][-1] = 2_663_221
-doses_by_state['nsw'][-1] = 235_852
-doses_by_state['vic'][-1] = 263_065
-doses_by_state['qld'][-1] = 157_164
-doses_by_state['wa'][-1] = 114_506
-doses_by_state['tas'][-1] = 43_727
-doses_by_state['sa'][-1] = 70_310
-doses_by_state['act'][-1] = 33_873
-doses_by_state['nt'][-1] = 19_441
+doses_by_state['aus'][-1] = 2_736_107
+doses_by_state['nsw'][-1] = 242_149
+doses_by_state['vic'][-1] = 273_220
+doses_by_state['qld'][-1] = 159_795
+doses_by_state['wa'][-1] = 116_975
+doses_by_state['tas'][-1] = 44_804
+doses_by_state['sa'][-1] = 77_110
+doses_by_state['act'][-1] = 34_757
+doses_by_state['nt'][-1] = 20_040
 
 
 doses_by_state['fed'] = doses_by_state['aus'] - sum(
