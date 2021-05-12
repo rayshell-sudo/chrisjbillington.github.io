@@ -370,6 +370,10 @@ nonreserved_rate = np.diff(all_nonreserved, prepend=0)
 tmp = np.zeros_like(nonreserved_rate)
 tmp[28:] = nonreserved_rate[:-28]
 nonreserved_rate = tmp
+
+# Include current doses in smoothing so as to ramp from the current rate to the
+# projected rate over the short term
+nonreserved_rate[: len(dates)] = np.diff(doses_by_state['aus'], prepend=0)
 # 7-day average:
 nonreserved_rate = n_day_average(nonreserved_rate, 7)
 # Gaussian smooth 1 week:
@@ -414,8 +418,7 @@ if PROJECT:
         label='Projection',
         step='post',
         color='cyan',
-        alpha=0.5,
-        linewidth=0,
+        alpha=0.5, linewidth=0,
     )
 
 ax1 = plt.gca()
