@@ -343,6 +343,9 @@ proj_doses = AZ_first_doses + AZ_second_doses + pfizer_first_doses + pfizer_seco
 
 days = (dates - dates[0]).astype(float)
 
+daily_doses = np.diff(doses_by_state['aus'], prepend=0)
+smoothed_daily_doses = n_day_average(daily_doses, 7)
+
 
 # Model of projected dosage rate:
 all_nonreserved = (
@@ -366,19 +369,23 @@ nonreserved_rate = np.diff(all_nonreserved, prepend=0)
 # tmp[7:] = nonreserved_rate_smoothed[:-7]
 # nonreserved_rate_smoothed = tmp
 
-# Delay by 4 weeks:
+# Delay by 3 weeks:
 tmp = np.zeros_like(nonreserved_rate)
-tmp[28:] = nonreserved_rate[:-28]
+tmp[21:] = nonreserved_rate[:-21]
 nonreserved_rate = tmp
 
 # Include current doses in smoothing so as to ramp from the current rate to the
 # projected rate over the short term
-nonreserved_rate[: len(dates)] = np.diff(doses_by_state['aus'], prepend=0)
+nonreserved_rate[: len(dates)] = daily_doses
 # 7-day average:
 nonreserved_rate = n_day_average(nonreserved_rate, 7)
 # Gaussian smooth 1 week:
-nonreserved_rate_smoothed = gaussian_smoothing(nonreserved_rate, 7)
+nonreserved_rate = gaussian_smoothing(nonreserved_rate, 7)
 
+# Smooth out any remaining discontinuity:
+err = nonreserved_rate[len(dates) - 2] - smoothed_daily_doses[-1]
+offset = err * np.exp(-(np.arange(50)) / 14)
+nonreserved_rate[len(dates) - 1 : len(dates) + 49] -= offset
 
 def state_label(state):
     if state == 'fed':
@@ -411,7 +418,7 @@ if PROJECT:
         all_dates[len(dates) - 1 :] + 1,
         (
             doses_by_state["aus"][-1]
-            + nonreserved_rate_smoothed[len(dates) - 1 :].cumsum()
+            + nonreserved_rate[len(dates) - 1 :].cumsum()
         )
         / 1e6,
         # proj_doses[len(dates) - 1 :] / 1e6,
@@ -466,7 +473,7 @@ if PROJECT:
     daily_proj_doses = np.diff(proj_doses, prepend=0)
     plt.fill_between(
         all_dates[len(dates) - 1 :] + 1,
-        nonreserved_rate_smoothed[len(dates) - 1 :] / 1e3,
+        nonreserved_rate[len(dates) - 1 :] / 1e3,
         # gaussian_smoothing(daily_proj_doses / 1e3, 4)[len(dates) - 1 :],
         # padded_gaussian_smoothing(daily_proj_doses / 1e3, 4)[len(dates) - 1 :],
         label='Projection',
