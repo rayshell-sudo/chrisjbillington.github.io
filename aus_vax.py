@@ -208,8 +208,8 @@ AZ_local_supply = np.append(
 AZ_local_supply[-1] = AZ_MAX_DOSES
 
 
-# Estimated Pfizer supply. 170k per week until mid-May, then 250k per week until July.
-# Then 600k per week until Oct, then whatever weekly rate is required to get to 40M by
+# Estimated Pfizer supply. 170k per week until mid-May, then 350k per week until July.
+# Then 700k per week until Oct, then whatever weekly rate is required to get to 40M by
 # EOY.
 MID_MAY = np.datetime64('2021-05-15')
 JULY = np.datetime64('2021-07-01')
@@ -222,7 +222,7 @@ while pfizer_supply_dates[-1] <= JULY:
     pfizer_supply = np.append(pfizer_supply, [pfizer_supply[-1] + 350000])
 while pfizer_supply_dates[-1] <= OCTOBER:
     pfizer_supply_dates = np.append(pfizer_supply_dates, [pfizer_supply_dates[-1] + 7])
-    pfizer_supply = np.append(pfizer_supply, [pfizer_supply[-1] + 600000])
+    pfizer_supply = np.append(pfizer_supply, [pfizer_supply[-1] + 700000])
 remaining_per_week = (40e6 - pfizer_supply[-1]) / 12
 for i in range(12):
     pfizer_supply_dates = np.append(pfizer_supply_dates, [pfizer_supply_dates[-1] + 7])
