@@ -282,7 +282,7 @@ for i, date in enumerate(all_dates):
             AZ_reserved[i:] += 0.5 * (1 - WASTAGE) * AZ_lot
         else:
             outstanding_AZ_second_doses = AZ_first_doses[i] - AZ_second_doses[i]
-            reserve_allocation = 0.5 * outstanding_AZ_second_doses - AZ_reserved[i]
+            reserve_allocation = 1.0 * outstanding_AZ_second_doses - AZ_reserved[i]
             AZ_lot = AZ_production[AZ_local_supply_dates == date][0]
             AZ_available[i:] += (1 - WASTAGE) * AZ_lot - reserve_allocation
             AZ_reserved[i:] += reserve_allocation
