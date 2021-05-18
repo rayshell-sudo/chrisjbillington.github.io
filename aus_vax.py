@@ -77,8 +77,8 @@ for s in STATES:
     )
 
     # Only use data as of yesterday:
-    # state_doses = state_doses[:-1]
-    # dates = dates[:-1]
+    state_doses = state_doses[:-1]
+    dates = dates[:-1]
 
     # Extrapolate one day
     # for _ in range(2):
@@ -90,15 +90,15 @@ for s in STATES:
     doses_by_state[s] = state_doses
 
 # Data not yet on covidlive
-doses_by_state['aus'][-1] = 3_100_137
-doses_by_state['nsw'][-1] = 280_135
-doses_by_state['vic'][-1] = 313_539
-doses_by_state['qld'][-1] = 170_330
-doses_by_state['wa'][-1] = 130_649
-doses_by_state['tas'][-1] = 49_739
-doses_by_state['sa'][-1] = 80_017
-doses_by_state['act'][-1] = 38_696
-doses_by_state['nt'][-1] = 22_953
+# doses_by_state['aus'][-1] = 3_100_137
+# doses_by_state['nsw'][-1] = 280_135
+# doses_by_state['vic'][-1] = 313_539
+# doses_by_state['qld'][-1] = 170_330
+# doses_by_state['wa'][-1] = 130_649
+# doses_by_state['tas'][-1] = 49_739
+# doses_by_state['sa'][-1] = 80_017
+# doses_by_state['act'][-1] = 38_696
+# doses_by_state['nt'][-1] = 22_953
 
 
 doses_by_state['fed'] = doses_by_state['aus'] - sum(
@@ -137,13 +137,14 @@ pfizer_supply_data = """
 2021-05-02      1_518_000
 2021-05-09      1_869_000
 2021-05-16      2_220_000
+2021-05-23      2_572_000
 """
 
 LONGPROJECT = False or 'project' in sys.argv
 
 AZ_OS_supply_data = """
 2021-03-07      300_000
-2021-03-21      700_000
+2021-03-21      714_000
 """
 
 AZ_local_supply_data = """
@@ -154,7 +155,8 @@ AZ_local_supply_data = """
 2021-04-25      2_238_000
 2021-05-02      2_920_000
 2021-05-09      3_681_900
-2021-05-16      4_681_900
+2021-05-16      4_712_500
+2021-05-23      5_712_500
 """
 
 # Doses distributed by the feds (scroll to weekly updates):
@@ -208,21 +210,17 @@ AZ_local_supply = np.append(
 AZ_local_supply[-1] = AZ_MAX_DOSES
 
 
-# Estimated Pfizer supply. 170k per week until mid-May, then 350k per week until July.
-# Then 700k per week until Oct, then whatever weekly rate is required to get to 40M by
-# EOY.
+# Estimated Pfizer supply. 300k per week until July. Then 600k per week until Oct, then
+# whatever weekly rate is required to get to 40M by EOY.
 MID_MAY = np.datetime64('2021-05-15')
 JULY = np.datetime64('2021-07-01')
 OCTOBER = np.datetime64('2021-10-01')
-while pfizer_supply_dates[-1] <= MID_MAY:
-    pfizer_supply_dates = np.append(pfizer_supply_dates, [pfizer_supply_dates[-1] + 7])
-    pfizer_supply = np.append(pfizer_supply, [pfizer_supply[-1] + 170000])
 while pfizer_supply_dates[-1] <= JULY:
     pfizer_supply_dates = np.append(pfizer_supply_dates, [pfizer_supply_dates[-1] + 7])
-    pfizer_supply = np.append(pfizer_supply, [pfizer_supply[-1] + 350000])
+    pfizer_supply = np.append(pfizer_supply, [pfizer_supply[-1] + 300000])
 while pfizer_supply_dates[-1] <= OCTOBER:
     pfizer_supply_dates = np.append(pfizer_supply_dates, [pfizer_supply_dates[-1] + 7])
-    pfizer_supply = np.append(pfizer_supply, [pfizer_supply[-1] + 700000])
+    pfizer_supply = np.append(pfizer_supply, [pfizer_supply[-1] + 600000])
 remaining_per_week = (40e6 - pfizer_supply[-1]) / 12
 for i in range(12):
     pfizer_supply_dates = np.append(pfizer_supply_dates, [pfizer_supply_dates[-1] + 7])
