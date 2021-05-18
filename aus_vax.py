@@ -77,8 +77,8 @@ for s in STATES:
     )
 
     # Only use data as of yesterday:
-    state_doses = state_doses[:-1]
-    dates = dates[:-1]
+    # state_doses = state_doses[:-1]
+    # dates = dates[:-1]
 
     # Extrapolate one day
     # for _ in range(2):
