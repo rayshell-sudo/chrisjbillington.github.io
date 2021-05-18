@@ -707,6 +707,26 @@ for ax in [ax1, ax2, ax3, ax4, ax5]:
     ax.grid(True, linestyle=":", color='k')
 
 
+# Plot of doses by weekday
+fig6 = plt.figure(figsize=(8, 6))
+
+doses_by_day = np.diff(doses_by_state['aus'])
+doses_by_day = np.append(doses_by_day, [np.nan] * (7 - len(doses_by_day) % 7))
+N_WEEKS = 4
+days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+for i in reversed(range(N_WEEKS)):
+    start = len(doses_by_day) + (-N_WEEKS + i) * 7
+    block = doses_by_day[start : start + 7]
+    date = dates[start + 1].astype(datetime).strftime('%B %d')
+    plt.plot(days, block / 1e3, 'o-', label=f"Week beginning {date}")
+plt.grid(True, linestyle=':', color='k', alpha=0.5)
+# plt.gca().set_xticklabels()
+plt.legend()
+plt.ylabel('Daily doses (thousands)')
+plt.axis(ymin=0)
+plt.title('National daily doses by weekday')
+
+
 # Update the date in the HTML
 html_file = 'aus_vaccinations.html'
 html_lines = Path(html_file).read_text().splitlines()
@@ -726,5 +746,6 @@ for extension in ['png', 'svg']:
         fig3.savefig(f'utilisation.{extension}')
         fig4.savefig(f'az_utilisation.{extension}')
         fig5.savefig(f'pfizer_utilisation.{extension}')
+        fig6.savefig(f'doses_by_weekday.{extension}')
 
 plt.show()
