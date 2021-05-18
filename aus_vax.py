@@ -712,7 +712,7 @@ fig6 = plt.figure(figsize=(8, 6))
 
 doses_by_day = np.diff(doses_by_state['aus'])
 doses_by_day = np.append(doses_by_day, [np.nan] * (7 - len(doses_by_day) % 7))
-N_WEEKS = 4
+N_WEEKS = 5
 days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 for i in reversed(range(N_WEEKS)):
     start = len(doses_by_day) + (-N_WEEKS + i) * 7
