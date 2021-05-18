@@ -717,7 +717,7 @@ days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 for i in reversed(range(N_WEEKS)):
     start = len(doses_by_day) + (-N_WEEKS + i) * 7
     block = doses_by_day[start : start + 7]
-    date = dates[start + 1].astype(datetime).strftime('%B %d')
+    date = dates[start].astype(datetime).strftime('%B %d')
     plt.plot(days, block / 1e3, 'o-', label=f"Week beginning {date}")
 plt.grid(True, linestyle=':', color='k', alpha=0.5)
 # plt.gca().set_xticklabels()
