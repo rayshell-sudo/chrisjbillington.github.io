@@ -142,7 +142,7 @@ PHASE_2A = np.datetime64('2021-05-03')
 # to each day's doses from the start of phase 1b until April 16.
 LATE_REPORTED_GP_DOSES = 80560
 daily_fed_doses = np.diff(doses_by_state['FED'], prepend=0)
-reportedix = np.where(dates == np.datetime64('2021-04-19'))[0][0]
+reportedix = np.where(dates == np.datetime64('2021-04-18'))[0][0]
 backdates = (PHASE_1B <= dates) & (dates <= np.datetime64('2021-04-17'))
 daily_fed_doses[reportedix] -= LATE_REPORTED_GP_DOSES
 total_in_backdate_period = daily_fed_doses[backdates].sum()
