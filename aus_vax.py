@@ -1,6 +1,7 @@
 import sys
-import pandas as pd
 from datetime import datetime
+import json
+import requests
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.units as munits
@@ -19,10 +20,6 @@ def n_day_average(data, n=14):
     ret = np.cumsum(data, dtype=float)
     ret[n:] = ret[n:] - ret[:-n]
     return ret / n
-
-
-STATES = ['aus', 'nsw', 'vic', 'sa', 'wa', 'tas', 'qld', 'nt', 'act']
-
 
 def gaussian_smoothing(data, pts):
     """gaussian smooth an array by given number of points"""
@@ -62,32 +59,72 @@ def exponential_smoothing(data, pts):
     return convolve(data, kernel, mode='same') / normalisation
 
 
-START_DATE = np.datetime64('2021-02-22')
-PHASE_1B = np.datetime64('2021-03-22')
-PHASE_2A = np.datetime64('2021-05-03')
+def get_data():
+    COVIDLIVE = 'https://covidlive.com.au/covid-live.json'
+    PDFPARSER = "https://vaccinedata.covid19nearme.com.au/data/all.json"
+    covidlivedata = json.loads(requests.get(COVIDLIVE).content)
+    pdfdata = json.loads(requests.get(PDFPARSER).content)[-1]
 
-doses_by_state = {}
-for s in STATES:
-    print(f"getting data for {s}")
-    df = pd.read_html(f"https://covidlive.com.au/report/daily-vaccinations/{s}")[1]
-    dates = np.array(df['DATE'][::-1])
-    state_doses = np.array(df['DOSES'][::-1], dtype=float)
-    dates = np.array(
-        [np.datetime64(datetime.strptime(d, '%d %b %y'), 'D') for d in dates]
+    START_DATE = np.datetime64('2021-02-21')
+
+    doses_by_state = {
+        'AUS': [],
+        'NSW': [],
+        'VIC': [],
+        'SA': [],
+        'WA': [],
+        'TAS': [],
+        'QLD': [],
+        'NT': [],
+        'ACT': [],
+    }
+
+    # Get data before today from covidlive:
+    YESTERDAY = np.datetime64(datetime.now().strftime('%Y-%m-%d')) - 1
+    for report in covidlivedata:
+        date = np.datetime64(report['REPORT_DATE']) - 1
+        if date == YESTERDAY:
+            continue
+        if report['VACC_DOSE_CNT'] is None:
+            continue
+        state = report['CODE']
+        doses = int(report['VACC_DOSE_CNT'])
+        if state != 'AUS' and report['VACC_GP_CNT'] is not None:
+            doses -= int(report['VACC_AGED_CARE_CNT']) + int(report['VACC_GP_CNT'])
+        doses_by_state[state].append((date, doses))
+
+    for state, data in doses_by_state.items():
+        data.sort()
+        dates, doses = [np.array(a) for a in zip(*data)]
+        doses_by_state[state] = dates[dates >= START_DATE], doses[dates >= START_DATE]
+
+    for dates, _ in doses_by_state.values():
+        assert np.array_equal(dates, doses_by_state['AUS'][0])
+
+    dates, *_ = doses_by_state['AUS']
+    for state, (_, doses) in doses_by_state.items():
+        doses_by_state[state] = doses.astype(float)
+
+    # Get data for today, if it exists, from jxeeno/aust-govt-covid19-vaccine-pdf:
+    if np.datetime64(pdfdata['DATE_AS_AT']) == YESTERDAY:
+        dates = np.append(dates, [YESTERDAY])
+        for state in doses_by_state:
+            if state == 'AUS':
+                doses = int(pdfdata['TOTALS_NATIONAL_TOTAL'])
+            else:
+                doses = int(pdfdata[f'STATE_CLINICS_{state}_TOTAL'])
+            doses_by_state[state] = np.append(doses_by_state[state], [doses])
+
+    doses_by_state['FED'] = doses_by_state['AUS'] - sum(
+        doses_by_state[s] for s in doses_by_state if s != 'AUS'
     )
 
-    # Only use data as of yesterday:
-    # state_doses = state_doses[:-1]
-    # dates = dates[:-1]
+    return dates, doses_by_state
 
-    # Extrapolate one day
-    # for _ in range(2):
-    #     dates = np.append(dates, [dates[-1] + 1])
-    #     state_doses = np.append(state_doses, [2 * state_doses[-1] - state_doses[-2]])
+dates, doses_by_state = get_data()
 
-    state_doses = state_doses[dates >= START_DATE]
-    dates = dates[dates >= START_DATE]
-    doses_by_state[s] = state_doses
+PHASE_1B = np.datetime64('2021-03-22')
+PHASE_2A = np.datetime64('2021-05-03')
 
 # Data not yet on covidlive
 # doses_by_state['aus'][-1] = 3_100_137
@@ -100,27 +137,21 @@ for s in STATES:
 # doses_by_state['act'][-1] = 38_696
 # doses_by_state['nt'][-1] = 22_953
 
-
-doses_by_state['fed'] = doses_by_state['aus'] - sum(
-    doses_by_state[s] for s in STATES if s != 'aus'
-)
-
-
 # 80560 doses were reported on April 19th that actually were administered "prior to
 # April 17". We don't know how much prior, so we'll spread these doses out proportional
 # to each day's doses from the start of phase 1b until April 16.
 LATE_REPORTED_GP_DOSES = 80560
-daily_fed_doses = np.diff(doses_by_state['fed'], prepend=0)
+daily_fed_doses = np.diff(doses_by_state['FED'], prepend=0)
 reportedix = np.where(dates == np.datetime64('2021-04-19'))[0][0]
 backdates = (PHASE_1B <= dates) & (dates <= np.datetime64('2021-04-17'))
 daily_fed_doses[reportedix] -= LATE_REPORTED_GP_DOSES
 total_in_backdate_period = daily_fed_doses[backdates].sum()
 daily_fed_doses[backdates] *= 1 + LATE_REPORTED_GP_DOSES / total_in_backdate_period
-doses_by_state['fed'] = daily_fed_doses.cumsum()
+doses_by_state['FED'] = daily_fed_doses.cumsum()
 
 
 
-doses = doses_by_state['aus']
+doses = doses_by_state['AUS']
 
 
 pfizer_supply_data = """
@@ -341,7 +372,7 @@ proj_doses = AZ_first_doses + AZ_second_doses + pfizer_first_doses + pfizer_seco
 
 days = (dates - dates[0]).astype(float)
 
-daily_doses = np.diff(doses_by_state['aus'], prepend=0)
+daily_doses = np.diff(doses_by_state['AUS'], prepend=0)
 smoothed_daily_doses = n_day_average(daily_doses, 7)
 
 
@@ -386,7 +417,7 @@ offset = err * np.exp(-(np.arange(50)) / 14)
 nonreserved_rate[len(dates) - 1 : len(dates) + 49] -= offset
 
 def state_label(state):
-    if state == 'fed':
+    if state == 'FED':
         return 'GPs/fed. care'
     else:
         return f"{state.upper()} clinics"
@@ -396,7 +427,7 @@ fig1 = plt.figure(figsize=(8, 6))
 
 cumsum = np.zeros(len(dates))
 colours = list(reversed([f'C{i}' for i in range(9)]))
-for i, state in enumerate(['nt', 'act', 'tas', 'sa', 'wa', 'qld', 'vic', 'nsw', 'fed']):
+for i, state in enumerate(['NT', 'ACT', 'TAS', 'SA', 'WA', 'QLD', 'VIC', 'NSW', 'FED']):
     doses = doses_by_state[state]
     latest_doses = doses[-1]
 
@@ -415,7 +446,7 @@ if PROJECT:
     plt.fill_between(
         all_dates[len(dates) - 1 :] + 1,
         (
-            doses_by_state["aus"][-1]
+            doses_by_state['AUS'][-1]
             + nonreserved_rate[len(dates) - 1 :].cumsum()
         )
         / 1e6,
@@ -438,7 +469,7 @@ plt.axis(
 if LONGPROJECT:
     plt.title("Projected cumulative doses")
 else:
-    plt.title(f'AUS cumulative doses. Total to date: {doses_by_state["aus"][-1]/1e6:.2f}M')
+    plt.title(f'AUS cumulative doses. Total to date: {doses_by_state["AUS"][-1]/1e6:.2f}M')
 plt.ylabel('Cumulative doses (millions)')
 
 
@@ -446,7 +477,7 @@ fig2 = plt.figure(figsize=(8, 6))
 
 cumsum = np.zeros(len(dates))
 colours = list(reversed([f'C{i}' for i in range(9)]))
-for i, state in enumerate(['nt', 'act', 'tas', 'sa', 'wa', 'qld', 'vic', 'nsw', 'fed']):
+for i, state in enumerate(['NT', 'ACT', 'TAS', 'SA', 'WA', 'QLD', 'VIC', 'NSW', 'FED']):
     doses = doses_by_state[state]
     # smoothed_doses = gaussian_smoothing(np.diff(doses, prepend=0), 2).cumsum()
     # smoothed_doses = padded_gaussian_smoothing(np.diff(doses, prepend=0), 2).cumsum()
@@ -614,7 +645,7 @@ ax5 = plt.gca()
 for ax in [ax1, ax2, ax3, ax4, ax5]:
     ax.fill_betweenx(
         [0, ax.get_ylim()[1]],
-        2 * [START_DATE.astype(int)],
+        2 * [dates[0].astype(int)],
         2 * [PHASE_1B.astype(int)],
         color='red',
         alpha=0.35,
@@ -710,7 +741,8 @@ for ax in [ax1, ax2, ax3, ax4, ax5]:
 # Plot of doses by weekday
 fig6 = plt.figure(figsize=(8, 6))
 
-doses_by_day = np.diff(doses_by_state['aus'])
+doses_by_day = np.diff(doses_by_state['AUS'])
+# import embed
 doses_by_day = np.append(doses_by_day, [np.nan] * (7 - len(doses_by_day) % 7))
 N_WEEKS = 5
 days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
