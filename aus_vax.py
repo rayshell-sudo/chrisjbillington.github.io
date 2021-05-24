@@ -204,7 +204,7 @@ AZ_local_supply_data = """
 PLOT_END_DATE = (
     np.datetime64('2021-12-31') if LONGPROJECT else dates[-1] + 50 #np.datetime64('2021-05-31')
 )
-CUMULATIVE_YMAX = 7  # million
+CUMULATIVE_YMAX = 10  # million
 
 PROJECT = True
 
@@ -743,7 +743,8 @@ fig6 = plt.figure(figsize=(8, 6))
 
 doses_by_day = np.diff(doses_by_state['AUS'])
 # import embed
-doses_by_day = np.append(doses_by_day, [np.nan] * (7 - len(doses_by_day) % 7))
+if len(doses_by_day) % 7:
+    doses_by_day = np.append(doses_by_day, [np.nan] * (7 - len(doses_by_day) % 7))
 N_WEEKS = 5
 days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 for i in reversed(range(N_WEEKS)):
