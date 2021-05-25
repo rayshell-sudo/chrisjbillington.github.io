@@ -115,10 +115,6 @@ def get_data():
                 doses = int(pdfdata[f'STATE_CLINICS_{state}_TOTAL'])
             doses_by_state[state] = np.append(doses_by_state[state], [doses])
 
-    doses_by_state['FED'] = doses_by_state['AUS'] - sum(
-        doses_by_state[s] for s in doses_by_state if s != 'AUS'
-    )
-
     return dates, doses_by_state
 
 dates, doses_by_state = get_data()
@@ -136,6 +132,23 @@ PHASE_2A = np.datetime64('2021-05-03')
 # doses_by_state['sa'][-1] = 80_017
 # doses_by_state['act'][-1] = 38_696
 # doses_by_state['nt'][-1] = 22_953
+
+# A correction of -9260 was applied to VIC's numbers on May 25th. We spread these out
+# proportional to each day's doses from the start of phase 1b until May 23th.
+VIC_DOSES_CORRECTION = -9260
+daily_vic_doses = np.diff(doses_by_state['VIC'], prepend=0)
+reportedix = np.where(dates == np.datetime64('2021-05-24'))[0][0]
+backdates = (PHASE_1B <= dates) & (dates <= np.datetime64('2021-05-23'))
+daily_vic_doses[reportedix] -= VIC_DOSES_CORRECTION
+total_in_backdate_period = daily_vic_doses[backdates].sum()
+daily_vic_doses[backdates] *= 1 + VIC_DOSES_CORRECTION / total_in_backdate_period
+doses_by_state['VIC'] = daily_vic_doses.cumsum()
+doses_by_state['AUS'][reportedix] -= VIC_DOSES_CORRECTION
+
+
+doses_by_state['FED'] = doses_by_state['AUS'] - sum(
+    doses_by_state[s] for s in doses_by_state if s != 'AUS'
+)
 
 # 80560 doses were reported on April 19th that actually were administered "prior to
 # April 17". We don't know how much prior, so we'll spread these doses out proportional
