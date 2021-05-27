@@ -590,6 +590,7 @@ for SINGLE in [False, True]:
             100 * vax_data[country]['vaccinated'] / (1e6 * populations[country]),
             color='mediumseagreen',
             label='Vaccinated',
+            where='post',
             linewidth=3,
         )
 
