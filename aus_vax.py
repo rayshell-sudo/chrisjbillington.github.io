@@ -543,7 +543,7 @@ plt.axis(
     xmin=dates[0].astype(int) + 1,
     xmax=PLOT_END_DATE,
     ymin=0,
-    ymax=300 if LONGPROJECT else 120,
+    ymax=300 if LONGPROJECT else 160,
 )
 ax2 = plt.gca()
 
