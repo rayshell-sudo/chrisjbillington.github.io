@@ -699,7 +699,36 @@ plt.axvline(today, linestyle=":", color='k', label=f"Today ({today})")
 ax6 = plt.gca()
 
 
-for ax in [ax1, ax2, ax3, ax4, ax5, ax6]:
+# Plot of projection 1st vs 2nd doses
+fig7 = plt.figure(figsize=(8, 6))
+plt.step(
+    all_dates + 1,
+    diff_and_smooth(AZ_first_doses + pfizer_first_doses).cumsum() / 1e6,
+    where='pre',
+    label="First doses",
+)
+plt.step(
+    all_dates + 1,
+    diff_and_smooth(AZ_second_doses + pfizer_second_doses).cumsum() / 1e6,
+    where='pre',
+    label="Second doses",
+)
+    
+plt.axis(
+    xmin=dates[0].astype(int) + 1,
+    xmax=PLOT_END_DATE,
+    ymin=0,
+    ymax=20 if LONGPROJECT else CUMULATIVE_YMAX,
+
+)
+plt.title('Projected cumulative 1st and 2nd doses')
+plt.ylabel('Cumulative doses (millions)')
+today = np.datetime64(datetime.now(), 'D')
+plt.axvline(today, linestyle=":", color='k', label=f"Today ({today})")
+ax7 = plt.gca()
+
+
+for ax in [ax1, ax2, ax3, ax4, ax5, ax6, ax7]:
     ax.fill_betweenx(
         [0, ax.get_ylim()[1]],
         2 * [dates[0].astype(int)],
@@ -796,7 +825,18 @@ ax6.legend(
     fontsize="small"
 )
 
-for ax in [ax1, ax2, ax3, ax4, ax5, ax6]:
+
+handles, labels = ax7.get_legend_handles_labels()
+order = [0, 1, 3, 4, 5, 2]
+ax7.legend(
+    # [handles[idx] for idx in order],
+    # [labels[idx] for idx in order],
+    loc='upper left',
+    # ncol=2,
+    fontsize="small"
+)
+
+for ax in [ax1, ax2, ax3, ax4, ax5, ax6, ax7]:
     locator = mdates.DayLocator([1] if LONGPROJECT else [1, 15])
     formatter = mdates.ConciseDateFormatter(locator)
     ax.xaxis.set_major_locator(locator)
@@ -806,7 +846,7 @@ for ax in [ax1, ax2, ax3, ax4, ax5, ax6]:
 
 
 # Plot of doses by weekday
-fig7 = plt.figure(figsize=(8, 6))
+fig8 = plt.figure(figsize=(8, 6))
 
 doses_by_day = np.diff(doses_by_state['AUS'])
 # import embed
@@ -841,12 +881,13 @@ for extension in ['png', 'svg']:
         fig1.savefig(f'cumulative_doses_longproject.{extension}')
         fig2.savefig(f'daily_doses_by_state_longproject.{extension}')
         fig6.savefig(f'projection_by_type.{extension}')
+        fig7.savefig(f'projection_cumulative_by_type.{extension}')
     else:
         fig1.savefig(f'cumulative_doses.{extension}')
         fig2.savefig(f'daily_doses_by_state.{extension}')
         fig3.savefig(f'utilisation.{extension}')
         fig4.savefig(f'az_utilisation.{extension}')
         fig5.savefig(f'pfizer_utilisation.{extension}')
-        fig7.savefig(f'doses_by_weekday.{extension}')
+        fig8.savefig(f'doses_by_weekday.{extension}')
 
 plt.show()
