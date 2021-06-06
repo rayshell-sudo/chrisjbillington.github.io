@@ -392,18 +392,24 @@ smoothed_daily_doses = n_day_average(daily_doses, 7)
 
 
 # Model of projected dosage rate:
-all_nonreserved = (
-    AZ_first_doses
-    + AZ_second_doses
-    + AZ_available
-    # + AZ_reserved
-    + pfizer_first_doses
-    + pfizer_second_doses
-    + pfizer_available
-    # + pfizer_reserved
-)
+# all_nonreserved = (
+#     AZ_first_doses
+#     + AZ_second_doses
+#     # + AZ_available
+#     # + AZ_reserved
+#     + pfizer_first_doses
+#     + pfizer_second_doses
+#     # + pfizer_available
+#     # + pfizer_reserved
+# )
 
-nonreserved_rate = np.diff(all_nonreserved, prepend=0)
+def diff_and_smooth(dat):
+    dat = np.diff(dat, prepend=0)
+    dat = n_day_average(dat, 7)
+    dat = gaussian_smoothing(dat, 7)
+    return dat
+
+# nonreserved_rate = np.diff(all_nonreserved, prepend=0)
 # # Smooth over the next 3 weeks:
 # nonreserved_rate_smoothed = exponential_smoothing(nonreserved_rate, 21)
 # # Gaussian smooth an extra week:
@@ -413,19 +419,22 @@ nonreserved_rate = np.diff(all_nonreserved, prepend=0)
 # tmp[7:] = nonreserved_rate_smoothed[:-7]
 # nonreserved_rate_smoothed = tmp
 
-# Delay by 3 weeks:
-tmp = np.zeros_like(nonreserved_rate)
-tmp[21:] = nonreserved_rate[:-21]
-nonreserved_rate = tmp
+# Delay by 1 weeks:
+# tmp = np.zeros_like(nonreserved_rate)
+# tmp[7:] = nonreserved_rate[:-7]
+# nonreserved_rate = tmp
 
 # Include current doses in smoothing so as to ramp from the current rate to the
 # projected rate over the short term
-nonreserved_rate[: len(dates)] = daily_doses
-# 7-day average:
-nonreserved_rate = n_day_average(nonreserved_rate, 7)
-# Gaussian smooth 1 week:
-nonreserved_rate = gaussian_smoothing(nonreserved_rate, 7)
+# nonreserved_rate[: len(dates)] = daily_doses
+# # 7-day average:
+# nonreserved_rate = n_day_average(nonreserved_rate, 7)
+# # Gaussian smooth 1 week:
+# nonreserved_rate = gaussian_smoothing(nonreserved_rate, 7)
 
+nonreserved_rate = diff_and_smooth(
+    AZ_first_doses + AZ_second_doses + pfizer_first_doses + pfizer_second_doses
+)
 # Smooth out any remaining discontinuity:
 err = nonreserved_rate[len(dates) - 2] - smoothed_daily_doses[-1]
 offset = err * np.exp(-(np.arange(50)) / 14)
@@ -657,7 +666,40 @@ plt.axis(
 ax5 = plt.gca()
 
 
-for ax in [ax1, ax2, ax3, ax4, ax5]:
+# Plot of projection by dose type
+fig6 = plt.figure(figsize=(8, 6))
+cumsum = np.zeros(len(all_dates))
+for doses, label in [
+    (AZ_first_doses, "AZ first doses"),
+    (AZ_second_doses, "AZ second doses"),
+    (pfizer_first_doses, "Pfizer first doses"),
+    (pfizer_second_doses, "Pfizer second doses"),
+]:
+    rate = diff_and_smooth(doses)
+    plt.fill_between(
+        all_dates + 1,
+        cumsum / 1e3,
+        (cumsum + rate) / 1e3,
+        label=label,
+        step='pre',
+        # color=colours[i],
+        linewidth=0,
+    )
+    cumsum += rate
+plt.axis(
+    xmin=dates[0].astype(int) + 1,
+    xmax=PLOT_END_DATE,
+    ymin=0,
+    ymax=300 if LONGPROJECT else 160,
+)
+plt.title('Projected daily doses by type')
+plt.ylabel('Daily doses (thousands)')
+today = np.datetime64(datetime.now(), 'D')
+plt.axvline(today, linestyle=":", color='k', label=f"Today ({today})")
+ax6 = plt.gca()
+
+
+for ax in [ax1, ax2, ax3, ax4, ax5, ax6]:
     ax.fill_betweenx(
         [0, ax.get_ylim()[1]],
         2 * [dates[0].astype(int)],
@@ -744,7 +786,17 @@ for ax in [ax3, ax4, ax5]:
         fontsize="small"
     )
 
-for ax in [ax1, ax2, ax3, ax4, ax5]:
+handles, labels = ax6.get_legend_handles_labels()
+order = [1, 2, 3, 4, 5, 7, 0]
+ax6.legend(
+    [handles[idx] for idx in order],
+    [labels[idx] for idx in order],
+    loc='upper left',
+    # ncol=2,
+    fontsize="small"
+)
+
+for ax in [ax1, ax2, ax3, ax4, ax5, ax6]:
     locator = mdates.DayLocator([1] if LONGPROJECT else [1, 15])
     formatter = mdates.ConciseDateFormatter(locator)
     ax.xaxis.set_major_locator(locator)
@@ -754,7 +806,7 @@ for ax in [ax1, ax2, ax3, ax4, ax5]:
 
 
 # Plot of doses by weekday
-fig6 = plt.figure(figsize=(8, 6))
+fig7 = plt.figure(figsize=(8, 6))
 
 doses_by_day = np.diff(doses_by_state['AUS'])
 # import embed
@@ -788,12 +840,13 @@ for extension in ['png', 'svg']:
     if LONGPROJECT:
         fig1.savefig(f'cumulative_doses_longproject.{extension}')
         fig2.savefig(f'daily_doses_by_state_longproject.{extension}')
+        fig6.savefig(f'projection_by_type.{extension}')
     else:
         fig1.savefig(f'cumulative_doses.{extension}')
         fig2.savefig(f'daily_doses_by_state.{extension}')
         fig3.savefig(f'utilisation.{extension}')
         fig4.savefig(f'az_utilisation.{extension}')
         fig5.savefig(f'pfizer_utilisation.{extension}')
-        fig6.savefig(f'doses_by_weekday.{extension}')
+        fig7.savefig(f'doses_by_weekday.{extension}')
 
 plt.show()
