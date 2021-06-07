@@ -240,7 +240,7 @@ AZ_OS_supply_dates, AZ_OS_suppy = unpack_data(AZ_OS_supply_data)
 AZ_local_supply_dates, AZ_local_supply = unpack_data(AZ_local_supply_data)
 #distributed_doses_dates, distributed_doses = unpack_data(distributed_doses_data)
 
-WASTAGE = 0.1
+WASTAGE = 0.125
 
 # Estimated AZ supply. Assume 670k per week locally-produced AZ up to 16M (plus
 # wastage):
@@ -436,7 +436,7 @@ nonreserved_rate = diff_and_smooth(
     AZ_first_doses + AZ_second_doses + pfizer_first_doses + pfizer_second_doses
 )
 # Smooth out any remaining discontinuity:
-err = nonreserved_rate[len(dates) - 2] - smoothed_daily_doses[-1]
+err = nonreserved_rate[len(dates) - 1] - smoothed_daily_doses[-1]
 offset = err * np.exp(-(np.arange(50)) / 14)
 nonreserved_rate[len(dates) - 1 : len(dates) + 49] -= offset
 
@@ -816,7 +816,7 @@ for ax in [ax3, ax4, ax5]:
     )
 
 handles, labels = ax6.get_legend_handles_labels()
-order = [1, 2, 3, 4, 5, 7, 0]
+order = [1, 2, 3, 4, 5, 6, 7, 0]
 ax6.legend(
     [handles[idx] for idx in order],
     [labels[idx] for idx in order],
@@ -829,8 +829,8 @@ ax6.legend(
 handles, labels = ax7.get_legend_handles_labels()
 order = [0, 1, 3, 4, 5, 2]
 ax7.legend(
-    # [handles[idx] for idx in order],
-    # [labels[idx] for idx in order],
+    [handles[idx] for idx in order],
+    [labels[idx] for idx in order],
     loc='upper left',
     # ncol=2,
     fontsize="small"
@@ -878,16 +878,16 @@ Path(html_file).write_text('\n'.join(html_lines) + '\n')
 
 for extension in ['png', 'svg']:
     if LONGPROJECT:
-        fig1.savefig(f'cumulative_doses_longproject.{extension}')
-        fig2.savefig(f'daily_doses_by_state_longproject.{extension}')
-        fig6.savefig(f'projection_by_type.{extension}')
-        fig7.savefig(f'projection_cumulative_by_type.{extension}')
+        fig1.savefig(f'cumulative_doses_longproject.{extension}', dpi=600)
+        fig2.savefig(f'daily_doses_by_state_longproject.{extension}', dpi=600)
+        fig6.savefig(f'projection_by_type.{extension}', dpi=600)
+        fig7.savefig(f'projection_cumulative_by_type.{extension}', dpi=600)
     else:
-        fig1.savefig(f'cumulative_doses.{extension}')
-        fig2.savefig(f'daily_doses_by_state.{extension}')
-        fig3.savefig(f'utilisation.{extension}')
-        fig4.savefig(f'az_utilisation.{extension}')
-        fig5.savefig(f'pfizer_utilisation.{extension}')
-        fig8.savefig(f'doses_by_weekday.{extension}')
+        fig1.savefig(f'cumulative_doses.{extension}', dpi=600)
+        fig2.savefig(f'daily_doses_by_state.{extension}', dpi=600)
+        fig3.savefig(f'utilisation.{extension}', dpi=600)
+        fig4.savefig(f'az_utilisation.{extension}', dpi=600)
+        fig5.savefig(f'pfizer_utilisation.{extension}', dpi=600)
+        fig8.savefig(f'doses_by_weekday.{extension}', dpi=600)
 
 plt.show()
