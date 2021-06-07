@@ -184,6 +184,9 @@ pfizer_supply_data = """
 2021-05-09      1_869_000
 2021-05-16      2_220_000
 2021-05-23      2_572_000
+2021-05-30      2_924_340
+2021-06-06      3_222_690
+2021-06-13      4_034_670
 """
 
 LONGPROJECT = False or 'project' in sys.argv
@@ -203,6 +206,9 @@ AZ_local_supply_data = """
 2021-05-09      3_681_900
 2021-05-16      4_712_500
 2021-05-23      5_712_500
+2021-05-30      6_739_200
+2021-06-06      7_688_500
+2021-06-13      7_918_500
 """
 
 # Doses distributed by the feds (scroll to weekly updates):
@@ -326,7 +332,7 @@ for i, date in enumerate(all_dates):
             AZ_reserved[i:] += 0.5 * (1 - WASTAGE) * AZ_lot
         else:
             outstanding_AZ_second_doses = AZ_first_doses[i] - AZ_second_doses[i]
-            reserve_allocation = 1.0 * outstanding_AZ_second_doses - AZ_reserved[i]
+            reserve_allocation = 0.66 * outstanding_AZ_second_doses - AZ_reserved[i]
             AZ_lot = AZ_production[AZ_local_supply_dates == date][0]
             AZ_available[i:] += (1 - WASTAGE) * AZ_lot - reserve_allocation
             AZ_reserved[i:] += reserve_allocation
