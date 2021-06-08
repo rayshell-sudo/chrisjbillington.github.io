@@ -248,7 +248,7 @@ AZ_local_supply_dates, AZ_local_supply = unpack_data(AZ_local_supply_data)
 
 WASTAGE = 0.125
 
-# Estimated AZ supply. Assume 670k per week locally-produced AZ up to 16M (plus
+# Estimated AZ supply. Assume 1M per week locally-produced AZ up to 16M (plus
 # wastage):
 AZ_MAX_DOSES = 16e6 / (1 - WASTAGE)
 n_weeks = int((AZ_MAX_DOSES - AZ_local_supply[-1]) // 1000000) + 1
@@ -262,21 +262,27 @@ AZ_local_supply = np.append(
 AZ_local_supply[-1] = AZ_MAX_DOSES
 
 
-# Estimated Pfizer supply. 300k per week until July. Then 600k per week until Oct, then
-# whatever weekly rate is required to get to 40M by EOY.
+# Estimated Pfizer supply. 300k per week until July. Then a 400k week, a 500k week, then
+# 600k per week until Oct, then 2076k per week until EOY whatever weekly rate is
+# required to get to 40M by EOY.
 MID_MAY = np.datetime64('2021-05-15')
 JULY = np.datetime64('2021-07-01')
 OCTOBER = np.datetime64('2021-10-01')
 while pfizer_supply_dates[-1] <= JULY:
     pfizer_supply_dates = np.append(pfizer_supply_dates, [pfizer_supply_dates[-1] + 7])
     pfizer_supply = np.append(pfizer_supply, [pfizer_supply[-1] + 300000])
+# Ramp up in July:
+pfizer_supply_dates = np.append(pfizer_supply_dates, [pfizer_supply_dates[-1] + 7])
+pfizer_supply = np.append(pfizer_supply, [pfizer_supply[-1] + 400000])
+pfizer_supply_dates = np.append(pfizer_supply_dates, [pfizer_supply_dates[-1] + 7])
+pfizer_supply = np.append(pfizer_supply, [pfizer_supply[-1] + 500000])
+
 while pfizer_supply_dates[-1] <= OCTOBER:
     pfizer_supply_dates = np.append(pfizer_supply_dates, [pfizer_supply_dates[-1] + 7])
     pfizer_supply = np.append(pfizer_supply, [pfizer_supply[-1] + 600000])
-remaining_per_week = (40e6 - pfizer_supply[-1]) / 12
-for i in range(12):
+for i in range(13):
     pfizer_supply_dates = np.append(pfizer_supply_dates, [pfizer_supply_dates[-1] + 7])
-    pfizer_supply = np.append(pfizer_supply, [pfizer_supply[-1] + remaining_per_week])
+    pfizer_supply = np.append(pfizer_supply, [pfizer_supply[-1] + 2076000])
 
 pfizer_shipments = np.diff(pfizer_supply, prepend=0)
 AZ_shipments = np.diff(AZ_OS_suppy, prepend=0)
@@ -884,16 +890,16 @@ Path(html_file).write_text('\n'.join(html_lines) + '\n')
 
 for extension in ['png', 'svg']:
     if LONGPROJECT:
-        fig1.savefig(f'cumulative_doses_longproject.{extension}', dpi=600)
-        fig2.savefig(f'daily_doses_by_state_longproject.{extension}', dpi=600)
-        fig6.savefig(f'projection_by_type.{extension}', dpi=600)
-        fig7.savefig(f'projection_cumulative_by_type.{extension}', dpi=600)
+        fig1.savefig(f'cumulative_doses_longproject.{extension}')
+        fig2.savefig(f'daily_doses_by_state_longproject.{extension}')
+        fig6.savefig(f'projection_by_type.{extension}')
+        fig7.savefig(f'projection_cumulative_by_type.{extension}')
     else:
-        fig1.savefig(f'cumulative_doses.{extension}', dpi=600)
-        fig2.savefig(f'daily_doses_by_state.{extension}', dpi=600)
-        fig3.savefig(f'utilisation.{extension}', dpi=600)
-        fig4.savefig(f'az_utilisation.{extension}', dpi=600)
-        fig5.savefig(f'pfizer_utilisation.{extension}', dpi=600)
-        fig8.savefig(f'doses_by_weekday.{extension}', dpi=600)
+        fig1.savefig(f'cumulative_doses.{extension}')
+        fig2.savefig(f'daily_doses_by_state.{extension}')
+        fig3.savefig(f'utilisation.{extension}')
+        fig4.savefig(f'az_utilisation.{extension}')
+        fig5.savefig(f'pfizer_utilisation.{extension}')
+        fig8.savefig(f'doses_by_weekday.{extension}')
 
 plt.show()
