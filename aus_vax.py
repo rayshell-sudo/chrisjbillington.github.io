@@ -187,6 +187,7 @@ pfizer_supply_data = """
 2021-05-30      2_924_340
 2021-06-06      3_222_690
 2021-06-13      4_034_670
+2021-06-20      4_333_020
 """
 
 LONGPROJECT = False or 'project' in sys.argv
@@ -208,7 +209,8 @@ AZ_local_supply_data = """
 2021-05-23      5_712_500
 2021-05-30      6_739_200
 2021-06-06      7_688_500
-2021-06-13      7_918_500
+2021-06-13      7_921_300
+2021-06-20      8_641_300
 """
 
 # Doses distributed by the feds (scroll to weekly updates):
