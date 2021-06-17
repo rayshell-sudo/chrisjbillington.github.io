@@ -186,8 +186,8 @@ pfizer_supply_data = """
 2021-05-23      2_572_000
 2021-05-30      2_924_340
 2021-06-06      3_222_690
-2021-06-13      4_034_670
-2021-06-20      4_333_020
+2021-06-13      3_534_670 + 500_000 # Direct plus COVAX
+2021-06-20      3_833_020 + 500_000
 """
 
 LONGPROJECT = False or 'project' in sys.argv
@@ -224,6 +224,37 @@ AZ_local_supply_data = """
 #2021-05-09  4_620_108
 #"""
 
+PFIZER_PROJECTED_SHIPMENTS= """ # In thousands per week
+2021-06-27 300
+2021-07-04 400
+2021-07-11 500
+2021-07-18 600
+2021-07-25 600
+2021-08-01 600
+2021-08-08 600
+2021-08-15 600
+2021-08-22 600
+2021-08-29 600
+2021-09-05 800
+2021-09-12 1000
+2021-09-19 1200
+2021-09-26 1400
+2021-10-03 2076
+2021-10-10 2076
+2021-10-17 2076
+2021-10-24 2076
+2021-10-31 2076
+2021-11-07 2076
+2021-11-14 2076
+2021-11-21 2076
+2021-11-28 2076
+2021-12-05 2076
+2021-12-12 2076
+2021-12-19 2076
+2021-12-26 2076
+2022-01-02 2076
+"""
+
 PLOT_END_DATE = (
     np.datetime64('2021-12-31') if LONGPROJECT else dates[-1] + 50 #np.datetime64('2021-05-31')
 )
@@ -250,9 +281,13 @@ AZ_local_supply_dates, AZ_local_supply = unpack_data(AZ_local_supply_data)
 
 WASTAGE = 0.125
 
-# Estimated AZ supply. Assume 1M per week locally-produced AZ up to 16M (plus
+# Number of AZ first doses
+MAX_AZ_ADMINISTERED = 5.35e6 # 5M over 60s in Aus.
+
+
+# Estimated AZ supply. Assume 1M per week locally-produced AZ up to ~10.8M (plus
 # wastage):
-AZ_MAX_DOSES = 16e6 / (1 - WASTAGE)
+AZ_MAX_DOSES = 2 * MAX_AZ_ADMINISTERED / (1 - WASTAGE)
 n_weeks = int((AZ_MAX_DOSES - AZ_local_supply[-1]) // 1000000) + 1
 AZ_local_supply_dates = np.append(
     AZ_local_supply_dates,
@@ -264,27 +299,12 @@ AZ_local_supply = np.append(
 AZ_local_supply[-1] = AZ_MAX_DOSES
 
 
-# Estimated Pfizer supply. 300k per week until July. Then a 400k week, a 500k week, then
-# 600k per week until Oct, then 2076k per week until EOY whatever weekly rate is
-# required to get to 40M by EOY.
-MID_MAY = np.datetime64('2021-05-15')
-JULY = np.datetime64('2021-07-01')
-OCTOBER = np.datetime64('2021-10-01')
-while pfizer_supply_dates[-1] <= JULY:
-    pfizer_supply_dates = np.append(pfizer_supply_dates, [pfizer_supply_dates[-1] + 7])
-    pfizer_supply = np.append(pfizer_supply, [pfizer_supply[-1] + 300000])
-# Ramp up in July:
-pfizer_supply_dates = np.append(pfizer_supply_dates, [pfizer_supply_dates[-1] + 7])
-pfizer_supply = np.append(pfizer_supply, [pfizer_supply[-1] + 400000])
-pfizer_supply_dates = np.append(pfizer_supply_dates, [pfizer_supply_dates[-1] + 7])
-pfizer_supply = np.append(pfizer_supply, [pfizer_supply[-1] + 500000])
+# Estimated Pfizer supply.
 
-while pfizer_supply_dates[-1] <= OCTOBER:
-    pfizer_supply_dates = np.append(pfizer_supply_dates, [pfizer_supply_dates[-1] + 7])
-    pfizer_supply = np.append(pfizer_supply, [pfizer_supply[-1] + 600000])
-for i in range(13):
-    pfizer_supply_dates = np.append(pfizer_supply_dates, [pfizer_supply_dates[-1] + 7])
-    pfizer_supply = np.append(pfizer_supply, [pfizer_supply[-1] + 2076000])
+for d, p in zip(*unpack_data(PFIZER_PROJECTED_SHIPMENTS)):
+    pfizer_supply_dates = np.append(pfizer_supply_dates, [d])
+    pfizer_supply = np.append(pfizer_supply, [pfizer_supply[-1] + p * 1000])
+
 
 pfizer_shipments = np.diff(pfizer_supply, prepend=0)
 AZ_shipments = np.diff(AZ_OS_suppy, prepend=0)
@@ -300,6 +320,8 @@ if PROJECT:
 else:
     all_dates = dates
 
+for d, p in zip(pfizer_supply_dates, pfizer_shipments):
+    print(str(d), p / 1000)
 # Calculate vaccine utilisation:
 first_doses = np.zeros(len(all_dates), dtype=float)
 first_doses[: len(doses)] = doses
@@ -345,10 +367,10 @@ for i, date in enumerate(all_dates):
             AZ_available[i:] += (1 - WASTAGE) * AZ_lot - reserve_allocation
             AZ_reserved[i:] += reserve_allocation
             wasted[i:] += WASTAGE * AZ_lot
-            # Once we're finished our 8M local (plus 350k imported) AZ first doses, all
+            # Once we're finished our 5M local (plus 350k imported) AZ first doses, all
             # remaining supply is reserved for 2nd doses:
-            if AZ_available[i] + AZ_first_doses[i] > 8.35e6:
-                excess = AZ_first_doses[i] + AZ_available[i] - 8.35e6
+            if AZ_available[i] + AZ_first_doses[i] > MAX_AZ_ADMINISTERED:
+                excess = AZ_first_doses[i] + AZ_available[i] - MAX_AZ_ADMINISTERED
                 AZ_available[i:] -= excess
                 AZ_reserved[i:] += excess
     if i == 0:
@@ -684,10 +706,10 @@ ax5 = plt.gca()
 fig6 = plt.figure(figsize=(8, 6))
 cumsum = np.zeros(len(all_dates))
 for doses, label in [
-    (AZ_first_doses, "AZ first doses"),
-    (AZ_second_doses, "AZ second doses"),
     (pfizer_first_doses, "Pfizer first doses"),
     (pfizer_second_doses, "Pfizer second doses"),
+    (AZ_first_doses, "AZ first doses"),
+    (AZ_second_doses, "AZ second doses"),
 ]:
     rate = diff_and_smooth(doses)
     plt.fill_between(
