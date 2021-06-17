@@ -226,8 +226,8 @@ AZ_local_supply_data = """
 
 PFIZER_PROJECTED_SHIPMENTS= """ # In thousands per week
 2021-06-27 300
-2021-07-04 400
-2021-07-11 500
+2021-07-04 600
+2021-07-11 600
 2021-07-18 600
 2021-07-25 600
 2021-08-01 600
@@ -377,21 +377,31 @@ for i, date in enumerate(all_dates):
         first_doses_today = first_doses[i]
     elif i < len(dates):
         first_doses_today = first_doses[i] - first_doses[i - 1]
+    if i < len(dates):
+        AZ_frac = AZ_available[i] / (AZ_available[i] + pfizer_available[i])
+        pfizer_frac = pfizer_available[i] / (AZ_available[i] + pfizer_available[i])
+
+        AZ_first_doses_today = AZ_frac * first_doses_today
+        pfizer_first_doses_today = pfizer_frac * first_doses_today
     else:
         # This is the assumption for projecting based on expected supply. That we use 5%
         # of available doses each day on first doses. Since a dose will be reserved as
         # well, this means we're always 10 days away from running out of vaccine at the
         # current rate - which is approximately what we see in the data.
-        first_doses_today = 1 / 14 * (pfizer_available[i] + AZ_available[i])
+        AZ_first_doses_today = 1 / 21 * AZ_available[i]
+        pfizer_first_doses_today = 1 / 14 * pfizer_available[i]
+
+        first_doses_today = AZ_first_doses_today + pfizer_first_doses_today
         total_first_doses = AZ_first_doses[i] + pfizer_first_doses[i]
         first_doses_today = max(0, min(20000000 - total_first_doses, first_doses_today))
+        pfizer_first_doses_today = first_doses_today - AZ_first_doses_today
         first_doses[i:] += first_doses_today
 
-    AZ_frac = AZ_available[i] / (AZ_available[i] + pfizer_available[i])
-    pfizer_frac = pfizer_available[i] / (AZ_available[i] + pfizer_available[i])
+    # AZ_frac = AZ_available[i] / (AZ_available[i] + pfizer_available[i])
+    # pfizer_frac = pfizer_available[i] / (AZ_available[i] + pfizer_available[i])
 
-    AZ_first_doses_today = AZ_frac * first_doses_today
-    pfizer_first_doses_today = pfizer_frac * first_doses_today
+    # AZ_first_doses_today = AZ_frac * first_doses_today
+    # pfizer_first_doses_today = pfizer_frac * first_doses_today
 
     # Once we're finished our 8M local (plus 350k imported) AZ first doses, all
     # remaining supply is reserved for 2nd doses:
