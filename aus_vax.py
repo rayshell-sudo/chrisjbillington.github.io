@@ -235,24 +235,24 @@ PFIZER_PROJECTED_SHIPMENTS= """ # In thousands per week
 2021-08-15 700
 2021-08-22 700
 2021-08-29 700
-2021-09-05 900
-2021-09-12 1100
-2021-09-19 1300
-2021-09-26 1500
-2021-10-03 2076
-2021-10-10 2076
-2021-10-17 2076
-2021-10-24 2076
-2021-10-31 2076
-2021-11-07 2076
-2021-11-14 2076
-2021-11-21 2076
-2021-11-28 2076
-2021-12-05 2076
-2021-12-12 2076
-2021-12-19 2076
-2021-12-26 2076
-2022-01-02 2076
+2021-09-05 1000 + 110 # Pfizer + Moderna
+2021-09-12 1000 + 110
+2021-09-19 1000 + 110
+2021-09-26 1000 + 110
+2021-10-03 2000 + 520 
+2021-10-10 2000 + 520 
+2021-10-17 2000 + 520 
+2021-10-24 2000 + 520 
+2021-10-31 2000 + 520 
+2021-11-07 2000 + 520 
+2021-11-14 2000 + 520 
+2021-11-21 2000 + 520 
+2021-11-28 2000 + 520 
+2021-12-05 2000 + 520 
+2021-12-12 2000 + 520 
+2021-12-19 2000 + 520 
+2021-12-26 2000 + 520 
+2022-01-02 2000 + 520 
 """
 
 PLOT_END_DATE = (
@@ -337,7 +337,7 @@ pfizer_available = np.zeros_like(first_doses)
 wasted = np.zeros_like(first_doses)
 
 tau_AZ = 84
-tau_pfizer = 21
+tau_pfizer = 25
 
 pfizer_available += pfizer_shipments[pfizer_supply_dates < dates[0]].sum()
 AZ_available += AZ_shipments[AZ_OS_supply_dates < dates[0]].sum()
@@ -680,10 +680,10 @@ ax4 = plt.gca()
 fig5 = plt.figure(figsize=(8, 6))
 cumsum = np.zeros(len(all_dates))
 for arr, label, colour in [
-    (pfizer_first_doses, 'Pfizer administered first doses', 'C0'),
-    (pfizer_available, 'Pfizer available for first doses', 'C2'),
-    (pfizer_second_doses, 'Pfizer administered second doses', 'C1'),
-    (pfizer_reserved, 'Pfizer reserved for second doses', 'C3'),
+    (pfizer_first_doses, 'Pfizer/Moderna administered first doses', 'C0'),
+    (pfizer_available, 'Pfizer/Moderna available for first doses', 'C2'),
+    (pfizer_second_doses, 'Pfizer/Moderna administered second doses', 'C1'),
+    (pfizer_reserved, 'Pfizer/Moderna reserved for second doses', 'C3'),
 ]:
     plt.fill_between(
         all_dates[: endindex] + 1,
@@ -701,7 +701,7 @@ unused = pfizer_available[len(dates) - 1]
 utilisation = 100 * used / (used + unused)
 plt.ylabel('Cumulative doses (millions)')
 plt.title(
-    f"Estimated Pfizer vaccine utilisation: first dose utilisation rate: {utilisation:.1f}%"
+    f"Estimated Pfizer/Moderna vaccine utilisation: first dose utilisation rate: {utilisation:.1f}%"
 )
 plt.axis(
     xmin=dates[0].astype(int) + 1,
@@ -716,8 +716,8 @@ ax5 = plt.gca()
 fig6 = plt.figure(figsize=(8, 6))
 cumsum = np.zeros(len(all_dates))
 for doses, label in [
-    (pfizer_first_doses, "Pfizer first doses"),
-    (pfizer_second_doses, "Pfizer second doses"),
+    (pfizer_first_doses, "Pfizer/Moderna first doses"),
+    (pfizer_second_doses, "Pfizer/Moderna second doses"),
     (AZ_first_doses, "AZ first doses"),
     (AZ_second_doses, "AZ second doses"),
 ]:
@@ -933,7 +933,7 @@ for extension in ['png', 'svg']:
         fig2.savefig(f'daily_doses_by_state.{extension}')
         fig3.savefig(f'utilisation.{extension}')
         fig4.savefig(f'az_utilisation.{extension}')
-        fig5.savefig(f'pfizer_utilisation.{extension}')
+        fig5.savefig(f'pfizer-moderna_utilisation.{extension}')
         fig8.savefig(f'doses_by_weekday.{extension}')
 
 plt.show()

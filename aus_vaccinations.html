@@ -49,7 +49,7 @@
   <div class="content">
     <h1>Australian COVID-19 vaccination rollout</h1>
     <p>
-    Last updated: 2021-06-23-15:10 Melbourne time
+    Last updated: 2021-06-23-20:21 Melbourne time
     </p>
     <div id="toc_container">
       <p class="toc_title">Contents</p>
@@ -123,14 +123,12 @@
       wastage.
     </p>
     <p>
-      Approximate expected supply of the Pfizer vaccine (based on comments from Greg
-      Hunt <a href="https://youtu.be/NnwVpSmFh2k?t=1830">here</a>,  <a
-      href="https://www.health.gov.au/ministers/the-hon-greg-hunt-mp/media/press-conference-in-canberra-with-minister-hunt-professor-brendan-murphy-in-canberra-on-13-may-2021with-an-update-on-the-vaccination">here</a>,
-      <a
-      href="https://www.health.gov.au/ministers/the-hon-greg-hunt-mp/media/press-conference-in-canberra-on-14-june-2021-about-the-vaccine-rollout-covid-19-and-vaccine-reallocation">here</a>,
-      and <a href="https://youtu.be/10YlD2G5z3k?t=1454">here</a>) is 300k doses per week
-      until July, then 700k per week until September, ramping up to 1.5M per week in
-      September, then increasing to 2.2M per week from October onward.
+      Approximate expected supply of mRNA vaccines (based on the federal allocation
+      horizons document <a
+      href="https://www.health.gov.au/sites/default/files/documents/2021/06/covid-19-vaccination-covid-vaccination-allocations-horizons.pdf">here</a>)
+      is 700k Pfizer per week starting in July, then 1M Pfizer plus 110k Moderna per
+      week starting in September, then 2M Pfizer plus 520k Moderna per week starting in
+      October.
     <p>
       Expected supply of the AstraZeneca vaccine is 1M doses per week, which is the
       current rate of local production
@@ -151,13 +149,14 @@
       assumptions:
       <ul>
         <li>
-          That the number of Pfizer and AstraZeneca first doses administered on a given
+          That the number of Pfizer/Moderna and AstraZeneca first doses administered on a given
           day is in proportion to the number of available doses of each type of vaccine
           on that day.
         </li>
         <li>
-          That 50% of Pfizer supply is held in reserve for second doses, administered
-          exactly 3 weeks after the first dose.
+          That 50% of Pfizer/Moderna supply is held in reserve for second doses,
+          administered exactly 25 weeks after the first dose (Pfizer should be 21 days
+          and Moderna 28m, but I'm treating them the same for simplicity).
         </li>
         <li>
           <!-- That 50% of AstraZeneca supply is held in reserve for second doses,
@@ -181,9 +180,9 @@
     <h2 id="utilisation_by_type">Estimated utilisation by vaccine type</h2>
     <p>
       Below is the same utilisation estimates as in the above plot, but separated by
-      vaccine type: AstraZeneca vs Pfizer.
+      vaccine type: AstraZeneca vs Pfizer/Moderna (which are lumped together).
     </p>
-    <img src="pfizer_utilisation.svg">
+    <img src="pfizer-moderna_utilisation.svg">
     <br>
     <img src="az_utilisation.svg">
     <h3 id="details">Details</h3>
