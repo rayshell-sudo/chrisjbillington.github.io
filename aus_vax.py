@@ -256,7 +256,7 @@ PFIZER_PROJECTED_SHIPMENTS= """ # In thousands per week
 """
 
 PLOT_END_DATE = (
-    np.datetime64('2021-12-31') if LONGPROJECT else dates[-1] + 50 #np.datetime64('2021-05-31')
+    np.datetime64('2022-01-31') if LONGPROJECT else dates[-1] + 50 #np.datetime64('2021-05-31')
 )
 CUMULATIVE_YMAX = 15  # million
 
@@ -284,6 +284,8 @@ WASTAGE = 0.125
 # Number of AZ first doses
 MAX_AZ_ADMINISTERED = 5.35e6 # 5M over 60s in Aus.
 
+# Number of people 12 years old and older, 21.53M
+MAX_ELIGIBLE = (1 - .063 - .064 - 2/5 * .060) * 25.36e6
 
 # Estimated AZ supply. Assume 1M per week locally-produced AZ up to ~10.8M (plus
 # wastage):
@@ -312,9 +314,9 @@ AZ_production = np.diff(AZ_local_supply, prepend=0)
 
 if PROJECT:
     if LONGPROJECT:
-        projection_end = np.datetime64('2021-12-31')
+        projection_end = np.datetime64('2022-01-31')
     else:
-        projection_end = np.datetime64('2021-12-31')
+        projection_end = np.datetime64('2022-01-31')
     projection_dates = np.arange(dates[-1] + 1, projection_end)
     all_dates = np.concatenate((dates, projection_dates))
 else:
@@ -393,7 +395,9 @@ for i, date in enumerate(all_dates):
 
         first_doses_today = AZ_first_doses_today + pfizer_first_doses_today
         total_first_doses = AZ_first_doses[i] + pfizer_first_doses[i]
-        first_doses_today = max(0, min(20000000 - total_first_doses, first_doses_today))
+        first_doses_today = max(
+            0, min(MAX_ELIGIBLE - total_first_doses, first_doses_today)
+        )
         pfizer_first_doses_today = first_doses_today - AZ_first_doses_today
         first_doses[i:] += first_doses_today
 
@@ -533,7 +537,7 @@ plt.axis(
     xmin=dates[0].astype(int) + 1,
     xmax=PLOT_END_DATE,
     ymin=0,
-    ymax=40 if LONGPROJECT else CUMULATIVE_YMAX,
+    ymax=2*MAX_ELIGIBLE/1e6 if LONGPROJECT else CUMULATIVE_YMAX,
 )
 
 if LONGPROJECT:
@@ -598,7 +602,7 @@ plt.axis(
     xmin=dates[0].astype(int) + 1,
     xmax=PLOT_END_DATE,
     ymin=0,
-    ymax=300 if LONGPROJECT else 160,
+    ymax=320 if LONGPROJECT else 160,
 )
 ax2 = plt.gca()
 
@@ -637,7 +641,7 @@ plt.axis(
     xmin=dates[0].astype(int) + 1,
     xmax=PLOT_END_DATE,
     ymin=0,
-    ymax=40 if LONGPROJECT else CUMULATIVE_YMAX,
+    ymax=2*MAX_ELIGIBLE/1e6 if LONGPROJECT else CUMULATIVE_YMAX,
 )
 ax3 = plt.gca()
 
@@ -672,7 +676,7 @@ plt.axis(
     xmin=dates[0].astype(int) + 1,
     xmax=PLOT_END_DATE,
     ymin=0,
-    ymax=40 if LONGPROJECT else CUMULATIVE_YMAX,
+    ymax=2*MAX_ELIGIBLE/1e6 if LONGPROJECT else CUMULATIVE_YMAX,
 )
 ax4 = plt.gca()
 
@@ -707,7 +711,7 @@ plt.axis(
     xmin=dates[0].astype(int) + 1,
     xmax=PLOT_END_DATE,
     ymin=0,
-    ymax=40 if LONGPROJECT else CUMULATIVE_YMAX,
+    ymax=2*MAX_ELIGIBLE/1e6 if LONGPROJECT else CUMULATIVE_YMAX,
 )
 ax5 = plt.gca()
 
@@ -736,7 +740,7 @@ plt.axis(
     xmin=dates[0].astype(int) + 1,
     xmax=PLOT_END_DATE,
     ymin=0,
-    ymax=300 if LONGPROJECT else 160,
+    ymax=320 if LONGPROJECT else 160,
 )
 plt.title('Projected daily doses by type')
 plt.ylabel('Daily doses (thousands)')
@@ -764,7 +768,7 @@ plt.axis(
     xmin=dates[0].astype(int) + 1,
     xmax=PLOT_END_DATE,
     ymin=0,
-    ymax=20 if LONGPROJECT else CUMULATIVE_YMAX,
+    ymax=MAX_ELIGIBLE/1e6 if LONGPROJECT else CUMULATIVE_YMAX,
 
 )
 plt.title('Projected cumulative 1st and 2nd doses')
