@@ -188,6 +188,7 @@ pfizer_supply_data = """
 2021-06-06      3_222_690
 2021-06-13      3_534_670 + 500_000 # Direct plus COVAX
 2021-06-20      3_833_020 + 500_000
+2021-06-27      4_131_370 + 500_000
 """
 
 LONGPROJECT = False or 'project' in sys.argv
@@ -210,7 +211,8 @@ AZ_local_supply_data = """
 2021-05-30      6_739_200
 2021-06-06      7_688_500
 2021-06-13      7_921_300
-2021-06-20      8_641_300
+2021-06-20      8_642_400
+2021-06-27      9_319_000
 """
 
 # Doses distributed by the feds (scroll to weekly updates):
