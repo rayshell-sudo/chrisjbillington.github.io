@@ -304,7 +304,8 @@ else:
         'Seychelles': 0.097625,
         'Panama': 4.246,
         'Rwanda': 12.63,
-        'Papua New Guinea': 8.776
+        'Papua New Guinea': 8.776,
+        'Fiji': 0.889543
 }
 
 
