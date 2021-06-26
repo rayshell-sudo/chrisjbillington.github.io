@@ -26,6 +26,9 @@ def covidlive_data(start_date=np.datetime64('2021-06-10')):
 
     df = df[:200]
 
+    if df['NET'][0] == '-':
+        df = df[1:200]
+
     dates = np.array(
         [
             np.datetime64(datetime.strptime(date, "%d %b %y"), 'D') - 1
