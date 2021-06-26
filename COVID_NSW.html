@@ -1,0 +1,173 @@
+<html>
+<META HTTP-EQUIV="EXPIRES" CONTENT="0">
+<head>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-162432647-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-162432647-1');
+  </script>
+
+  <meta charset="UTF-8">
+  <meta property="og:image" content="COVID_social_preview.png">
+  <meta property="og:title" content="Plot of estimated R_eff for the Bondi COVID outbreak in New South Wales"/>
+  <meta property="og:url" content="http://chrisbillington.net/COVID_NSW.html">
+
+  <style type="text/css">
+  html * {
+    font-family: verdana, arial, sans-serif;
+    line-height: 150%;
+  }
+  div.content { width: 960px; margin:0 auto; }
+
+  #toc_container {
+    background: #f9f9f9 none repeat scroll 0 0;
+    border: 1px solid #aaa;
+    display: table;
+    font-size: 14px;
+    margin-bottom: 1em;
+    padding: 15px;
+    width: auto;
+  }
+
+  .toc_title {
+    font-weight: 700;
+  }
+
+  #toc_container li, #toc_container ul, #toc_container ul li{
+    list-style: outside none none !important;
+  }
+
+</style>
+
+</head>
+<body>
+  <div class="content">
+    Last updated: 2021-06-26-22:33 AEST
+    <br>
+    <small>
+      Updated daily after NSW announce case numbers
+    </small>
+    <h1>
+      Progression of the Bondi COVID outbreak in New South Wales
+    </h1>
+    <p>
+      <mark><b><a href="COVID.html">←Back to per-country plots</a></b></mark>
+    </p>
+    <p>
+      <span style="background-color: #FF00FF"><b>See also: <a href="COVID_VIC.html">The road to a COVID-free Victoria</a></b></span>
+    </p>
+    <p>
+      <span style="background-color: #00FFFF"><b>See also: <a href="aus_vaccinations.html">Australian vaccination rollout</a></b></span>
+    </p>
+    <p>
+      New South Wales is currently experiencing an outbreak of COVID, due to the delta
+      variant. On June 26th, after a concerning increase in case numbers, the Greater
+      Sydney area was placed under lockdown restrictions, and other restrictions were
+      imposed in regional New South Wales.
+    </p>
+
+    How have New South Wales' restrictions affected the spread of the virus? The below
+    plot shows how the effective reproduction number of the virus,
+    <i>R</i><sub>eff</sub> has changed over time in New South Wales, as well as how the
+    daily cases have changed over time. A trendline shows the approximate trajectory
+    daily case numbers would follow, were the reproduction number of the virus to remain
+    at its current level.
+  </p>
+  <img src="COVID_NSW.svg">
+  <h3>Disclaimer</h3>
+  <p>
+    The plotted trend is a simple extrapolation of what will happen if
+    <i>R</i><sub>eff</sub> remains at its current value. This does not take into account
+    that things are in a state of flux. As restrictions take effect, the virus should have
+    fewer opportunities for spread, and <i>R</i><sub>eff</sub> will decrease. If
+    restrictions are eased, it may increase. Contact tracing may suppress spread to a
+    greater or lesser degree over time.
+  </p>
+  <p>
+    Furthermore, when case numbers are small, the random chance of how many people each
+    infected person subsequently infects can cause estimates of <i>R</i><sub>eff</sub> to
+    vary randomly in time. As such the projections should be taken with a grain of
+    salt—they are merely an indication of the trend as it is right now.
+  </p> 
+
+  <h3>Data note</h3>
+  <p>
+    I use the "true" daily case numbers available from NSW health. These do not necessarily
+    match the "new" daily case numbers announced each morning in press conferences. The
+    latter can include cases that actually tested positive in prior days and were included
+    in the numbers late due to data delays, whereas the former is retroactively modified to
+    assign cases to the date they tested positive. Hence the "true" cases are a better
+    representation of the progression of the virus and allow a more accurate estimate of
+    <i>R</i><sub>eff</sub>.
+  </p>
+  <p>
+    The "true" case numbers dataset is not updated for some time after the "new" case
+    numbers are announced each day, so in the mornings (and on weekends, if NSW health
+    have not updated their dataset as they often don't) this plot is updated using the
+    "new" case numbers instead for the missing data. This is then be corrected later once
+    the "true" dataset is updated by NSW health.
+  </p>
+
+  <h3>Methodology</h3>
+
+  <ul>
+    <li>
+      Daily case numbers have been smoothed with 2.5-day Gaussian smoothing:
+      <br>
+      <br>
+      <i>N</i><sub>smoothed</sub>(<i>t</i>) = <i>N</i>(<i>t</i>) ∗
+      (2<i>πT</i><sub>s</sub><sup>2</sup>)<sup>-1/2</sup> exp(-<i>t</i><sup>2</sup> /
+      2<i>T</i><sub>s</sub><sup>2</sup>)
+      <br>
+      <br>
+      where <i>T</i><sub>s</sub> = 2.5 days
+      and ∗ is the convolution operation.
+    </li>
+
+    <li>
+      Before smoothing, the daily case numbers are padded on the right with an
+      extrapolation based on a exponential fit to the most recent week of data.
+    </li>
+
+    <li>
+      <i>R</i><sub>eff</sub> is then calculated for each day as:
+      <br>
+      <br>
+      <i>R</i><sub>eff</sub>(<i>t<sub>i</sub></i>) = (<i>N</i><sub>smoothed</sub>(<i>t<sub>i</sub></i>) / <i>N</i><sub>smoothed</sub>(<i>t</i><sub><i>i</i>-1</sub>))<sup><i>T</i><sub>g</sub></sup>
+      <br>
+      <br>
+      where <i>T</i><sub>g</sub> = 5 days is the approximate generation time of the virus.
+    </li>
+    <li>
+      The uncertainty in <i>R</i><sub>eff</sub> has contributions from the uncertainty
+      in the above-mentioned exponential fit, as well as Poisson uncertainty in daily
+      case numbers, and an additional 20% uncertainty in daily case numbers - the latter
+      is just a crude eyeballed figure of observed day-to-day fluctuations.
+    </li>
+    <li>
+      The extrapolation of daily case numbers is based on exponential growth/decay using the most recent value of <i>R</i><sub>eff</sub> and its uncertainty range:
+      <br>
+      <br>
+      <i>N</i><sub>extrap</sub>(<i>t<sub>i</sub></i>) = <i>N</i><sub>smoothed</sub>(<i>t</i><sub>today</sub>) <i>R</i><sub>eff</sub>(<i>t</i><sub>today</sub>)
+      <sup>(<i>t<sub>i</sub></i> - <i>t</i><sub>today</sub>)/<i>T</i><sub>g</sub></sup>
+      <br>
+      <br>
+    </li>
+  </ul>
+  <p>
+    Source for case numbers: <a href="https://data.nsw.gov.au/data/dataset/nsw-covid-19-cases-by-likely-source-of-infection/resource/2f1ba0f3-8c21-4a86-acaf-444be4401a6d">NSW health</a> and
+    <a href="https://covidlive.com.au/report/daily-source-overseas/nsw">covidlive.com.au</a>
+  </p>
+  <p>
+    Plot/analysis by Chris Billington. Contact: chrisjbillington [at] gmail [dot] com
+  </p>
+  <p>
+    Python script for producing the plot can be found at <a href="https://github.com/chrisjbillington/chrisjbillington.github.io/blob/master/nsw.py">GitHub</a>.
+  </p>
+</div>
+</body>
+</html>

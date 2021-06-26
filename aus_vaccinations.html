@@ -49,8 +49,12 @@
   <div class="content">
     <h1>Australian COVID-19 vaccination rollout</h1>
     <p>
-    Last updated: 2021-06-26-14:44 Melbourne time
+      Last updated: 2021-06-26-14:44 Melbourne time
     </p>
+    <p>
+      <span style="background-color: #00FF00"><b>See also: <a href="COVID_NSW.html">Progression of the Bondi COVID outbreak in New South Wales</a></b></span>
+    </p>
+
     <div id="toc_container">
       <p class="toc_title">Contents</p>
       <li><a href="#daily">Daily doses by administration channel</a></li>
@@ -80,56 +84,56 @@
      administered "prior to April 17". These have been incorporated into the data by
      spreading them over the period from March 22nd (start of phase 1b) to April 16th in
      proportion to the daily rate of GP-adminsitered doses on each day.
-    </p>
-    <p>
+   </p>
+   <p>
      Data note 2: A correction to of -9,260 doses to VIC's state-clinic numbers  was
      made on May 25th. These have been incorporated into the data by spreading them over
      the period from March 22nd (start of phase 1b) to April May 23rd in proportion to
      the daily rate of VIC state-clinic-adminsitered doses on each day.
-    </p>
-    <img src="daily_doses_by_state.svg">
+   </p>
+   <img src="daily_doses_by_state.svg">
 
-    <h2 id="weekday">Daily doses by weekday</h2>
-    <p>
-      Below is a plot of national daily doses by weekday, for the past five weeks. No
-      averaging or smoothing has been done.
-    </p>
-    <img src="doses_by_weekday.svg">
-    <h2 id="cumulative">Cumulative doses</h2>
-    <p>
-      Below is a simple plot of cumulative doses in Australia over time by
-      administration channel, showing the cumulative number of doses administered by
-      state vaccination clinics, and by GPs and in federally operated aged and
-      disability care. Australia aims to vaccinate all eligible people with at
-      least one dose by the end of 2021.
-    </p>
-    <p>
-      Projected doses are based on expected supply smoothed over several weeks after
-      supply becomes available, the assumption that second doses are reserved and
-      administered on time as described in the <a href="#utilisation">Estimated
-      utilisation</a> section, and allowing for 12.5% wastage.
-    </p>
-    <img src="cumulative_doses.svg">
-    <h2 id="longproject">Longer-term projections</h2>
-    <p>
-      Below is a possible scenario for the vaccination program over the course of the
-      year. This assumes that we keep up with supply, administering doses in the weeks
-      following them becoming available, up until 21.53M people (the number of people in
-      Australia aged 12+) have been vaccinated, with a maximum of 5.35M people receiving
-      the AstraZeneca vaccine.
-    </p>
-    <p>
-      This assumes second doses are reserved and administered on time as described in
-      the <a href="#utilisation">Estimated utilisation</a> section, and allows for 12.5%
-      wastage.
-    </p>
-    <p>
-      Approximate expected supply of mRNA vaccines (based on the federal allocation
-      horizons document <a
-      href="https://www.health.gov.au/sites/default/files/documents/2021/06/covid-19-vaccination-covid-vaccination-allocations-horizons.pdf">here</a>)
-      is 700k Pfizer per week starting in July, then 1M Pfizer plus 110k Moderna per
-      week starting in September, then 2M Pfizer plus 520k Moderna per week starting in
-      October.
+   <h2 id="weekday">Daily doses by weekday</h2>
+   <p>
+    Below is a plot of national daily doses by weekday, for the past five weeks. No
+    averaging or smoothing has been done.
+  </p>
+  <img src="doses_by_weekday.svg">
+  <h2 id="cumulative">Cumulative doses</h2>
+  <p>
+    Below is a simple plot of cumulative doses in Australia over time by
+    administration channel, showing the cumulative number of doses administered by
+    state vaccination clinics, and by GPs and in federally operated aged and
+    disability care. Australia aims to vaccinate all eligible people with at
+    least one dose by the end of 2021.
+  </p>
+  <p>
+    Projected doses are based on expected supply smoothed over several weeks after
+    supply becomes available, the assumption that second doses are reserved and
+    administered on time as described in the <a href="#utilisation">Estimated
+    utilisation</a> section, and allowing for 12.5% wastage.
+  </p>
+  <img src="cumulative_doses.svg">
+  <h2 id="longproject">Longer-term projections</h2>
+  <p>
+    Below is a possible scenario for the vaccination program over the course of the
+    year. This assumes that we keep up with supply, administering doses in the weeks
+    following them becoming available, up until 21.53M people (the number of people in
+    Australia aged 12+) have been vaccinated, with a maximum of 5.35M people receiving
+    the AstraZeneca vaccine.
+  </p>
+  <p>
+    This assumes second doses are reserved and administered on time as described in
+    the <a href="#utilisation">Estimated utilisation</a> section, and allows for 12.5%
+    wastage.
+  </p>
+  <p>
+    Approximate expected supply of mRNA vaccines (based on the federal allocation
+    horizons document <a
+    href="https://www.health.gov.au/sites/default/files/documents/2021/06/covid-19-vaccination-covid-vaccination-allocations-horizons.pdf">here</a>)
+    is 700k Pfizer per week starting in July, then 1M Pfizer plus 110k Moderna per
+    week starting in September, then 2M Pfizer plus 520k Moderna per week starting in
+    October.
     <p>
       Expected supply of the AstraZeneca vaccine is 1M doses per week, which is the
       current rate of local production
@@ -161,45 +165,45 @@
         </li>
         <li>
           <!-- That 50% of AstraZeneca supply is held in reserve for second doses,
-          administered exactly 12 weeks after the first dose. -->
-          Prior to mid-April, that 50% of AstraZeneca supply is held in reserve for
-          second doses. After mid-April (when the government became confident enough in
-          local supply to maintain a smaller reserve), that a reserve is maintained with
-          a number of doses equal two thirds of all outstanding second doses. These
-          second doses are administered exactly 12 weeks after the first dose.
-        </li>
-        <li>
-          That doses becoming available in a given week (supply data is only available
-          at the 1-week level) become available at the end of that week.
-        </li>
-        <li>
-          That 12.5% of doses are wasted.
-        </li>
-      </ul>
-    </p>
-    <img src="utilisation.svg">
-    <h2 id="utilisation_by_type">Estimated utilisation by vaccine type</h2>
-    <p>
-      Below is the same utilisation estimates as in the above plot, but separated by
-      vaccine type: AstraZeneca vs Pfizer/Moderna (which are lumped together).
-    </p>
-    <img src="pfizer-moderna_utilisation.svg">
-    <br>
-    <img src="az_utilisation.svg">
-    <h3 id="details">Details</h3>
-    <p>
-      Source for vaccine supply and expected supply: <a href="https://www.covid19data.com.au/vaccines">covid19data.com.au</a>
-    </p>
-    <p>
-      Source for dose numbers: <a href="https://covidlive.com.au">covidlive.com.au</a>
-    </p>
-    <p>
-      Plots by Chris Billington. Contact: chrisjbillington [at] gmail [dot] com
-    </p>
-    <p>
-      Python script for producing the plots is available <a
-      href="https://github.com/chrisjbillington/chrisjbillington.github.io/blob/master/aus_vax.py">on GitHub</a>.
-    </p>
-  </div>
-</body>
-</html>
+            administered exactly 12 weeks after the first dose. -->
+            Prior to mid-April, that 50% of AstraZeneca supply is held in reserve for
+            second doses. After mid-April (when the government became confident enough in
+            local supply to maintain a smaller reserve), that a reserve is maintained with
+            a number of doses equal two thirds of all outstanding second doses. These
+            second doses are administered exactly 12 weeks after the first dose.
+          </li>
+          <li>
+            That doses becoming available in a given week (supply data is only available
+            at the 1-week level) become available at the end of that week.
+          </li>
+          <li>
+            That 12.5% of doses are wasted.
+          </li>
+        </ul>
+      </p>
+      <img src="utilisation.svg">
+      <h2 id="utilisation_by_type">Estimated utilisation by vaccine type</h2>
+      <p>
+        Below is the same utilisation estimates as in the above plot, but separated by
+        vaccine type: AstraZeneca vs Pfizer/Moderna (which are lumped together).
+      </p>
+      <img src="pfizer-moderna_utilisation.svg">
+      <br>
+      <img src="az_utilisation.svg">
+      <h3 id="details">Details</h3>
+      <p>
+        Source for vaccine supply and expected supply: <a href="https://www.covid19data.com.au/vaccines">covid19data.com.au</a>
+      </p>
+      <p>
+        Source for dose numbers: <a href="https://covidlive.com.au">covidlive.com.au</a>
+      </p>
+      <p>
+        Plots by Chris Billington. Contact: chrisjbillington [at] gmail [dot] com
+      </p>
+      <p>
+        Python script for producing the plots is available <a
+        href="https://github.com/chrisjbillington/chrisjbillington.github.io/blob/master/aus_vax.py">on GitHub</a>.
+      </p>
+    </div>
+  </body>
+  </html>
