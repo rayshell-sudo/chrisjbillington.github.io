@@ -119,6 +119,9 @@ def model_uncertainty(function, x, params, covariance):
 
 dates, new = nswhealth_data()
 
+for d, n in zip(dates, new):
+    print(d, n)
+
 # If NSW health data not updated yet, use covidlive data:
 cl_dates, cl_new = covidlive_data(start_date=dates[-1] + 1)
 dates = np.append(dates, cl_dates)
@@ -466,7 +469,7 @@ plt.gca().xaxis.set_major_locator(mdates.DayLocator([1, 5, 10, 15, 20, 25]))
 plt.gca().get_xaxis().get_major_formatter().show_offset = False
 
 fig1.savefig('COVID_NSW.svg')
-fig1.savefig('COVID_NSW.png')
+fig1.savefig('COVID_NSW.png', dpi=600)
 plt.show()
 
 # Update the date in the HTML
