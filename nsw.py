@@ -123,9 +123,13 @@ for d, n in zip(dates, new):
     print(d, n)
 
 # If NSW health data not updated yet, use covidlive data:
-cl_dates, cl_new = covidlive_data(start_date=dates[-1] + 1)
-dates = np.append(dates, cl_dates)
-new = np.append(new, cl_new)
+# cl_dates, cl_new = covidlive_data(start_date=dates[-1] + 1)
+# dates = np.append(dates, cl_dates)
+# new = np.append(new, cl_new)
+
+dates, new = covidlive_data()
+# for d, n in zip(dates, new):
+#     print(d, n)
 
 # dates = np.append(dates, [dates[-1] + 1])
 # new = np.append(new, [28])
