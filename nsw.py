@@ -77,6 +77,44 @@ def nswhealth_data(start_date=np.datetime64('2021-06-10')):
     return dates[dates >= start_date], new[dates >= start_date]
 
 
+def nonisolating_data():
+    DATA = """
+        2021-06-10 0
+        2021-06-11 0
+        2021-06-12 0
+        2021-06-13 0
+        2021-06-14 0
+        2021-06-15 0
+        2021-06-16 0
+        2021-06-17 4
+        2021-06-18 1
+        2021-06-19 2
+        2021-06-20 1
+        2021-06-21 0
+        2021-06-22 3
+        2021-06-23 12
+        2021-06-24 4
+        2021-06-25 9
+        2021-06-26 12
+        2021-06-27 19
+        2021-06-28 13
+        2021-06-29 12
+    """
+
+    def unpack_data(s):
+        dates = []
+        values = []
+        for line in s.splitlines():
+            if line.strip() and not line.strip().startswith('#'):
+                date, value = line.strip().split(maxsplit=1)
+                dates.append(np.datetime64(date) - 1)
+                values.append(eval(value))
+        return np.array(dates), np.array(values)
+
+    dates, new = unpack_data(DATA)
+    return dates, new
+
+
 def gaussian_smoothing(data, pts):
     """gaussian smooth an array by given number of points"""
     x = np.arange(-4 * pts, 4 * pts + 1, 1)
@@ -128,6 +166,7 @@ for d, n in zip(dates, new):
 # new = np.append(new, cl_new)
 
 dates, new = covidlive_data()
+# dates, new = nonisolating_data()
 # for d, n in zip(dates, new):
 #     print(d, n)
 
