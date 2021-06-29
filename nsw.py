@@ -131,6 +131,9 @@ dates, new = covidlive_data()
 # for d, n in zip(dates, new):
 #     print(d, n)
 
+# dates = np.append(dates, [dates[-1] + 1])
+# new = np.append(new, [28])
+
 START_PLOT = start_date=np.datetime64('2021-06-13')
 END_PLOT = np.datetime64('2021-08-01')
 
