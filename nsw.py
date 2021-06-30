@@ -160,6 +160,10 @@ dates, new = nswhealth_data()
 for d, n in zip(dates, new):
     print(d, n)
 
+# Last day is incomplete data
+# dates = dates[:-1]
+# new = new[:-1]
+
 # If NSW health data not updated yet, use covidlive data:
 # cl_dates, cl_new = covidlive_data(start_date=dates[-1] + 1)
 # dates = np.append(dates, cl_dates)
