@@ -189,6 +189,7 @@ pfizer_supply_data = """
 2021-06-13      3_534_670 + 500_000 # Direct plus COVAX
 2021-06-20      3_833_020 + 500_000
 2021-06-27      4_131_370 + 500_000
+2021-07-04      4_420_000 + 500_000
 """
 
 LONGPROJECT = False or 'project' in sys.argv
@@ -227,8 +228,6 @@ AZ_local_supply_data = """
 #"""
 
 PFIZER_PROJECTED_SHIPMENTS= """ # In thousands per week
-2021-06-27 300
-2021-07-04 700
 2021-07-11 700
 2021-07-18 700
 2021-07-25 700
