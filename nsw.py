@@ -459,7 +459,7 @@ plt.title(
     + (' (non-isolating cases only)' if NONISOLATING else '')
     + (
         "\n"
-        + fR"Latest estimate: $R_\mathrm{{eff}}={R[-1]:.01f} \pm {u_R_latest:.01f}$"
+        + fR"Latest estimate: $R_\mathrm{{eff}}={R[-1]:.02f} \pm {u_R_latest:.02f}$"
     )
 )
 
