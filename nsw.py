@@ -1,4 +1,4 @@
-import os
+import sys
 from datetime import datetime
 from pytz import timezone
 from pathlib import Path
@@ -19,6 +19,7 @@ munits.registry[np.datetime64] = converter
 munits.registry[datetime.date] = converter
 munits.registry[datetime] = converter
 
+NONISOLATING = 'noniso' in sys.argv
 
 # Data from covidlive by date announced to public
 def covidlive_data(start_date=np.datetime64('2021-06-10')):
@@ -101,6 +102,8 @@ def nonisolating_data():
         2021-06-29 12
         2021-06-30 11
         2021-07-01 15
+        2021-07-02 15
+        2021-07-03 12
     """
 
     def unpack_data(s):
@@ -171,8 +174,10 @@ for d, n in zip(dates, new):
 # dates = np.append(dates, cl_dates)
 # new = np.append(new, cl_new)
 
-dates, new = covidlive_data()
-# dates, new = nonisolating_data()
+if NONISOLATING:
+    dates, new = nonisolating_data()
+else:
+    dates, new = covidlive_data()
 # for d, n in zip(dates, new):
 #     print(d, n)
 
@@ -449,7 +454,9 @@ plt.ylabel(R"$R_\mathrm{eff}$")
 u_R_latest = (R_upper[-1] - R_lower[-1]) / 2
 
 plt.title(
-    "$R_\\mathrm{eff}$ in New South Wales with Sydney restriction levels and daily cases"
+    "$R_\\mathrm{eff}$ in New South Wales with Sydney restriction levels and daily"
+    " cases"
+    + (' (non-isolating cases only)' if NONISOLATING else '')
     + (
         "\n"
         + fR"Latest estimate: $R_\mathrm{{eff}}={R[-1]:.01f} \pm {u_R_latest:.01f}$"
@@ -517,8 +524,8 @@ plt.setp(plt.gca().get_yminorticklabels()[1::2], visible=False)
 plt.gca().xaxis.set_major_locator(mdates.DayLocator([1, 5, 10, 15, 20, 25]))
 plt.gca().get_xaxis().get_major_formatter().show_offset = False
 
-fig1.savefig('COVID_NSW.svg')
-fig1.savefig('COVID_NSW.png', dpi=600)
+fig1.savefig(f'COVID_NSW{"_noniso" if NONISOLATING else ""}.svg')
+fig1.savefig(f'COVID_NSW{"_noniso" if NONISOLATING else ""}.png', dpi=600)
 plt.show()
 
 # Update the date in the HTML
