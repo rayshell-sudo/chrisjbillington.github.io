@@ -372,6 +372,7 @@ new_projection_lower = np.exp(np.log(new_projection) - log_new_projection_uncert
 MASKS = np.datetime64('2021-06-21')
 LGA_LOCKDOWN = np.datetime64('2021-06-26')
 LOCKDOWN = np.datetime64('2021-06-27')
+END_LOCKDOWN = np.datetime64('2021-07-10')
 
 ORANGEYELLOW = (
     np.array(mcolors.to_rgb("orange")) + np.array(mcolors.to_rgb("yellow"))
@@ -399,7 +400,7 @@ plt.fill_betweenx(
 plt.fill_betweenx(
     [-10, 10],
     [LOCKDOWN, LOCKDOWN],
-    [LOCKDOWN + 14, LOCKDOWN + 14],
+    [END_LOCKDOWN, END_LOCKDOWN],
     color="red",
     alpha=0.3,
     linewidth=0,
@@ -409,13 +410,13 @@ plt.fill_betweenx(
 for i in range(10):
     plt.fill_betweenx(
         [-10, 10],
-        [LOCKDOWN.astype(int) + 14 + 0.5 * i, LOCKDOWN.astype(int) + 14 + 0.5 * i],
+        [END_LOCKDOWN.astype(int) + 0.3 * i, END_LOCKDOWN.astype(int) + 0.3 * i],
         [
-            LOCKDOWN.astype(int) + 14 + 0.5 * i + 0.5,
-            LOCKDOWN.astype(int) + 14 + 0.5 * i + 0.5,
+            END_LOCKDOWN.astype(int) + 0.3 * i + 0.3,
+            END_LOCKDOWN.astype(int) + 0.3 * i + 0.3,
         ],
         color="red",
-        alpha=0.3 * (10 - i) / 10,
+        alpha=0.2 * (10 - i) / 10,
         linewidth=0,
         zorder=-10,
     )
