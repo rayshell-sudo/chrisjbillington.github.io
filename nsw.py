@@ -104,6 +104,7 @@ def nonisolating_data():
         2021-07-01 15
         2021-07-02 15
         2021-07-03 12
+        2021-07-04 3
     """
 
     def unpack_data(s):
