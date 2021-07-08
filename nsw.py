@@ -108,6 +108,7 @@ def nonisolating_data():
         2021-07-05 11
         2021-07-06 7
         2021-07-07 14
+        2021-07-08 20
     """
 
     def unpack_data(s):
@@ -375,7 +376,7 @@ new_projection_lower = np.exp(np.log(new_projection) - log_new_projection_uncert
 MASKS = np.datetime64('2021-06-21')
 LGA_LOCKDOWN = np.datetime64('2021-06-26')
 LOCKDOWN = np.datetime64('2021-06-27')
-END_LOCKDOWN = np.datetime64('2021-07-10')
+END_LOCKDOWN = np.datetime64('2021-07-17')
 
 ORANGEYELLOW = (
     np.array(mcolors.to_rgb("orange")) + np.array(mcolors.to_rgb("yellow"))
