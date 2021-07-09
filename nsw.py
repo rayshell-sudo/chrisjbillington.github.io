@@ -377,6 +377,7 @@ new_projection_lower = np.exp(np.log(new_projection) - log_new_projection_uncert
 MASKS = np.datetime64('2021-06-21')
 LGA_LOCKDOWN = np.datetime64('2021-06-26')
 LOCKDOWN = np.datetime64('2021-06-27')
+TIGHTER_LOCKDOWN = np.datetime64('2021-07-10')
 END_LOCKDOWN = np.datetime64('2021-07-17')
 
 ORANGEYELLOW = (
@@ -389,29 +390,44 @@ plt.fill_betweenx(
     [MASKS, MASKS],
     [LGA_LOCKDOWN, LGA_LOCKDOWN],
     color="yellow",
-    alpha=0.3,
+    alpha=0.5,
     linewidth=0,
     label="Initial restrictions",
 )
+
+
 plt.fill_betweenx(
     [-10, 10],
     [LGA_LOCKDOWN, LGA_LOCKDOWN],
     [LOCKDOWN, LOCKDOWN],
-    color="orange",
-    alpha=0.3,
+    color="yellow",
+    edgecolor="orange",
+    alpha=0.5,
     linewidth=0,
+    hatch="//////",
     label="East Sydney LGA lockdown",
 )
 plt.fill_betweenx(
     [-10, 10],
     [LOCKDOWN, LOCKDOWN],
-    [END_LOCKDOWN, END_LOCKDOWN],
-    color="red",
-    alpha=0.3,
+    [TIGHTER_LOCKDOWN, TIGHTER_LOCKDOWN],
+    color="orange",
+    alpha=0.5,
     linewidth=0,
     label="Greater Sydney lockdown",
 )
 
+plt.fill_betweenx(
+    [-10, 10],
+    [TIGHTER_LOCKDOWN, TIGHTER_LOCKDOWN],
+    [END_LOCKDOWN, END_LOCKDOWN],
+    color="red",
+    alpha=0.5,
+    linewidth=0,
+    label="Lockdown tightened",
+)
+
+6
 for i in range(10):
     plt.fill_betweenx(
         [-10, 10],
@@ -421,7 +437,7 @@ for i in range(10):
             END_LOCKDOWN.astype(int) + 0.3 * i + 0.3,
         ],
         color="red",
-        alpha=0.2 * (10 - i) / 10,
+        alpha=0.4 * (10 - i) / 10,
         linewidth=0,
         zorder=-10,
     )
@@ -514,14 +530,14 @@ handles2, labels2 = plt.gca().get_legend_handles_labels()
 handles += handles2
 labels += labels2
 
-order = [3, 4, 5, 6, 7, 8, 0, 1, 2]
+order = [4, 5, 6, 7, 8, 9, 0, 1, 2, 3]
 plt.legend(
     # handles,
     # labels,
     [handles[idx] for idx in order],
     [labels[idx] for idx in order],
-    loc='upper right',
-    ncol=1,
+    loc='upper left',
+    ncol=2,
 )
 
 plt.gca().yaxis.set_major_formatter(mticker.ScalarFormatter())
