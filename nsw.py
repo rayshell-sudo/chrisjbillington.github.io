@@ -112,6 +112,7 @@ def nonisolating_data():
         2021-07-09 29
         2021-07-10 37
         2021-07-11 42
+        # 2021-07-12 60
     """
 
     def unpack_data(s):
@@ -189,11 +190,12 @@ else:
 # for d, n in zip(dates, new):
 #     print(d, n)
 
-# dates = np.append(dates, [dates[-1] + 1])
-# new = np.append(new, [28])
+# if not NONISOLATING:
+#     dates = np.append(dates, [dates[-1] + 1])
+#     new = np.append(new, [100])
 
 START_PLOT = start_date=np.datetime64('2021-06-13')
-END_PLOT = np.datetime64('2021-08-01')
+END_PLOT = np.datetime64('2021-09-01')
 
 SMOOTHING = 4
 PADDING = 3 * int(round(3 * SMOOTHING))
@@ -216,7 +218,7 @@ tau = 5  # reproductive time of the virus in days
 # fit results prior to smoothing.
 
 FIT_PTS = min(20, len(dates[dates >= START_PLOT]))
-x0 = -10
+x0 = -14
 delta_x = 1
 fit_x = np.arange(-FIT_PTS, 0)
 fit_weights = 1 / (1 + np.exp(-(fit_x - x0) / delta_x))
@@ -380,13 +382,13 @@ MASKS = np.datetime64('2021-06-21')
 LGA_LOCKDOWN = np.datetime64('2021-06-26')
 LOCKDOWN = np.datetime64('2021-06-27')
 TIGHTER_LOCKDOWN = np.datetime64('2021-07-10')
-END_LOCKDOWN = np.datetime64('2021-07-17')
+END_LOCKDOWN = TIGHTER_LOCKDOWN + 30 # Who knows? # np.datetime64('2021-07-17')
 
 ORANGEYELLOW = (
     np.array(mcolors.to_rgb("orange")) + np.array(mcolors.to_rgb("yellow"))
 ) / 2
 
-fig1 = plt.figure(figsize=(10, 6))
+fig1 = plt.figure(figsize=(12, 6))
 plt.fill_betweenx(
     [-10, 10],
     [MASKS, MASKS],
@@ -424,13 +426,13 @@ plt.fill_betweenx(
     [TIGHTER_LOCKDOWN, TIGHTER_LOCKDOWN],
     [END_LOCKDOWN, END_LOCKDOWN],
     color="red",
-    alpha=0.5,
+    alpha=0.3,
     linewidth=0,
     label="Lockdown tightened",
 )
 
-6
-for i in range(10):
+
+for i in range(30):
     plt.fill_betweenx(
         [-10, 10],
         [END_LOCKDOWN.astype(int) + 0.3 * i, END_LOCKDOWN.astype(int) + 0.3 * i],
@@ -439,7 +441,7 @@ for i in range(10):
             END_LOCKDOWN.astype(int) + 0.3 * i + 0.3,
         ],
         color="red",
-        alpha=0.4 * (10 - i) / 10,
+        alpha=0.3 * (30 - i) / 30,
         linewidth=0,
         zorder=-10,
     )
@@ -469,7 +471,7 @@ plt.fill_between(
 )
 
 plt.axhline(1.0, color='k', linewidth=1)
-plt.axis(xmin=START_PLOT, xmax=END_PLOT, ymin=0, ymax=6)
+plt.axis(xmin=START_PLOT, xmax=END_PLOT, ymin=0, ymax=8)
 plt.grid(True, linestyle=":", color='k', alpha=0.5)
 
 handles, labels = plt.gca().get_legend_handles_labels()
@@ -484,7 +486,7 @@ plt.title(
     + (' (non-isolating cases only)' if NONISOLATING else '')
     + (
         "\n"
-        + fR"Latest estimate: $R_\mathrm{{eff}}={R[-1]:.02f} \pm {u_R_latest:.02f}$"
+        + fR"Latest estimate: $R_\mathrm{{eff}}={R[-1]:.01f} \pm {u_R_latest:.01f}$"
     )
 )
 
@@ -523,9 +525,9 @@ plt.fill_between(
     alpha=0.3,
     linewidth=0,
 )
-plt.axis(ymin=1, ymax=1000)
+plt.axis(ymin=1, ymax=10000)
 plt.ylabel("Daily confirmed cases")
-plt.tight_layout()
+plt.tight_layout(pad=1.8)
 
 handles2, labels2 = plt.gca().get_legend_handles_labels()
 
@@ -540,6 +542,7 @@ plt.legend(
     [labels[idx] for idx in order],
     loc='upper left',
     ncol=2,
+    prop={'size': 8}
 )
 
 plt.gca().yaxis.set_major_formatter(mticker.ScalarFormatter())
