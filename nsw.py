@@ -388,7 +388,7 @@ ORANGEYELLOW = (
     np.array(mcolors.to_rgb("orange")) + np.array(mcolors.to_rgb("yellow"))
 ) / 2
 
-fig1 = plt.figure(figsize=(12, 6))
+fig1 = plt.figure(figsize=(10, 6))
 plt.fill_betweenx(
     [-10, 10],
     [MASKS, MASKS],
