@@ -283,7 +283,10 @@ AZ_local_supply_dates, AZ_local_supply = unpack_data(AZ_local_supply_data)
 WASTAGE = 0.125
 
 # Number of AZ first doses
-MAX_AZ_ADMINISTERED = 5.35e6 # 5M over 60s in Aus.
+
+# 80% of ~5M over 60s, 40% of ~3M people in their fifties, 50% of 1M NSW residents in
+# their forties 40s, plus 350k from early in the rollout
+MAX_AZ_ADMINISTERED = .8 * 5e6 + .4 * 3e6 + .5 * 1e6 + 350e3
 
 # Number of people 12 years old and older, 21.53M
 MAX_ELIGIBLE = (1 - .063 - .064 - 2/5 * .060) * 25.36e6
