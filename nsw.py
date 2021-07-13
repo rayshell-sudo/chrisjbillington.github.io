@@ -113,6 +113,7 @@ def nonisolating_data():
         2021-07-10 37
         2021-07-11 42 + 3
         2021-07-12 46 + 18
+        # 2021-07-13 ??
     """
 
     def unpack_data(s):
@@ -544,6 +545,8 @@ plt.legend(
     ncol=2,
     prop={'size': 8}
 )
+
+# plt.axhline(2000 / .03 / 17, color='r', linestyle="--")
 
 plt.gca().yaxis.set_major_formatter(mticker.ScalarFormatter())
 plt.gca().yaxis.set_minor_formatter(mticker.ScalarFormatter())
