@@ -192,9 +192,9 @@ else:
 # for d, n in zip(dates, new):
 #     print(d, n)
 
-if not NONISOLATING:
-    dates = np.append(dates, [dates[-1] + 1])
-    new = np.append(new, [112])
+# if not NONISOLATING:
+#     dates = np.append(dates, [dates[-1] + 1])
+#     new = np.append(new, [80])
 
 START_PLOT = start_date=np.datetime64('2021-06-13')
 END_PLOT = np.datetime64('2021-09-01')
@@ -384,7 +384,7 @@ MASKS = np.datetime64('2021-06-21')
 LGA_LOCKDOWN = np.datetime64('2021-06-26')
 LOCKDOWN = np.datetime64('2021-06-27')
 TIGHTER_LOCKDOWN = np.datetime64('2021-07-10')
-END_LOCKDOWN = TIGHTER_LOCKDOWN + 30 # Who knows? # np.datetime64('2021-07-17')
+END_LOCKDOWN = np.datetime64('2021-07-31')
 
 ORANGEYELLOW = (
     np.array(mcolors.to_rgb("orange")) + np.array(mcolors.to_rgb("yellow"))
@@ -443,7 +443,7 @@ for i in range(30):
             END_LOCKDOWN.astype(int) + 0.3 * i + 0.3,
         ],
         color="red",
-        alpha=0.3 * (30 - i) / 30,
+        alpha=0.2 * (30 - i) / 30,
         linewidth=0,
         zorder=-10,
     )
