@@ -114,6 +114,7 @@ def nonisolating_data():
         2021-07-11 42 + 3
         2021-07-12 46 + 18
         2021-07-13 34
+        2021-07-14 37
     """
 
     def unpack_data(s):
@@ -191,9 +192,9 @@ else:
 # for d, n in zip(dates, new):
 #     print(d, n)
 
-# if not NONISOLATING:
-#     dates = np.append(dates, [dates[-1] + 1])
-#     new = np.append(new, [100])
+if not NONISOLATING:
+    dates = np.append(dates, [dates[-1] + 1])
+    new = np.append(new, [112])
 
 START_PLOT = start_date=np.datetime64('2021-06-13')
 END_PLOT = np.datetime64('2021-09-01')
