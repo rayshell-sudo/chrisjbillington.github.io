@@ -115,6 +115,7 @@ def nonisolating_data():
         2021-07-12 46 + 18
         2021-07-13 34
         2021-07-14 37
+        2021-07-15 29
     """
 
     def unpack_data(s):
@@ -194,7 +195,7 @@ else:
 
 # if not NONISOLATING:
 #     dates = np.append(dates, [dates[-1] + 1])
-#     new = np.append(new, [80])
+#     new = np.append(new, [65])
 
 START_PLOT = start_date=np.datetime64('2021-06-13')
 END_PLOT = np.datetime64('2021-09-01')
@@ -220,7 +221,7 @@ tau = 5  # reproductive time of the virus in days
 # fit results prior to smoothing.
 
 FIT_PTS = min(20, len(dates[dates >= START_PLOT]))
-x0 = -14
+x0 = -10
 delta_x = 1
 fit_x = np.arange(-FIT_PTS, 0)
 fit_weights = 1 / (1 + np.exp(-(fit_x - x0) / delta_x))
