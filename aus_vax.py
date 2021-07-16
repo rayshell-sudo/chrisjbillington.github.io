@@ -779,7 +779,13 @@ plt.title('Projected cumulative 1st and 2nd doses')
 plt.ylabel('Cumulative doses (millions)')
 today = np.datetime64(datetime.now(), 'D')
 plt.axvline(today, linestyle=":", color='k', label=f"Today ({today})")
+plt.gca().yaxis.set_major_locator(ticker.MultipleLocator(2.0))
 ax7 = plt.gca()
+
+twinax = plt.twinx()
+twinax.axis(ymin=0, ymax=100 * MAX_ELIGIBLE / (20e6))
+twinax.yaxis.set_major_locator(ticker.MultipleLocator(10.0))
+plt.ylabel("Percentage of adult population")
 
 
 for ax in [ax1, ax2, ax3, ax4, ax5, ax6, ax7]:
