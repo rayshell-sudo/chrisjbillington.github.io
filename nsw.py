@@ -390,15 +390,18 @@ TIGHTER_LOCKDOWN = np.datetime64('2021-07-10')
 NONCRITICAL_RETAIL_CLOSED = np.datetime64('2021-07-18')
 END_LOCKDOWN = np.datetime64('2021-07-31')
 
-ORANGERED = (np.array(mcolors.to_rgb("orange")) + np.array(mcolors.to_rgb("red"))) / 2
+def whiten(color, f):
+    """Mix a color with white where f is how much of the original colour to keep"""
+    white = np.array(mcolors.to_rgb("white"))
+    return (1 - f) * white + f * np.array(mcolors.to_rgb(color))
+
 
 fig1 = plt.figure(figsize=(10, 6))
 plt.fill_betweenx(
     [-10, 10],
     [MASKS, MASKS],
     [LGA_LOCKDOWN, LGA_LOCKDOWN],
-    color="yellow",
-    alpha=0.5,
+    color=whiten("yellow", 0.5),
     linewidth=0,
     label="Initial restrictions",
 )
@@ -408,9 +411,8 @@ plt.fill_betweenx(
     [-10, 10],
     [LGA_LOCKDOWN, LGA_LOCKDOWN],
     [LOCKDOWN, LOCKDOWN],
-    color="yellow",
-    edgecolor="orange",
-    alpha=0.5,
+    color=whiten("yellow", 0.5),
+    edgecolor=whiten("orange", 0.5),
     linewidth=0,
     hatch="//////",
     label="East Sydney LGA lockdown",
@@ -419,8 +421,7 @@ plt.fill_betweenx(
     [-10, 10],
     [LOCKDOWN, LOCKDOWN],
     [TIGHTER_LOCKDOWN, TIGHTER_LOCKDOWN],
-    color="orange",
-    alpha=0.5,
+    color=whiten("orange", 0.5),
     linewidth=0,
     label="Greater Sydney lockdown",
 )
@@ -429,9 +430,8 @@ plt.fill_betweenx(
     [-10, 10],
     [TIGHTER_LOCKDOWN, TIGHTER_LOCKDOWN],
     [NONCRITICAL_RETAIL_CLOSED, NONCRITICAL_RETAIL_CLOSED],
-    color="orange",
-    edgecolor=ORANGERED,
-    alpha=0.5,
+    color=whiten("orange", 0.5),
+    edgecolor=whiten("red", 0.5),
     linewidth=0,
     hatch="//////",
     label="Lockdown tightened",
@@ -441,8 +441,7 @@ plt.fill_betweenx(
     [-10, 10],
     [NONCRITICAL_RETAIL_CLOSED, NONCRITICAL_RETAIL_CLOSED],
     [END_LOCKDOWN, END_LOCKDOWN],
-    color="red",
-    alpha=0.35,
+    color=whiten("red", 0.35),
     linewidth=0,
     label="Noncritical retail closed\nConstruction paused",
 )
@@ -456,8 +455,7 @@ for i in range(30):
             END_LOCKDOWN.astype(int) + 0.3 * i + 0.3,
             END_LOCKDOWN.astype(int) + 0.3 * i + 0.3,
         ],
-        color="red",
-        alpha=0.25 * (30 - i) / 30,
+        color=whiten("red", 0.25 * (30 - i) / 30),
         linewidth=0,
         zorder=-10,
     )
