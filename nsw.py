@@ -431,7 +431,7 @@ plt.fill_betweenx(
     [TIGHTER_LOCKDOWN, TIGHTER_LOCKDOWN],
     [NONCRITICAL_RETAIL_CLOSED, NONCRITICAL_RETAIL_CLOSED],
     color=whiten("orange", 0.5),
-    edgecolor=whiten("red", 0.5),
+    edgecolor=whiten("red", 0.35),
     linewidth=0,
     hatch="//////",
     label="Lockdown tightened",
