@@ -387,11 +387,10 @@ MASKS = np.datetime64('2021-06-21')
 LGA_LOCKDOWN = np.datetime64('2021-06-26')
 LOCKDOWN = np.datetime64('2021-06-27')
 TIGHTER_LOCKDOWN = np.datetime64('2021-07-10')
+NONCRITICAL_RETAIL_CLOSED = np.datetime64('2021-07-18')
 END_LOCKDOWN = np.datetime64('2021-07-31')
 
-ORANGEYELLOW = (
-    np.array(mcolors.to_rgb("orange")) + np.array(mcolors.to_rgb("yellow"))
-) / 2
+ORANGERED = (np.array(mcolors.to_rgb("orange")) + np.array(mcolors.to_rgb("red"))) / 2
 
 fig1 = plt.figure(figsize=(10, 6))
 plt.fill_betweenx(
@@ -429,11 +428,23 @@ plt.fill_betweenx(
 plt.fill_betweenx(
     [-10, 10],
     [TIGHTER_LOCKDOWN, TIGHTER_LOCKDOWN],
+    [NONCRITICAL_RETAIL_CLOSED, NONCRITICAL_RETAIL_CLOSED],
+    color="orange",
+    edgecolor=ORANGERED,
+    alpha=0.5,
+    linewidth=0,
+    hatch="//////",
+    label="Lockdown tightened",
+)
+
+plt.fill_betweenx(
+    [-10, 10],
+    [NONCRITICAL_RETAIL_CLOSED, NONCRITICAL_RETAIL_CLOSED],
     [END_LOCKDOWN, END_LOCKDOWN],
     color="red",
-    alpha=0.3,
+    alpha=0.35,
     linewidth=0,
-    label="Lockdown tightened",
+    label="Critical retail only/construction pause",
 )
 
 
@@ -446,7 +457,7 @@ for i in range(30):
             END_LOCKDOWN.astype(int) + 0.3 * i + 0.3,
         ],
         color="red",
-        alpha=0.2 * (30 - i) / 30,
+        alpha=0.25 * (30 - i) / 30,
         linewidth=0,
         zorder=-10,
     )
@@ -539,7 +550,7 @@ handles2, labels2 = plt.gca().get_legend_handles_labels()
 handles += handles2
 labels += labels2
 
-order = [4, 5, 6, 7, 8, 9, 0, 1, 2, 3]
+order = [5, 6, 7, 8, 9, 10, 0, 1, 2, 3, 4]
 plt.legend(
     # handles,
     # labels,
