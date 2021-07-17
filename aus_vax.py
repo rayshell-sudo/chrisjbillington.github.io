@@ -606,8 +606,9 @@ plt.axis(
     xmin=dates[0].astype(int) + 1,
     xmax=PLOT_END_DATE,
     ymin=0,
-    ymax=320 if LONGPROJECT else 160,
+    ymax=320 if LONGPROJECT else 200,
 )
+plt.gca().yaxis.set_major_locator(ticker.MultipleLocator(20))
 ax2 = plt.gca()
 
 
@@ -744,8 +745,9 @@ plt.axis(
     xmin=dates[0].astype(int) + 1,
     xmax=PLOT_END_DATE,
     ymin=0,
-    ymax=320 if LONGPROJECT else 160,
+    ymax=320 if LONGPROJECT else 200,
 )
+plt.gca().yaxis.set_major_locator(ticker.MultipleLocator(20))
 plt.title('Projected daily doses by type')
 plt.ylabel('Daily doses (thousands)')
 today = np.datetime64(datetime.now(), 'D')
