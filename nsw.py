@@ -444,7 +444,7 @@ plt.fill_betweenx(
     color="red",
     alpha=0.35,
     linewidth=0,
-    label="Critical retail only/construction pause",
+    label="Noncritical retail closed\nConstruction paused",
 )
 
 
