@@ -119,6 +119,7 @@ def nonisolating_data():
         2021-07-16 51
         2021-07-17 42
         2021-07-18 36
+        2021-07-19 44
     """
 
     def unpack_data(s):
@@ -198,9 +199,9 @@ else:
 
 # if not NONISOLATING:
 #     dates = np.append(dates, [dates[-1] + 1])
-#     new = np.append(new, [65])
+#     new = np.append(new, [98])
 
-START_PLOT = start_date=np.datetime64('2021-06-13')
+START_PLOT = np.datetime64('2021-06-13')
 END_PLOT = np.datetime64('2021-09-01')
 
 SMOOTHING = 4
@@ -570,7 +571,7 @@ plt.gca().xaxis.set_major_locator(mdates.DayLocator([1, 5, 10, 15, 20, 25]))
 plt.gca().get_xaxis().get_major_formatter().show_offset = False
 
 fig1.savefig(f'COVID_NSW{"_noniso" if NONISOLATING else ""}.svg')
-fig1.savefig(f'COVID_NSW{"_noniso" if NONISOLATING else ""}.png', dpi=600)
+fig1.savefig(f'COVID_NSW{"_noniso" if NONISOLATING else ""}.png', dpi=200)
 plt.show()
 
 # Update the date in the HTML
