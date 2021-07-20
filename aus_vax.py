@@ -292,7 +292,7 @@ WASTAGE = 0.125
 
 # 80% of ~5M over 60s, 40% of ~3M people in their fifties, 50% of 1M NSW residents in
 # their forties 40s, plus 350k from early in the rollout
-MAX_AZ_ADMINISTERED = .8 * 5e6 + .4 * 3e6 + .5 * 1e6 + 350e3
+MAX_AZ_ADMINISTERED = .9 * 5e6 + .4 * 3e6 + .5 * 1e6 + 350e3
 
 # Number of people 12 years old and older, 21.53M
 MAX_ELIGIBLE = (1 - .063 - .064 - 2/5 * .060) * 25.36e6
@@ -400,7 +400,7 @@ for i, date in enumerate(all_dates):
         # of available doses each day on first doses. Since a dose will be reserved as
         # well, this means we're always 10 days away from running out of vaccine at the
         # current rate - which is approximately what we see in the data.
-        AZ_first_doses_today = 1 / 21 * AZ_available[i]
+        AZ_first_doses_today = 1 / 14 * AZ_available[i]
         pfizer_first_doses_today = 1 / 14 * pfizer_available[i]
 
         first_doses_today = AZ_first_doses_today + pfizer_first_doses_today
