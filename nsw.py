@@ -43,6 +43,13 @@ def covidlive_data(start_date=np.datetime64('2021-06-10')):
     return dates, cases
 
 
+def covidlive_doses_per_100():
+    df = pd.read_html("https://covidlive.com.au/report/daily-vaccinations/nsw")[1]
+    doses = df['DOSES'][0]
+    POP_OF_NSW = 8.166e6
+    return 100 * doses / POP_OF_NSW
+
+
 # Data from NSW Health by test notification date
 def nswhealth_data(start_date=np.datetime64('2021-06-10')):
     url = (
@@ -195,6 +202,10 @@ if NONISOLATING:
     dates, new = nonisolating_data()
 else:
     dates, new = covidlive_data()
+
+# Current vaccination level:
+current_doses_per_100 = covidlive_doses_per_100()
+
 # for d, n in zip(dates, new):
 #     print(d, n)
 
@@ -326,13 +337,68 @@ new_smoothed_upper = new_smoothed_upper.clip(0, None)
 new_smoothed_lower = new_smoothed_lower.clip(0, None)
 new_smoothed = new_smoothed.clip(0, None)
 
-# Propagate uncertainty in log space where linear uncertainty propagation better
-# applies
+
+def projected_susceptible_population(t, current_doses_per_100):
+    """compute projected future susceptible population, starting with the current doses
+    per 100 population, and assuming a certain vaccine efficacy and rollout schedule"""
+    AUG = np.datetime64('2021-08-01').astype(int) - dates[-1].astype(int)
+    SEP = np.datetime64('2021-09-01').astype(int) - dates[-1].astype(int)
+    OCT = np.datetime64('2021-10-01').astype(int) - dates[-1].astype(int)
+    NOV = np.datetime64('2021-11-01').astype(int) - dates[-1].astype(int)
+
+    # My national projections of doses per 100 people per day are:
+    # Jul 140k per day = 0.55 %
+    # Aug 165k per day = 0.66 %
+    # Sep 185k per day = 0.74 %
+    # Oct 230k per day = 0.92 %
+    # Nov 280k per day = 1.12 %
+
+    # What if we give NSW double the supply?
+    # PRIORITY_FACTOR = 2
+
+    # NSW currently exceeding national rates by 15%, so let's go with that:
+    PRIORITY_FACTOR = 1.15
+
+    doses_per_100 = np.zeros_like(t)
+    doses_per_100[0] = current_doses_per_100
+    for i in range(1, len(doses_per_100)):
+        if i < AUG:
+            doses_per_100[i] = doses_per_100[i - 1] + 0.55 * PRIORITY_FACTOR
+        elif i < SEP:
+            doses_per_100[i] = doses_per_100[i - 1] + 0.66 * PRIORITY_FACTOR
+        elif i < OCT:
+            doses_per_100[i] = doses_per_100[i - 1] + 0.74 * PRIORITY_FACTOR
+        elif i < NOV:
+            doses_per_100[i] = doses_per_100[i - 1] + 0.92 * PRIORITY_FACTOR
+        else:
+            doses_per_100[i] = doses_per_100[i - 1] + 1.12 * PRIORITY_FACTOR
+
+    doses_per_100 = np.clip(doses_per_100, 0, 85 * 2)
+    susceptible = 1 - 0.4 * doses_per_100 / 100
+    return susceptible
+
+
+# Model including projected effect of vaccines
+def log_projection_model(t, A, R):
+    susceptible = projected_susceptible_population(t, current_doses_per_100)
+    R0 = R / susceptible[0]
+    R_t = susceptible * R0
+
+    y = np.zeros_like(t)
+    y[0] = A
+    for i in range(1, len(t)):
+        dt = t[i] - t[i - 1]
+        y[i] = y[i - 1] * R_t[i] ** (dt / tau)
+    return np.log(y)
+
+
+# Simple model, no vaccines
 def log_projection_model(t, A, R):
     return np.log(A * R ** (t / tau))
 
+
 # Projection of daily case numbers:
-days_projection = (END_PLOT - dates[-1]).astype(int)
+days_projection = (END_PLOT + 200 - dates[-1]).astype(int)
 t_projection = np.linspace(0, days_projection, days_projection + 1)
 
 # Construct a covariance matrix for the latest estimate in new_smoothed and R:
@@ -571,8 +637,15 @@ plt.setp(plt.gca().get_yminorticklabels()[1::2], visible=False)
 plt.gca().xaxis.set_major_locator(mdates.DayLocator([1, 5, 10, 15, 20, 25]))
 plt.gca().get_xaxis().get_major_formatter().show_offset = False
 
+
 fig1.savefig(f'COVID_NSW{"_noniso" if NONISOLATING else ""}.svg')
 fig1.savefig(f'COVID_NSW{"_noniso" if NONISOLATING else ""}.png', dpi=200)
+
+# plt.gca().xaxis.set_major_locator(mdates.DayLocator([1, 15]))
+# plt.axis(xmax=np.datetime64('2021-12-01'))
+# fig1.savefig(f'COVID_NSW_longproj{"_noniso" if NONISOLATING else ""}.svg')
+# fig1.savefig(f'COVID_NSW_longproj{"_noniso" if NONISOLATING else ""}.png', dpi=200)
+
 plt.show()
 
 # Update the date in the HTML
