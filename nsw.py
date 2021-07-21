@@ -20,6 +20,9 @@ munits.registry[datetime.date] = converter
 munits.registry[datetime] = converter
 
 NONISOLATING = 'noniso' in sys.argv
+VAX = 'vax' in sys.argv
+if not NONISOLATING and not VAX and sys.argv[1:]:
+    raise ValueError(sys.argv[1:])
 
 # Data from covidlive by date announced to public
 def covidlive_data(start_date=np.datetime64('2021-06-10')):
@@ -215,7 +218,7 @@ current_doses_per_100 = covidlive_doses_per_100()
 #     new = np.append(new, [98])
 
 START_PLOT = np.datetime64('2021-06-13')
-END_PLOT = np.datetime64('2021-09-01')
+END_PLOT = np.datetime64('2021-12-01') if VAX else np.datetime64('2021-09-01')
 
 SMOOTHING = 4
 PADDING = 3 * int(round(3 * SMOOTHING))
@@ -378,24 +381,24 @@ def projected_susceptible_population(t, current_doses_per_100):
     susceptible = 1 - 0.4 * doses_per_100 / 100
     return susceptible
 
+if VAX:
+    # Model including projected effect of vaccines
+    def log_projection_model(t, A, R):
+        susceptible = projected_susceptible_population(t, current_doses_per_100)
+        R0 = R / susceptible[0]
+        R_t = susceptible * R0
 
-# Model including projected effect of vaccines
-def log_projection_model(t, A, R):
-    susceptible = projected_susceptible_population(t, current_doses_per_100)
-    R0 = R / susceptible[0]
-    R_t = susceptible * R0
+        y = np.zeros_like(t)
+        y[0] = A
+        for i in range(1, len(t)):
+            dt = t[i] - t[i - 1]
+            y[i] = y[i - 1] * R_t[i] ** (dt / tau)
+        return np.log(y)
 
-    y = np.zeros_like(t)
-    y[0] = A
-    for i in range(1, len(t)):
-        dt = t[i] - t[i - 1]
-        y[i] = y[i - 1] * R_t[i] ** (dt / tau)
-    return np.log(y)
-
-
-# Simple model, no vaccines
-def log_projection_model(t, A, R):
-    return np.log(A * R ** (t / tau))
+else:
+    # Simple model, no vaccines
+    def log_projection_model(t, A, R):
+        return np.log(A * R ** (t / tau))
 
 
 # Projection of daily case numbers:
@@ -635,17 +638,20 @@ plt.gca().yaxis.set_major_formatter(mticker.ScalarFormatter())
 plt.gca().yaxis.set_minor_formatter(mticker.ScalarFormatter())
 plt.gca().tick_params(axis='y', which='minor', labelsize='x-small')
 plt.setp(plt.gca().get_yminorticklabels()[1::2], visible=False)
-plt.gca().xaxis.set_major_locator(mdates.DayLocator([1, 5, 10, 15, 20, 25]))
+plt.gca().xaxis.set_major_locator(
+    mdates.DayLocator([1, 15] if VAX else [1, 5, 10, 15, 20, 25])
+)
 plt.gca().get_xaxis().get_major_formatter().show_offset = False
 
+if VAX:
+    suffix = '_vax'
+elif NONISOLATING:
+    suffix = '_noniso'
+else:
+    suffix = ''
 
-fig1.savefig(f'COVID_NSW{"_noniso" if NONISOLATING else ""}.svg')
-fig1.savefig(f'COVID_NSW{"_noniso" if NONISOLATING else ""}.png', dpi=200)
-
-# plt.gca().xaxis.set_major_locator(mdates.DayLocator([1, 15]))
-# plt.axis(xmax=np.datetime64('2021-12-01'))
-# fig1.savefig(f'COVID_NSW_longproj{"_noniso" if NONISOLATING else ""}.svg')
-# fig1.savefig(f'COVID_NSW_longproj{"_noniso" if NONISOLATING else ""}.png', dpi=200)
+fig1.savefig(f'COVID_NSW{suffix}.svg')
+fig1.savefig(f'COVID_NSW{suffix}.png', dpi=200)
 
 plt.show()
 
