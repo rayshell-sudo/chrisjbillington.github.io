@@ -22,7 +22,7 @@ munits.registry[datetime] = converter
 NONISOLATING = 'noniso' in sys.argv
 
 # Data from covidlive by date announced to public
-def covidlive_data(start_date=np.datetime64('2021-06-10')):
+def covidlive_data(start_date=np.datetime64('2021-05-10')):
     df = pd.read_html('https://covidlive.com.au/report/daily-source-overseas/vic')[1]
 
     df = df[:200]
@@ -44,104 +44,10 @@ def covidlive_data(start_date=np.datetime64('2021-06-10')):
 
 
 def covidlive_doses_per_100():
-    df = pd.read_html("https://covidlive.com.au/report/daily-vaccinations/nsw")[1]
+    df = pd.read_html("https://covidlive.com.au/report/daily-vaccinations/vic")[1]
     doses = df['DOSES'][0]
-    POP_OF_NSW = 8.166e6
-    return 100 * doses / POP_OF_NSW
-
-
-# Data from NSW Health by test notification date
-def nswhealth_data(start_date=np.datetime64('2021-06-10')):
-    url = (
-        "https://data.nsw.gov.au/data/dataset/"
-        "c647a815-5eb7-4df6-8c88-f9c537a4f21e/"
-        "resource/2f1ba0f3-8c21-4a86-acaf-444be4401a6d/"
-        "download/confirmed_cases_table3_likely_source.csv"
-    )
-    df = pd.read_csv(url)
-
-    LOCAL = [
-        'Locally acquired - no links to known case or cluster',
-        'Locally acquired - investigation ongoing',
-        'Locally acquired - linked to known case or cluster',
-    ]
-
-    cases_by_date = {
-        d: 0
-        for d in np.arange(
-            np.datetime64(df['notification_date'].min()),
-            np.datetime64(df['notification_date'].max()) + 1,
-        )
-    }
-
-    for _, row in df.iterrows():
-        if row['likely_source_of_infection'] in LOCAL:
-            cases_by_date[np.datetime64(row['notification_date'])] += 1
-
-
-    dates = np.array(list(cases_by_date.keys()))
-    new = np.array(list(cases_by_date.values()))
-
-    return dates[dates >= start_date], new[dates >= start_date]
-
-
-def nonisolating_data():
-    DATA = """
-        2021-06-10 0
-        2021-06-11 0
-        2021-06-12 0
-        2021-06-13 0
-        2021-06-14 0
-        2021-06-15 0
-        2021-06-16 0
-        2021-06-17 4
-        2021-06-18 1
-        2021-06-19 2
-        2021-06-20 1
-        2021-06-21 0
-        2021-06-22 2
-        2021-06-23 12
-        2021-06-24 3
-        2021-06-25 9
-        2021-06-26 12
-        2021-06-27 19
-        2021-06-28 13
-        2021-06-29 12
-        2021-06-30 11
-        2021-07-01 15
-        2021-07-02 15 + 5
-        2021-07-03 12
-        2021-07-04 3
-        2021-07-05 11
-        2021-07-06 7
-        2021-07-07 14
-        2021-07-08 20
-        2021-07-09 27 + 7
-        2021-07-10 37
-        2021-07-11 42 + 3
-        2021-07-12 46 + 18
-        2021-07-13 34
-        2021-07-14 37
-        2021-07-15 36
-        2021-07-16 51
-        2021-07-17 42
-        2021-07-18 36
-        2021-07-19 44
-        2021-07-20 41
-    """
-
-    def unpack_data(s):
-        dates = []
-        values = []
-        for line in s.splitlines():
-            if line.strip() and not line.strip().startswith('#'):
-                date, value = line.strip().split(maxsplit=1)
-                dates.append(np.datetime64(date) - 1)
-                values.append(eval(value))
-        return np.array(dates), np.array(values)
-
-    dates, new = unpack_data(DATA)
-    return dates, new
+    POP_OF_VIC = 6.681e6
+    return 100 * doses / POP_OF_VIC
 
 
 def gaussian_smoothing(data, pts):
@@ -184,36 +90,15 @@ def model_uncertainty(function, x, params, covariance):
     return np.sqrt(squared_model_uncertainty)
 
 
-dates, new = nswhealth_data()
-
-for d, n in zip(dates, new):
-    print(d, n)
-
-# Last day is incomplete data
-# dates = dates[:-1]
-# new = new[:-1]
-
-# If NSW health data not updated yet, use covidlive data:
-# cl_dates, cl_new = covidlive_data(start_date=dates[-1] + 1)
-# dates = np.append(dates, cl_dates)
-# new = np.append(new, cl_new)
-
-if NONISOLATING:
-    dates, new = nonisolating_data()
-else:
-    dates, new = covidlive_data()
+dates, new = covidlive_data()
 
 # Current vaccination level:
 current_doses_per_100 = covidlive_doses_per_100()
 
-# for d, n in zip(dates, new):
-#     print(d, n)
+# dates = np.append(dates, [dates[-1] + 1])
+# new = np.append(new, [98])
 
-# if not NONISOLATING:
-#     dates = np.append(dates, [dates[-1] + 1])
-#     new = np.append(new, [98])
-
-START_PLOT = np.datetime64('2021-06-13')
+START_PLOT = np.datetime64('2021-05-20')
 END_PLOT = np.datetime64('2021-09-01')
 
 SMOOTHING = 4
@@ -353,8 +238,6 @@ def projected_susceptible_population(t, current_doses_per_100):
     # Oct 230k per day = 0.92 %
     # Nov 280k per day = 1.12 %
 
-    # What if we give NSW double the supply?
-    # PRIORITY_FACTOR = 2
 
     # NSW currently exceeding national rates by 15%, so let's go with that:
     PRIORITY_FACTOR = 1.15
@@ -452,12 +335,14 @@ new_projection_lower = np.exp(np.log(new_projection) - log_new_projection_uncert
 # plt.axis(xmin=dates[0], xmax=dates[-1] + 14, ymin=0, ymax=2 * new[-1])
 # plt.show()
 
-MASKS = np.datetime64('2021-06-21')
-LGA_LOCKDOWN = np.datetime64('2021-06-26')
-LOCKDOWN = np.datetime64('2021-06-27')
-TIGHTER_LOCKDOWN = np.datetime64('2021-07-10')
-NONCRITICAL_RETAIL_CLOSED = np.datetime64('2021-07-18')
-END_LOCKDOWN = np.datetime64('2021-07-31')
+
+FIRST_LOCKDOWN = np.datetime64('2021-05-28')
+EASING_1 = FIRST_LOCKDOWN + 21
+EASING_2 = np.datetime64('2021-07-09')
+
+
+LOCKDOWN = np.datetime64('2021-07-16')
+END_LOCKDOWN = np.datetime64('2021-07-28')
 
 def whiten(color, f):
     """Mix a color with white where f is how much of the original colour to keep"""
@@ -466,53 +351,41 @@ def whiten(color, f):
 
 
 fig1 = plt.figure(figsize=(10, 6))
-plt.fill_betweenx(
-    [-10, 10],
-    [MASKS, MASKS],
-    [LGA_LOCKDOWN, LGA_LOCKDOWN],
-    color=whiten("yellow", 0.5),
-    linewidth=0,
-    label="Initial restrictions",
-)
-
 
 plt.fill_betweenx(
     [-10, 10],
-    [LGA_LOCKDOWN, LGA_LOCKDOWN],
-    [LOCKDOWN, LOCKDOWN],
-    color=whiten("yellow", 0.5),
-    edgecolor=whiten("orange", 0.5),
+    [FIRST_LOCKDOWN, FIRST_LOCKDOWN],
+    [EASING_1, EASING_1],
+    color=whiten("red", 0.35),
     linewidth=0,
-    hatch="//////",
-    label="East Sydney LGA lockdown",
+    label="Lockdown",
 )
+
 plt.fill_betweenx(
     [-10, 10],
-    [LOCKDOWN, LOCKDOWN],
-    [TIGHTER_LOCKDOWN, TIGHTER_LOCKDOWN],
+    [EASING_1, EASING_1],
+    [EASING_2, EASING_2],
     color=whiten("orange", 0.5),
     linewidth=0,
-    label="Greater Sydney lockdown",
+    label="Eased stay-at-home orders",
 )
 
 plt.fill_betweenx(
     [-10, 10],
-    [TIGHTER_LOCKDOWN, TIGHTER_LOCKDOWN],
-    [NONCRITICAL_RETAIL_CLOSED, NONCRITICAL_RETAIL_CLOSED],
-    color=whiten("orange", 0.5),
-    edgecolor=whiten("red", 0.35),
+    [EASING_2, EASING_2],
+    [LOCKDOWN, LOCKDOWN],
+    color=whiten("yellow", 0.5),
     linewidth=0,
-    hatch="//////",
-    label="Lockdown tightened",
+    label="Eased gathering/mask requirements",
 )
 
 plt.fill_betweenx(
     [-10, 10],
-    [NONCRITICAL_RETAIL_CLOSED, NONCRITICAL_RETAIL_CLOSED],
+    [LOCKDOWN, LOCKDOWN],
     [END_LOCKDOWN, END_LOCKDOWN],
     color=whiten("red", 0.35),
     linewidth=0,
-    label="Noncritical retail closed\nConstruction paused",
+    # label="Lockdown",
 )
 
 
@@ -564,11 +437,8 @@ plt.ylabel(R"$R_\mathrm{eff}$")
 u_R_latest = (R_upper[-1] - R_lower[-1]) / 2
 
 plt.title(
-    "$R_\\mathrm{eff}$ in New South Wales with Sydney restriction levels and daily"
-    " cases"
-    + (' (non-isolating cases only)' if NONISOLATING else '')
-    + (
-        "\n"
+    "$R_\\mathrm{eff}$ in Victoria with Melbourne restriction levels and daily cases"
+    + ( "\n"
         + fR"Latest estimate: $R_\mathrm{{eff}}={R[-1]:.01f} \pm {u_R_latest:.01f}$"
     )
 )
@@ -617,7 +487,7 @@ handles2, labels2 = plt.gca().get_legend_handles_labels()
 handles += handles2
 labels += labels2
 
-order = [5, 6, 7, 8, 9, 10, 0, 1, 2, 3, 4]
+order = [3, 4, 5, 6, 7, 8, 0, 1, 2]
 plt.legend(
     # handles,
     # labels,
@@ -638,8 +508,8 @@ plt.gca().xaxis.set_major_locator(mdates.DayLocator([1, 5, 10, 15, 20, 25]))
 plt.gca().get_xaxis().get_major_formatter().show_offset = False
 
 
-fig1.savefig(f'COVID_NSW{"_noniso" if NONISOLATING else ""}.svg')
-fig1.savefig(f'COVID_NSW{"_noniso" if NONISOLATING else ""}.png', dpi=200)
+fig1.savefig('COVID_VIC_2021.svg')
+fig1.savefig('COVID_VIC_2021.png', dpi=200)
 
 # plt.gca().xaxis.set_major_locator(mdates.DayLocator([1, 15]))
 # plt.axis(xmax=np.datetime64('2021-12-01'))
@@ -649,7 +519,7 @@ fig1.savefig(f'COVID_NSW{"_noniso" if NONISOLATING else ""}.png', dpi=200)
 plt.show()
 
 # Update the date in the HTML
-html_file = 'COVID_NSW.html'
+html_file = 'COVID_VIC_2021.html'
 html_lines = Path(html_file).read_text().splitlines()
 now = datetime.now(timezone('Australia/Melbourne')).strftime('%Y-%m-%d-%H:%M')
 for i, line in enumerate(html_lines):
