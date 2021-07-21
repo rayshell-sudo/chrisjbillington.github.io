@@ -776,6 +776,17 @@ plt.step(
     label="Second doses",
 )
     
+# all_first_doses = diff_and_smooth(AZ_first_doses + pfizer_first_doses).cumsum()
+# all_second_doses = diff_and_smooth(AZ_second_doses + pfizer_second_doses).cumsum()
+# adult_first_dose_percent = 100 * all_first_doses / 20.61e6
+# adult_second_dose_percent = 100 * all_second_doses / 20.61e6
+# for i, date in enumerate(all_dates):
+#     print(
+#         date,
+#         f"first dose: {adult_first_dose_percent[i]:.02f}",
+#         f"second dose: {adult_second_dose_percent[i]:.02f}",
+#     )
+
 plt.axis(
     xmin=dates[0].astype(int) + 1,
     xmax=PLOT_END_DATE,
@@ -953,7 +964,13 @@ dates = np.array(dates)
 
 
 # Plot of percent coverage by age group
-fig9 = plt.figure(figsize=(8, 6))
+
+
+labels_by_age = []
+dates_by_age = []
+coverage_by_age = []
+
+
 
 for decade in [10, 20, 30, 40, 50, 60, 70, 80][::-1]:
     if decade == 10:
@@ -971,11 +988,17 @@ for decade in [10, 20, 30, 40, 50, 60, 70, 80][::-1]:
             total += column
     total /= 2 * len(ranges)
     stale = (total[-1] == total[-2])
-    plt.plot(
-        dates[:-1] if stale else dates,
-        total[:-1] if stale else total,
-        label=f'Age {ranges[0].split("-")[0]}-{ranges[-1].split("-")[-1]}',
-    )
+    dates_by_age.append(dates[:-1] if stale else dates)
+    coverage_by_age.append(total[:-1] if stale else total)
+    labels_by_age.append(f'Age {ranges[0].split("-")[0]}-{ranges[-1].split("-")[-1]}')
+
+VALID_DATA_START = 83
+
+fig9 = plt.figure(figsize=(8, 6))
+for dates, coverage, label in zip(dates_by_age, coverage_by_age, labels_by_age):
+    dates = dates[VALID_DATA_START:]
+    coverage = coverage[VALID_DATA_START:]
+    plt.plot(dates, coverage, label=label)
 
 plt.legend()
 plt.grid(True, linestyle=':', color='k', alpha=0.5)
@@ -989,6 +1012,25 @@ plt.axis(
 )
 plt.title("First dose coverage by age group")
 plt.ylabel("Vaccine coverage (%)")
+
+
+fig10 = plt.figure(figsize=(8, 6))
+for dates, coverage, label in zip(dates_by_age, coverage_by_age, labels_by_age):
+    dates = dates[VALID_DATA_START:]
+    coverage = coverage[VALID_DATA_START:]
+    plt.plot(dates[1:], 7 * n_day_average(np.diff(coverage), 7), label=label)
+plt.legend()
+plt.grid(True, linestyle=':', color='k', alpha=0.5)
+locator = mdates.DayLocator([1, 15])
+formatter = mdates.ConciseDateFormatter(locator)
+plt.gca().xaxis.set_major_locator(locator)
+plt.gca().xaxis.set_major_formatter(formatter)
+plt.gca().yaxis.set_major_locator(ticker.MultipleLocator(1.0))
+plt.axis(
+    xmin=np.datetime64('2021-05-09'), xmax=np.datetime64('2021-10-01'), ymin=0, ymax=10
+)
+plt.title("First dose weekly increase by age group")
+plt.ylabel("Vaccination rate (% of age group / week)")
 
 
 # Update the date in the HTML
@@ -1014,5 +1056,6 @@ for extension in ['png', 'svg']:
         fig5.savefig(f'pfizer-moderna_utilisation.{extension}')
         fig8.savefig(f'doses_by_weekday.{extension}')
         fig9.savefig(f'coverage_by_agegroup.{extension}')
+        fig10.savefig(f'coverage_rate_by_agegroup.{extension}')
 
 plt.show()
