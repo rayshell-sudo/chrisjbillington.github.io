@@ -567,10 +567,17 @@ plt.ylabel(R"$R_\mathrm{eff}$")
 
 u_R_latest = (R_upper[-1] - R_lower[-1]) / 2
 
+if NONISOLATING:
+    extra_title_info = ' (non-isolating cases only)'
+elif VAX:
+    extra_title_info = '\nwith projected effect of vaccination'
+else:
+    extra_title_info = ''
+
 plt.title(
     "$R_\\mathrm{eff}$ in New South Wales with Sydney restriction levels and daily"
     " cases"
-    + (' (non-isolating cases only)' if NONISOLATING else '')
+    + extra_title_info
     + (
         "\n"
         + fR"Latest estimate: $R_\mathrm{{eff}}={R[-1]:.01f} \pm {u_R_latest:.01f}$"
