@@ -999,11 +999,11 @@ labels_by_age = []
 first_dose_coverage_by_age = []
 second_dose_coverage_by_age = []
 
-for group_start in [16, 20, 30, 40, 50, 60, 70, 80][::-1]:
+for group_start in [16, 20, 30, 40, 50, 60, 70, 80, 90][::-1]:
     if group_start == 16:
         ranges = ['16_19']
-    elif group_start == 80:
-        ranges = ['80_84', '85_89', '90_94', '95_PLUS']
+    elif group_start == 90:
+        ranges = ['90_94', '95_PLUS']
     else:
         ranges = [f'{group_start}_{group_start+4}', f'{group_start+5}_{group_start+9}']
     first_dose_coverage = []
@@ -1022,8 +1022,8 @@ for group_start in [16, 20, 30, 40, 50, 60, 70, 80][::-1]:
             second_dose_coverage.append(100 * second_doses / pop)
     first_dose_coverage_by_age.append(np.array(first_dose_coverage))
     second_dose_coverage_by_age.append(np.array(second_dose_coverage))
-    if group_start == 80:
-        label = 'Ages 80+'
+    if group_start == 90:
+        label = 'Ages 90+'
     else:
         label = f'Ages {ranges[0].split("_")[0]}–{ranges[-1].split("_")[-1]}'
     labels_by_age.append(label)
