@@ -326,6 +326,12 @@ for i in range(N_monte_carlo):
         (new_smoothed_noisy[1:] - new_smoothed[1:]) * (R_noisy - R) / N_monte_carlo
     )
 
+
+# Fudge what would happen with a different R_eff:
+# cov_R_new_smoothed[-1] *= 0.05 / np.sqrt(variance_R[-1])
+# R[-1] = 0.75
+# variance_R[-1] = 0.05**2
+
 u_R = np.sqrt(variance_R)
 R_upper = R + u_R
 R_lower = R - u_R
@@ -581,7 +587,7 @@ plt.title(
     + extra_title_info
     + (
         "\n"
-        + fR"Latest estimate: $R_\mathrm{{eff}}={R[-1]:.01f} \pm {u_R_latest:.01f}$"
+        + fR"Latest estimate: $R_\mathrm{{eff}}={R[-1]:.02f} \pm {u_R_latest:.02f}$"
     )
 )
 
