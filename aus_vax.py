@@ -1049,8 +1049,8 @@ plt.ylabel("Vaccine coverage (%)")
 fig10 = plt.figure(figsize=(8, 6))
 for coverage, label in zip(first_dose_coverage_by_age, labels_by_age):
     plt.plot(
-        first_dose_coverage_dates[1:],
-        7 * n_day_average(np.diff(coverage), 7),
+        first_dose_coverage_dates[8:],
+        7 * n_day_average(np.diff(coverage), 7)[7:],
         label=label,
     )
 plt.legend()
@@ -1066,6 +1066,43 @@ plt.axis(
 plt.title("First dose weekly increase by age group")
 plt.ylabel("Vaccination rate (% of age group / week)")
 
+fig11 = plt.figure(figsize=(8, 6))
+for coverage, label in zip(second_dose_coverage_by_age, labels_by_age):
+    plt.plot(second_dose_coverage_dates, coverage, label=label)
+
+plt.legend()
+plt.grid(True, linestyle=':', color='k', alpha=0.5)
+locator = mdates.DayLocator([1, 15])
+formatter = mdates.ConciseDateFormatter(locator)
+plt.gca().xaxis.set_major_locator(locator)
+plt.gca().xaxis.set_major_formatter(formatter)
+plt.gca().yaxis.set_major_locator(ticker.MultipleLocator(10))
+plt.axis(
+    xmin=np.datetime64('2021-05-09'), xmax=np.datetime64('2021-10-01'), ymin=0, ymax=100
+)
+plt.title("Second dose coverage by age group")
+plt.ylabel("Vaccine coverage (%)")
+
+
+fig12 = plt.figure(figsize=(8, 6))
+for coverage, label in zip(second_dose_coverage_by_age, labels_by_age):
+    plt.plot(
+        second_dose_coverage_dates[8:],
+        7 * n_day_average(np.diff(coverage), 7)[7:],
+        label=label,
+    )
+plt.legend()
+plt.grid(True, linestyle=':', color='k', alpha=0.5)
+locator = mdates.DayLocator([1, 15])
+formatter = mdates.ConciseDateFormatter(locator)
+plt.gca().xaxis.set_major_locator(locator)
+plt.gca().xaxis.set_major_formatter(formatter)
+plt.gca().yaxis.set_major_locator(ticker.MultipleLocator(1.0))
+plt.axis(
+    xmin=np.datetime64('2021-05-09'), xmax=np.datetime64('2021-10-01'), ymin=0, ymax=10
+)
+plt.title("Second dose weekly increase by age group")
+plt.ylabel("Vaccination rate (% of age group / week)")
 
 # Update the date in the HTML
 html_file = 'aus_vaccinations.html'
@@ -1091,5 +1128,7 @@ for extension in ['png', 'svg']:
         fig8.savefig(f'doses_by_weekday.{extension}')
         fig9.savefig(f'coverage_by_agegroup.{extension}')
         fig10.savefig(f'coverage_rate_by_agegroup.{extension}')
+        fig11.savefig(f'coverage_2nd_by_agegroup.{extension}')
+        fig12.savefig(f'coverage_2nd_rate_by_agegroup.{extension}')
 
 plt.show()
