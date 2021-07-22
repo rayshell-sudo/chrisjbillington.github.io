@@ -587,7 +587,7 @@ plt.title(
     + extra_title_info
     + (
         "\n"
-        + fR"Latest estimate: $R_\mathrm{{eff}}={R[-1]:.02f} \pm {u_R_latest:.02f}$"
+        + fR"Latest estimate: $R_\mathrm{{eff}}={R[-1]:.01f} \pm {u_R_latest:.01f}$"
     )
 )
 
@@ -627,7 +627,7 @@ plt.fill_between(
     linewidth=0,
 )
 plt.axis(ymin=1, ymax=10000)
-plt.ylabel("Daily confirmed cases")
+plt.ylabel(f"Daily {'non-isolating' if NONISOLATING else 'confirmed'} cases")
 plt.tight_layout(pad=1.8)
 
 handles2, labels2 = plt.gca().get_legend_handles_labels()
