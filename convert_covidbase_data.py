@@ -7,26 +7,26 @@ import json
 
 # population data from here:
 
-# from ABS, released 11 June 2021: https:FEMALE//www.abs.gov.au/statistics/people/
-# population/national-state-and-territory-population/latest-release
+# ABS Estimated Resident Population, June 2020
+# https://www.abs.gov.au/statistics/people/population/national-state-and-territory-population/jun-2020
 POP_DATA = {
-    '16_19': {'MALE': 620_871, 'FEMALE': 587_540},
-    '20_24': {'MALE': 899_060, 'FEMALE': 850_721},
-    '25_29': {'MALE': 957_746, 'FEMALE': 949_146},
-    '30_34': {'MALE': 933_587, 'FEMALE': 959_375},
-    '35_39': {'MALE': 885_449, 'FEMALE': 896_946},
-    '40_44': {'MALE': 793_623, 'FEMALE': 802_591},
-    '45_49': {'MALE': 825_686, 'FEMALE': 854_071},
-    '50_54': {'MALE': 750_782, 'FEMALE': 785_017},
-    '55_59': {'MALE': 757_941, 'FEMALE': 790_197},
-    '60_64': {'MALE': 677_332, 'FEMALE': 714_617},
-    '65_69': {'MALE': 596_458, 'FEMALE': 631_045},
-    '70_74': {'MALE': 518_927, 'FEMALE': 539_265},
-    '75_79': {'MALE': 351_089, 'FEMALE': 383_275},
-    '80_84': {'MALE': 227_926, 'FEMALE': 277_175},
-    '85_89': {'MALE': 129_208, 'FEMALE': 184_648},
-    '90_94': {'MALE': 53_978, 'FEMALE': 99_014},
-    '95_PLUS': {'MALE': 13_867, 'FEMALE': 34_246},
+    '16_19': {'MALE': 614_430, 'FEMALE': 581_206},
+    '20_24': {'MALE': 880_327, 'FEMALE': 832_409},
+    '25_29': {'MALE': 960_798, 'FEMALE': 945_753},
+    '30_34': {'MALE': 948_799, 'FEMALE': 975_556},
+    '35_39': {'MALE': 909_066, 'FEMALE': 926_513},
+    '40_44': {'MALE': 805_245, 'FEMALE': 815_516},
+    '45_49': {'MALE': 825_971, 'FEMALE': 850_749},
+    '50_54': {'MALE': 763_177, 'FEMALE': 800_990},
+    '55_59': {'MALE': 759_231, 'FEMALE': 793_509},
+    '60_64': {'MALE': 695_820, 'FEMALE': 736_391},
+    '65_69': {'MALE': 607_161, 'FEMALE': 647_157},
+    '70_74': {'MALE': 539_496, 'FEMALE': 563_487},
+    '75_79': {'MALE': 370_469, 'FEMALE': 402_454},
+    '80_84': {'MALE': 239_703, 'FEMALE': 288_405},
+    '85_89': {'MALE': 130_999, 'FEMALE': 185_099},
+    '90_94': {'MALE': 57_457, 'FEMALE':  100_955},
+    '95_PLUS': {'MALE': 15_720, 'FEMALE': 37_186},
 }
 
 for pops in POP_DATA.values():
@@ -50,7 +50,7 @@ for i, row in df.iterrows():
         continue
     date = datetime.strptime(date, '%d %b %y')
     date = np.datetime64(date, 'D')
-    if date < np.datetime64('2021-06-09'):
+    if date < np.datetime64('2021-05-09'):
         continue
     data_for_date = {'DATE_AS_AT': str(date)}
     for age_group in age_groups:

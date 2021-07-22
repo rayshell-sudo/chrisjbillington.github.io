@@ -945,60 +945,92 @@ plt.ylabel('Daily doses (thousands)')
 plt.axis(ymin=0)
 plt.title('National daily doses by weekday')
 
-# Redirected from https://covidbaseau.com/vaccinations/download
-url = (
-    "https://docs.google.com/spreadsheets/d/"
-    "1gStZ55jH-weWAkI-EGhOzYo-lQeEKNlvm1F_Y70E4gc/export?format=csv"
-)
-data = check_output(['curl', '-L', url])
 
-df = pd.read_csv(io.StringIO(data.decode('utf8')))
-dates = []
-for item in df['Date']:
-    if not isinstance(item, str):
-        break
-    date = datetime.strptime(item.rsplit(' ', 1)[0] + ' 2021', '%d %b %Y')
-    dates.append(np.datetime64(date, 'D'))
+# Plots of percent coverage by age group
 
-dates = np.array(dates)
+# ABS Estimated Resident Population, June 2020
+# https://www.abs.gov.au/statistics/people/population/national-state-and-territory-population/jun-2020
+POP_DATA = {
+    '16_19': {'MALE': 614_430, 'FEMALE': 581_206},
+    '20_24': {'MALE': 880_327, 'FEMALE': 832_409},
+    '25_29': {'MALE': 960_798, 'FEMALE': 945_753},
+    '30_34': {'MALE': 948_799, 'FEMALE': 975_556},
+    '35_39': {'MALE': 909_066, 'FEMALE': 926_513},
+    '40_44': {'MALE': 805_245, 'FEMALE': 815_516},
+    '45_49': {'MALE': 825_971, 'FEMALE': 850_749},
+    '50_54': {'MALE': 763_177, 'FEMALE': 800_990},
+    '55_59': {'MALE': 759_231, 'FEMALE': 793_509},
+    '60_64': {'MALE': 695_820, 'FEMALE': 736_391},
+    '65_69': {'MALE': 607_161, 'FEMALE': 647_157},
+    '70_74': {'MALE': 539_496, 'FEMALE': 563_487},
+    '75_79': {'MALE': 370_469, 'FEMALE': 402_454},
+    '80_84': {'MALE': 239_703, 'FEMALE': 288_405},
+    '85_89': {'MALE': 130_999, 'FEMALE': 185_099},
+    '90_94': {'MALE': 57_457, 'FEMALE':  100_955},
+    '95_PLUS': {'MALE': 15_720, 'FEMALE': 37_186},
+}
 
+for pops in POP_DATA.values():
+    pops['TOTAL'] = pops['MALE'] + pops['FEMALE'] 
 
-# Plot of percent coverage by age group
+AIR_JSON = "https://vaccinedata.covid19nearme.com.au/data/air.json"
+AIR_data = json.loads(requests.get(AIR_JSON).content)
+with open('covidbase_data.json') as f:
+    covidbase_data = json.load(f)
 
+# Convert dates in both datasets to np.datetime64:
+for row in AIR_data + covidbase_data:
+    row['DATE_AS_AT'] = np.datetime64(row['DATE_AS_AT'])
+
+# Merge the datasets, using covidbase prior to June 30 and Ken Tsang's data thereafter:
+AIR_START_DATE = np.datetime64('2021-06-30')
+
+doses_by_age = AIR_data + [
+    row for row in covidbase_data if row['DATE_AS_AT'] < AIR_START_DATE
+]
+doses_by_age.sort(key=lambda x: x['DATE_AS_AT'])
+
+first_dose_coverage_dates = np.array([row['DATE_AS_AT'] for row in doses_by_age])
+second_dose_coverage_dates = first_dose_coverage_dates[
+    first_dose_coverage_dates >= AIR_START_DATE
+]
 
 labels_by_age = []
-dates_by_age = []
-coverage_by_age = []
+first_dose_coverage_by_age = []
+second_dose_coverage_by_age = []
 
-
-
-for decade in [10, 20, 30, 40, 50, 60, 70, 80][::-1]:
-    if decade == 10:
-        ranges = ['16-19']
-    elif decade == 90:
-        ranges = ['90-94', '95+']
+for group_start in [16, 20, 30, 40, 50, 60, 70, 80][::-1]:
+    if group_start == 16:
+        ranges = ['16_19']
+    elif group_start == 80:
+        ranges = ['80_84', '85_89', '90_94', '95_PLUS']
     else:
-        ranges = [f'{decade}-{decade+4}', f'{decade+5}-{decade+9}']
-    total = np.zeros(len(dates))
-    for gender in ['Male', 'Female']:
-        for years in ranges:
-            column = df[f'{gender}_{years}_%_Vaccinated']
-            column = [float(s.strip('%')) if isinstance(s, str) else s for s in column]
-            column = np.array(column)[: len(dates)]
-            total += column
-    total /= 2 * len(ranges)
-    stale = (total[-1] == total[-2])
-    dates_by_age.append(dates[:-1] if stale else dates)
-    coverage_by_age.append(total[:-1] if stale else total)
-    labels_by_age.append(f'Age {ranges[0].split("-")[0]}-{ranges[-1].split("-")[-1]}')
-
-VALID_DATA_START = 83
+        ranges = [f'{group_start}_{group_start+4}', f'{group_start+5}_{group_start+9}']
+    first_dose_coverage = []
+    second_dose_coverage = []
+    for row in doses_by_age:
+        first_doses = 0
+        second_doses = 0
+        pop = 0
+        for age_range in ranges:
+            first_doses += row[f'AIR_{age_range}_FIRST_DOSE_COUNT']
+            if row['DATE_AS_AT'] >= AIR_START_DATE:
+                second_doses += row[f'AIR_{age_range}_SECOND_DOSE_COUNT']
+            pop += POP_DATA[age_range]['TOTAL']
+        first_dose_coverage.append(100 * first_doses / pop)
+        if row['DATE_AS_AT'] >= AIR_START_DATE:
+            second_dose_coverage.append(100 * second_doses / pop)
+    first_dose_coverage_by_age.append(np.array(first_dose_coverage))
+    second_dose_coverage_by_age.append(np.array(second_dose_coverage))
+    if group_start == 80:
+        label = 'Ages 80+'
+    else:
+        label = f'Ages {ranges[0].split("_")[0]}–{ranges[-1].split("_")[-1]}'
+    labels_by_age.append(label)
 
 fig9 = plt.figure(figsize=(8, 6))
-for dates, coverage, label in zip(dates_by_age, coverage_by_age, labels_by_age):
-    dates = dates[VALID_DATA_START:]
-    coverage = coverage[VALID_DATA_START:]
-    plt.plot(dates, coverage, label=label)
+for coverage, label in zip(first_dose_coverage_by_age, labels_by_age):
+    plt.plot(first_dose_coverage_dates, coverage, label=label)
 
 plt.legend()
 plt.grid(True, linestyle=':', color='k', alpha=0.5)
@@ -1015,10 +1047,12 @@ plt.ylabel("Vaccine coverage (%)")
 
 
 fig10 = plt.figure(figsize=(8, 6))
-for dates, coverage, label in zip(dates_by_age, coverage_by_age, labels_by_age):
-    dates = dates[VALID_DATA_START:]
-    coverage = coverage[VALID_DATA_START:]
-    plt.plot(dates[1:], 7 * n_day_average(np.diff(coverage), 7), label=label)
+for coverage, label in zip(first_dose_coverage_by_age, labels_by_age):
+    plt.plot(
+        first_dose_coverage_dates[1:],
+        7 * n_day_average(np.diff(coverage), 7),
+        label=label,
+    )
 plt.legend()
 plt.grid(True, linestyle=':', color='k', alpha=0.5)
 locator = mdates.DayLocator([1, 15])
