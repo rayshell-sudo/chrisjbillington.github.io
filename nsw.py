@@ -13,6 +13,9 @@ import matplotlib.ticker as mticker
 import matplotlib.colors as mcolors
 import pandas as pd
 
+# Our uncertainty calculations are stochastic. Make them reproducible, at least:
+np.random.seed(0)
+
 converter = mdates.ConciseDateConverter()
 
 munits.registry[np.datetime64] = converter
@@ -243,7 +246,7 @@ tau = 5  # reproductive time of the virus in days
 # fit results prior to smoothing.
 
 FIT_PTS = min(20, len(dates[dates >= START_PLOT]))
-x0 = -10
+x0 = -14
 delta_x = 1
 fit_x = np.arange(-FIT_PTS, 0)
 fit_weights = 1 / (1 + np.exp(-(fit_x - x0) / delta_x))
@@ -566,7 +569,7 @@ plt.fill_between(
 )
 
 plt.axhline(1.0, color='k', linewidth=1)
-plt.axis(xmin=START_PLOT, xmax=END_PLOT, ymin=0, ymax=8)
+plt.axis(xmin=START_PLOT, xmax=END_PLOT, ymin=0, ymax=4)
 plt.grid(True, linestyle=":", color='k', alpha=0.5)
 
 handles, labels = plt.gca().get_legend_handles_labels()
@@ -588,11 +591,11 @@ plt.title(
     + extra_title_info
     + (
         "\n"
-        + fR"Latest estimate: $R_\mathrm{{eff}}={R[-1]:.01f} \pm {u_R_latest:.01f}$"
+        + fR"Latest estimate: $R_\mathrm{{eff}}={R[-1]:.02f} \pm {u_R_latest:.02f}$"
     )
 )
 
-plt.gca().yaxis.set_major_locator(mticker.MultipleLocator(0.5))
+plt.gca().yaxis.set_major_locator(mticker.MultipleLocator(0.25))
 ax2 = plt.twinx()
 plt.step(dates + 1, new + 0.02, color='purple', label='Daily cases')
 plt.semilogy(

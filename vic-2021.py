@@ -13,13 +13,14 @@ import matplotlib.ticker as mticker
 import matplotlib.colors as mcolors
 import pandas as pd
 
+# Our uncertainty calculations are stochastic. Make them reproducible, at least:
+np.random.seed(0)
+
 converter = mdates.ConciseDateConverter()
 
 munits.registry[np.datetime64] = converter
 munits.registry[datetime.date] = converter
 munits.registry[datetime] = converter
-
-NONISOLATING = 'noniso' in sys.argv
 
 # Data from covidlive by date announced to public
 def covidlive_data(start_date=np.datetime64('2021-05-10')):
@@ -427,7 +428,7 @@ plt.fill_between(
 )
 
 plt.axhline(1.0, color='k', linewidth=1)
-plt.axis(xmin=START_PLOT, xmax=END_PLOT, ymin=0, ymax=8)
+plt.axis(xmin=START_PLOT, xmax=END_PLOT, ymin=0, ymax=4)
 plt.grid(True, linestyle=":", color='k', alpha=0.5)
 
 handles, labels = plt.gca().get_legend_handles_labels()
@@ -439,11 +440,11 @@ u_R_latest = (R_upper[-1] - R_lower[-1]) / 2
 plt.title(
     "$R_\\mathrm{eff}$ in Victoria with Melbourne restriction levels and daily cases"
     + ( "\n"
-        + fR"Latest estimate: $R_\mathrm{{eff}}={R[-1]:.01f} \pm {u_R_latest:.01f}$"
+        + fR"Latest estimate: $R_\mathrm{{eff}}={R[-1]:.02f} \pm {u_R_latest:.02f}$"
     )
 )
 
-plt.gca().yaxis.set_major_locator(mticker.MultipleLocator(0.5))
+plt.gca().yaxis.set_major_locator(mticker.MultipleLocator(0.25))
 ax2 = plt.twinx()
 plt.step(dates + 1, new + 0.02, color='purple', label='Daily cases')
 plt.semilogy(
@@ -510,11 +511,6 @@ plt.gca().get_xaxis().get_major_formatter().show_offset = False
 
 fig1.savefig('COVID_VIC_2021.svg')
 fig1.savefig('COVID_VIC_2021.png', dpi=200)
-
-# plt.gca().xaxis.set_major_locator(mdates.DayLocator([1, 15]))
-# plt.axis(xmax=np.datetime64('2021-12-01'))
-# fig1.savefig(f'COVID_NSW_longproj{"_noniso" if NONISOLATING else ""}.svg')
-# fig1.savefig(f'COVID_NSW_longproj{"_noniso" if NONISOLATING else ""}.png', dpi=200)
 
 plt.show()
 
