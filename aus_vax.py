@@ -294,8 +294,8 @@ WASTAGE = 0.125
 # their forties 40s, plus 350k from early in the rollout
 MAX_AZ_ADMINISTERED = .9 * 5e6 + .4 * 3e6 + .5 * 1e6 + 350e3
 
-# Number of people 12 years old and older, 21.53M
-MAX_ELIGIBLE = (1 - .063 - .064 - 2/5 * .060) * 25.36e6
+# Number of people 12 years old and older, from ABS ERP June 2020
+MAX_ELIGIBLE = 21_852_349
 
 # Estimated AZ supply. Assume 1M per week locally-produced AZ up to ~10.8M (plus
 # wastage):
@@ -802,9 +802,9 @@ plt.gca().yaxis.set_major_locator(ticker.MultipleLocator(2.0))
 ax7 = plt.gca()
 
 twinax = plt.twinx()
-twinax.axis(ymin=0, ymax=100 * MAX_ELIGIBLE / (20e6))
+twinax.axis(ymin=0, ymax=100)
 twinax.yaxis.set_major_locator(ticker.MultipleLocator(10.0))
-plt.ylabel("Percentage of adult population")
+plt.ylabel("Percentage of population aged 12+")
 
 
 for ax in [ax1, ax2, ax3, ax4, ax5, ax6, ax7]:
