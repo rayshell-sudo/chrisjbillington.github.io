@@ -10,6 +10,8 @@ import json
 # ABS Estimated Resident Population, June 2020
 # https://www.abs.gov.au/statistics/people/population/national-state-and-territory-population/jun-2020
 POP_DATA = {
+    # '12_14': {'MALE': 486_620, 'FEMALE': 461_308},
+    # '15_19': {'MALE': 767_801, 'FEMALE': 725_052},
     '16_19': {'MALE': 614_430, 'FEMALE': 581_206},
     '20_24': {'MALE': 880_327, 'FEMALE': 832_409},
     '25_29': {'MALE': 960_798, 'FEMALE': 945_753},
