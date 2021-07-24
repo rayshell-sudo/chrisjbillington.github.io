@@ -672,8 +672,6 @@ else:
 fig1.savefig(f'COVID_NSW{suffix}.svg')
 fig1.savefig(f'COVID_NSW{suffix}.png', dpi=200)
 
-plt.show()
-
 # Update the date in the HTML
 html_file = 'COVID_NSW.html'
 html_lines = Path(html_file).read_text().splitlines()
