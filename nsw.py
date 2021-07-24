@@ -24,8 +24,13 @@ munits.registry[datetime] = converter
 
 NONISOLATING = 'noniso' in sys.argv
 VAX = 'vax' in sys.argv
-if not NONISOLATING and not VAX and sys.argv[1:]:
+ACCELERATED_VAX = 'accel_vax' in sys.argv
+
+if not NONISOLATING and not VAX and not ACCELERATED_VAX and sys.argv[1:]:
     raise ValueError(sys.argv[1:])
+
+if ACCELERATED_VAX:
+    VAX = True
 
 # Data from covidlive by date announced to public
 def covidlive_data(start_date=np.datetime64('2021-06-10')):
@@ -369,11 +374,15 @@ def projected_susceptible_population(t, current_doses_per_100):
     # Oct 230k per day = 0.92 %
     # Nov 280k per day = 1.12 %
 
-    # What if we give NSW double the supply?
-    # PRIORITY_FACTOR = 2
-
     # NSW currently exceeding national rates by 15%, so let's go with that:
     PRIORITY_FACTOR = 1.15
+
+    if ACCELERATED_VAX:
+        # What if we give NSW double the supply, or if their rollout is prioritised such
+        # that each dose reduces spread twice as much as for an average member of the
+        # population?
+        PRIORITY_FACTOR *= 2
+
 
     doses_per_100 = np.zeros_like(t)
     doses_per_100[0] = current_doses_per_100
@@ -579,22 +588,28 @@ plt.ylabel(R"$R_\mathrm{eff}$")
 
 u_R_latest = (R_upper[-1] - R_lower[-1]) / 2
 
-if NONISOLATING:
-    extra_title_info = ' (non-isolating cases only)'
-elif VAX:
-    extra_title_info = '\nwith projected effect of vaccination'
-else:
-    extra_title_info = ''
+R_eff_string = fR"$R_\mathrm{{eff}}={R[-1]:.02f} \pm {u_R_latest:.02f}$"
 
-plt.title(
-    "$R_\\mathrm{eff}$ in New South Wales with Sydney restriction levels and daily"
-    " cases"
-    + extra_title_info
-    + (
-        "\n"
-        + fR"Latest estimate: $R_\mathrm{{eff}}={R[-1]:.02f} \pm {u_R_latest:.02f}$"
-    )
-)
+if not VAX:
+    title_lines = [
+        "$R_\\mathrm{eff}$ in New South Wales "
+        "with Sydney restriction levels and daily cases",
+        f"Latest estimate: {R_eff_string}",
+    ]
+    if NONISOLATING:
+        title_lines[0] += ' (non-isolating cases only)'
+elif ACCELERATED_VAX:
+    title_lines = [
+        "Projected effect of 2× accelerated/prioritised New South Wales vaccination rollout",
+        f"Starting from currently estimated {R_eff_string}",
+    ]
+else:
+    title_lines = [
+        "Projected effect of standard New South Wales vaccination rollout",
+        f"Starting from currently estimated {R_eff_string}",
+    ]
+
+plt.title('\n'.join(title_lines))
 
 plt.gca().yaxis.set_major_locator(mticker.MultipleLocator(0.25))
 ax2 = plt.twinx()
@@ -664,6 +679,8 @@ plt.gca().get_xaxis().get_major_formatter().show_offset = False
 
 if VAX:
     suffix = '_vax'
+    if ACCELERATED_VAX:
+        suffix = '_accel_vax'
 elif NONISOLATING:
     suffix = '_noniso'
 else:
