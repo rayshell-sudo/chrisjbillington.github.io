@@ -222,6 +222,7 @@ AZ_local_supply_data = """
 2021-07-04     10_023_000
 2021-07-11     10_238_100
 2021-07-18     10_564_600
+# 2021-07-23     11_564_600 ?
 """
 
 # Doses distributed by the feds (scroll to weekly updates):
@@ -265,7 +266,7 @@ PFIZER_PROJECTED_SHIPMENTS= """ # In thousands per week
 PLOT_END_DATE = (
     np.datetime64('2022-01-31') if LONGPROJECT else dates[-1] + 50 #np.datetime64('2021-05-31')
 )
-CUMULATIVE_YMAX = 15  # million
+CUMULATIVE_YMAX = 18  # million
 
 PROJECT = True
 
@@ -290,9 +291,10 @@ WASTAGE = 0.125
 
 # Number of AZ first doses
 
-# 80% of ~5M over 60s, 40% of ~3M people in their fifties, 50% of 1M NSW residents in
-# their forties 40s, plus 350k from early in the rollout
-MAX_AZ_ADMINISTERED = .9 * 5e6 + .4 * 3e6 + .5 * 1e6 + 350e3
+# 80% of ~5M over sixties, 40% of ~3M people in their fifties, 50% of 1M NSW residents
+# in their forties, 50% of ~2M NSW residents in their 30s and 20s, plus 350k from early
+# in the rollout
+MAX_AZ_ADMINISTERED = .9 * 5e6 + .4 * 3e6 + .5 * 1e6 + + .5 * 2e6 + 350e3
 
 # Number of people 12 years old and older, from ABS ERP June 2020
 MAX_ELIGIBLE = 21_852_349
