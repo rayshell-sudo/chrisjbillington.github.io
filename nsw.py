@@ -203,8 +203,8 @@ def model_uncertainty(function, x, params, covariance):
 
 dates, new = nswhealth_data()
 
-for d, n in zip(dates, new):
-    print(d, n)
+# for d, n in zip(dates, new):
+#     print(d, n)
 
 # Last day is incomplete data
 # dates = dates[:-1]
@@ -442,6 +442,16 @@ log_new_projection_uncertainty = model_uncertainty(
 )
 new_projection_upper = np.exp(np.log(new_projection) + log_new_projection_uncertainty)
 new_projection_lower = np.exp(np.log(new_projection) - log_new_projection_uncertainty)
+
+if VAX:
+    total_cases = new_projection.sum() + new.sum()
+    total_cases_upper = new_projection_upper.sum() + new.sum()
+    total_cases_lower = new_projection_lower.sum() + new.sum()
+
+    print(f"total cases: {total_cases/1000:.02f}k")
+    print(
+        f"1 sigma range:  {total_cases_lower/1000:.02f}k—{total_cases_upper/1000:.02f}k"
+    )
 
 # Examining whether the smoothing and uncertainty look decent
 # plt.bar(dates, new)
