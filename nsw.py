@@ -25,9 +25,12 @@ munits.registry[datetime] = converter
 NONISOLATING = 'noniso' in sys.argv
 VAX = 'vax' in sys.argv
 ACCELERATED_VAX = 'accel_vax' in sys.argv
-
+LGA = False
 if not NONISOLATING and not VAX and not ACCELERATED_VAX and sys.argv[1:]:
-    raise ValueError(sys.argv[1:])
+    if len(sys.argv) == 2:
+        LGA = sys.argv[1]
+    else:
+        raise ValueError(sys.argv[1:])
 
 if ACCELERATED_VAX:
     VAX = True
@@ -95,6 +98,46 @@ def nswhealth_data(start_date=np.datetime64('2021-06-10')):
 
     return dates[dates >= start_date], new[dates >= start_date]
 
+# Data from NSW Health by LGA and test notification date
+def lga_data(start_date=np.datetime64('2021-06-10')):
+    url = (
+        "https://data.nsw.gov.au/data/dataset/"
+        "aefcde60-3b0c-4bc0-9af1-6fe652944ec2/"
+        "resource/21304414-1ff1-4243-a5d2-f52778048b29/"
+        "download/confirmed_cases_table1_location.csv"
+    )
+    df = pd.read_csv(url)
+
+    LGAs = set(df['lga_name19'])
+    cases_by_lga = {}
+    for lga in LGAs:
+        if not isinstance(lga, str):
+            continue
+        cases_by_date = {
+            d: 0
+            for d in np.arange(
+                np.datetime64(df['notification_date'].min()),
+                np.datetime64(df['notification_date'].max()) + 1,
+            )
+        }
+
+        for _, row in df[df['lga_name19'] == lga].iterrows():
+            cases_by_date[np.datetime64(row['notification_date'])] += 1
+
+        dates = np.array(list(cases_by_date.keys()))
+        new = np.array(list(cases_by_date.values()))
+
+        new = new[dates >= start_date]
+        dates = dates[dates >= start_date]
+
+        cases_by_lga[lga.split(' (')[0]] = new
+
+    
+    return dates, cases_by_lga 
+
+dates, cases_by_lga = lga_data()
+for lga, cases in sorted(cases_by_lga.items(), key=lambda kv: kv[1].sum()):
+    print(lga, cases.sum())
 
 def nonisolating_data():
     DATA = """
@@ -202,7 +245,7 @@ def model_uncertainty(function, x, params, covariance):
     return np.sqrt(squared_model_uncertainty)
 
 
-dates, new = nswhealth_data()
+# dates, new = nswhealth_data()
 
 # for d, n in zip(dates, new):
 #     print(d, n)
@@ -216,7 +259,13 @@ dates, new = nswhealth_data()
 # dates = np.append(dates, cl_dates)
 # new = np.append(new, cl_new)
 
-if NONISOLATING:
+if LGA:
+    dates, new_by_lga = lga_data()
+    new = new_by_lga[LGA]
+    # Last day is incomplete data
+    dates = dates[:-1]
+    new = new[:-1]
+elif NONISOLATING:
     dates, new = nonisolating_data()
 else:
     dates, new = covidlive_data()
@@ -604,8 +653,12 @@ u_R_latest = (R_upper[-1] - R_lower[-1]) / 2
 R_eff_string = fR"$R_\mathrm{{eff}}={R[-1]:.02f} \pm {u_R_latest:.02f}$"
 
 if not VAX:
+    if LGA:
+        region = LGA
+    else:
+        region = "New South Wales"
     title_lines = [
-        "$R_\\mathrm{eff}$ in New South Wales "
+        f"$R_\\mathrm{{eff}}$ in {region} "
         "with Sydney restriction levels and daily cases",
         f"Latest estimate: {R_eff_string}",
     ]
@@ -725,6 +778,8 @@ if VAX:
         suffix = '_accel_vax'
 elif NONISOLATING:
     suffix = '_noniso'
+elif LGA:
+    suffix=f'_{LGA.replace(" ", "_")}'
 else:
     suffix = ''
 
