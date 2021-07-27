@@ -682,23 +682,28 @@ plt.legend(
 # plt.axhline(2000 / .03 / 17, color='r', linestyle="--")
 
 plt.gca().yaxis.set_major_formatter(mticker.ScalarFormatter())
-plt.gca().yaxis.set_minor_formatter(mticker.ScalarFormatter())
 plt.gca().tick_params(axis='y', which='minor', labelsize='x-small')
 plt.setp(plt.gca().get_yminorticklabels()[1::2], visible=False)
-plt.gca().xaxis.set_major_locator(
-    mdates.DayLocator([1, 15] if VAX else [1, 5, 10, 15, 20, 25])
-)
-plt.gca().get_xaxis().get_major_formatter().show_offset = False
+locator = mdates.DayLocator([1, 15] if VAX else [1, 5, 10, 15, 20, 25])
+plt.gca().xaxis.set_major_locator(locator)
+formatter = mdates.ConciseDateFormatter(locator, show_offset=False)
+plt.gca().xaxis.set_major_formatter(formatter)
 
-plt.figtext(
-    0.01,
-    0.015,
+axpos = plt.gca().get_position()
+
+text = plt.figtext(
+    axpos.x0 + axpos.width - 0.01,
+    axpos.y0 + 0.02,
+    # 0.625,
+    # 0.13,
     "@chrisbilbo | chrisbillington.net/COVID_NSW",
     size=8,
     alpha=0.5,
     color=(0, 0, 0.25),
     fontfamily="monospace",
+    horizontalalignment="right"
 )
+text.set_bbox(dict(facecolor='white', alpha=0.8, linewidth=0))
 
 if VAX:
     total_cases_range = f"{total_cases_lower/1000:.0f}k—{total_cases_upper/1000:.0f}k"
