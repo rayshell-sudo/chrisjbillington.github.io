@@ -690,6 +690,16 @@ plt.gca().xaxis.set_major_locator(
 )
 plt.gca().get_xaxis().get_major_formatter().show_offset = False
 
+plt.figtext(
+    0.01,
+    0.015,
+    "@chrisbilbo | chrisbillington.net/COVID_NSW",
+    size=8,
+    alpha=0.5,
+    color=(0, 0, 0.25),
+    fontfamily="monospace",
+)
+
 if VAX:
     suffix = '_vax'
     if ACCELERATED_VAX:
