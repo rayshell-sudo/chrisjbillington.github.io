@@ -232,7 +232,7 @@ current_doses_per_100 = covidlive_doses_per_100()
 #     new = np.append(new, [98])
 
 START_PLOT = np.datetime64('2021-06-13')
-END_PLOT = np.datetime64('2021-12-01') if VAX else np.datetime64('2021-09-01')
+END_PLOT = np.datetime64('2022-01-01') if VAX else np.datetime64('2021-09-01')
 
 SMOOTHING = 4
 PADDING = 3 * int(round(3 * SMOOTHING))
