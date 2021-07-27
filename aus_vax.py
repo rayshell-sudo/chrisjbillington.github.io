@@ -1032,7 +1032,9 @@ for group_start in [16, 20, 30, 40, 50, 60, 70, 80, 90][::-1]:
 
 fig9 = plt.figure(figsize=(8, 6))
 for coverage, label in zip(first_dose_coverage_by_age, labels_by_age):
-    plt.plot(first_dose_coverage_dates, coverage, label=label)
+    plt.plot(
+        first_dose_coverage_dates, coverage, label=f"{label} ({coverage[-1]:.1f} %)"
+    )
 
 plt.legend()
 plt.grid(True, linestyle=':', color='k', alpha=0.5)
@@ -1050,10 +1052,11 @@ plt.ylabel("Vaccine coverage (%)")
 
 fig10 = plt.figure(figsize=(8, 6))
 for coverage, label in zip(first_dose_coverage_by_age, labels_by_age):
+    smoothed_coverage = 7 * n_day_average(np.diff(coverage), 7)[7:]
     plt.plot(
         first_dose_coverage_dates[8:],
-        7 * n_day_average(np.diff(coverage), 7)[7:],
-        label=label,
+        smoothed_coverage,
+        label=f"{label} ({smoothed_coverage[-1]:.1f} %/week)",
     )
 plt.legend()
 plt.grid(True, linestyle=':', color='k', alpha=0.5)
@@ -1070,7 +1073,9 @@ plt.ylabel("Vaccination rate (% of age group / week)")
 
 fig11 = plt.figure(figsize=(8, 6))
 for coverage, label in zip(second_dose_coverage_by_age, labels_by_age):
-    plt.plot(second_dose_coverage_dates, coverage, label=label)
+    plt.plot(
+        second_dose_coverage_dates, coverage, label=f"{label} ({coverage[-1]:.1f} %)"
+    )
 
 plt.legend()
 plt.grid(True, linestyle=':', color='k', alpha=0.5)
@@ -1088,10 +1093,11 @@ plt.ylabel("Vaccine coverage (%)")
 
 fig12 = plt.figure(figsize=(8, 6))
 for coverage, label in zip(second_dose_coverage_by_age, labels_by_age):
+    smoothed_coverage = 7 * n_day_average(np.diff(coverage), 7)[7:]
     plt.plot(
         second_dose_coverage_dates[8:],
-        7 * n_day_average(np.diff(coverage), 7)[7:],
-        label=label,
+        smoothed_coverage,
+        label=f"{label} ({smoothed_coverage[-1]:.1f} %/week)",
     )
 plt.legend()
 plt.grid(True, linestyle=':', color='k', alpha=0.5)
