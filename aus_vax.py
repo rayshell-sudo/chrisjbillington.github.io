@@ -1,8 +1,6 @@
 import sys
-import io
 from datetime import datetime
 import json
-from subprocess import check_output
 import requests
 import numpy as np
 import matplotlib.pyplot as plt
@@ -11,7 +9,6 @@ import matplotlib.dates as mdates
 import matplotlib.ticker as ticker
 from pathlib import Path
 from pytz import timezone
-import pandas as pd
 
 converter = mdates.ConciseDateConverter()
 munits.registry[np.datetime64] = converter
@@ -1048,6 +1045,14 @@ plt.axis(
 )
 plt.title("First dose coverage by age group")
 plt.ylabel("Vaccine coverage (%)")
+
+
+# import pickle
+
+# with open('vax_by_age.pickle', 'wb') as f:
+#     pickle.dump(
+#         (first_dose_coverage_dates, first_dose_coverage_by_age, labels_by_age), f
+#     )
 
 
 fig10 = plt.figure(figsize=(8, 6))
