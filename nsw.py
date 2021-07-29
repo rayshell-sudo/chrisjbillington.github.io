@@ -190,6 +190,7 @@ def nonisolating_data():
         2021-07-26 87
         2021-07-27 111
         2021-07-28 130
+        2021-07-29 158
     """
 
     def unpack_data(s):
@@ -736,6 +737,7 @@ plt.legend(
 # plt.axhline(2000 / .03 / 17, color='r', linestyle="--")
 
 plt.gca().yaxis.set_major_formatter(mticker.ScalarFormatter())
+plt.gca().yaxis.set_minor_formatter(mticker.ScalarFormatter())
 plt.gca().tick_params(axis='y', which='minor', labelsize='x-small')
 plt.setp(plt.gca().get_yminorticklabels()[1::2], visible=False)
 locator = mdates.DayLocator([1, 15] if VAX else [1, 5, 10, 15, 20, 25])
