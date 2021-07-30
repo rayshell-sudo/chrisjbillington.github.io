@@ -665,7 +665,7 @@ LGA_LOCKDOWN = np.datetime64('2021-06-26')
 LOCKDOWN = np.datetime64('2021-06-27')
 TIGHTER_LOCKDOWN = np.datetime64('2021-07-10')
 NONCRITICAL_RETAIL_CLOSED = np.datetime64('2021-07-18')
-END_LOCKDOWN = np.datetime64('2021-07-31')
+END_LOCKDOWN = np.datetime64('2021-07-31') + 28 # extended
 
 def whiten(color, f):
     """Mix a color with white where f is how much of the original colour to keep"""
