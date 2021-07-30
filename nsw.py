@@ -23,6 +23,7 @@ munits.registry[datetime.date] = converter
 munits.registry[datetime] = converter
 
 
+POP_OF_SYD = 5_312_163
 POP_OF_NSW = 8.166e6
 
 
@@ -64,6 +65,10 @@ def covidlive_data(start_date=np.datetime64('2021-06-10')):
 def covidlive_doses_per_100():
     df = pd.read_html("https://covidlive.com.au/report/daily-vaccinations/nsw")[1]
     doses = df['DOSES'][0]
+    # We're assuming that doses are evenly distributed NSW-wide. The extent that we want
+    # to assume Sydney is prioritised over regionsl is taken into account by the factor
+    # of two in the "accelerated vaccination" scenario. In the regular scenatio it's
+    # even state-wide.
     return 100 * doses / POP_OF_NSW
 
 
@@ -583,7 +588,7 @@ if VAX:
         initial_cumulative_cases=new.sum(),
         initial_R_eff=R[-1],
         tau=tau,
-        population_size=POP_OF_NSW,
+        population_size=POP_OF_SYD,
         vaccine_immunity=projected_vaccine_immune_population(
             t_projection, current_doses_per_100
         ),
