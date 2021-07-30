@@ -30,10 +30,10 @@ POP_OF_NSW = 8.166e6
 NONISOLATING = 'noniso' in sys.argv
 VAX = 'vax' in sys.argv
 ACCELERATED_VAX = 'accel_vax' in sys.argv
-LGA = False
-if not NONISOLATING and not VAX and not ACCELERATED_VAX and sys.argv[1:]:
+LGA_IX = None
+if not (NONISOLATING or VAX or ACCELERATED_VAX) and sys.argv[1:]:
     if len(sys.argv) == 2:
-        LGA = sys.argv[1]
+        LGA_IX = int(sys.argv[1])
     else:
         raise ValueError(sys.argv[1:])
 
@@ -143,9 +143,18 @@ def lga_data(start_date=np.datetime64('2021-06-10')):
     
     return dates, cases_by_lga 
 
-dates, cases_by_lga = lga_data()
-for lga, cases in sorted(cases_by_lga.items(), key=lambda kv: kv[1].sum()):
-    print(lga, cases.sum())
+if LGA_IX is not None:
+    dates, cases_by_lga = lga_data()
+    # Sort LGAs in reverse order by last 14d cases
+    sorted_lgas = sorted(
+        cases_by_lga.keys(), key=lambda k: -cases_by_lga[k][-14:].sum()
+    )
+    LGA = sorted_lgas[LGA_IX]
+    # for lga in sorted_lgas:
+    #     print(lga, cases_by_lga[lga][-14:].sum())
+else:
+    LGA = None
+
 
 def nonisolating_data():
     DATA = """
@@ -886,7 +895,7 @@ if VAX:
 elif NONISOLATING:
     suffix = '_noniso'
 elif LGA:
-    suffix=f'_{LGA.replace(" ", "_")}'
+    suffix=f'_LGA_{LGA_IX}'
 else:
     suffix = ''
 
