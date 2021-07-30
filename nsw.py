@@ -279,7 +279,7 @@ def stochastic_sir(
     given confidence interval of daily infections and cumulative infections
     """
     if not isinstance(vaccine_immunity, np.ndarray):
-        vaccine_immunity = np.full(vaccine_immunity, n_days)
+        vaccine_immunity = np.full(n_days, vaccine_immunity)
     # Our results dataset over all trials, will extract conficence intervals at the end.
     trials_infected_today = np.zeros((n_trials, n_days))
     for i in range(n_trials):
