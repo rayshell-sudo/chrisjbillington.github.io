@@ -22,6 +22,10 @@ munits.registry[np.datetime64] = converter
 munits.registry[datetime.date] = converter
 munits.registry[datetime] = converter
 
+
+POP_OF_NSW = 8.166e6
+
+
 NONISOLATING = 'noniso' in sys.argv
 VAX = 'vax' in sys.argv
 ACCELERATED_VAX = 'accel_vax' in sys.argv
@@ -60,7 +64,6 @@ def covidlive_data(start_date=np.datetime64('2021-06-10')):
 def covidlive_doses_per_100():
     df = pd.read_html("https://covidlive.com.au/report/daily-vaccinations/nsw")[1]
     doses = df['DOSES'][0]
-    POP_OF_NSW = 8.166e6
     return 100 * doses / POP_OF_NSW
 
 
@@ -191,6 +194,7 @@ def nonisolating_data():
         2021-07-27 111
         2021-07-28 130
         2021-07-29 158
+        2021-07-30 105
     """
 
     def unpack_data(s):
@@ -246,6 +250,130 @@ def model_uncertainty(function, x, params, covariance):
     )
     return np.sqrt(squared_model_uncertainty)
 
+def stochastic_sir(
+    initial_caseload,
+    initial_cumulative_cases,
+    initial_R_eff,
+    tau,
+    population_size,
+    vaccine_immunity,
+    n_days,
+    n_trials=10000,
+    cov_caseload_R_eff=None,
+    confidence_interval=0.67,
+):
+    """Run n trials of a stochastic SIR model, starting from an initial caseload and
+    cumulative cases, for a population of the given size, an initial observed R_eff
+    (i.e. the actual observed R_eff including the effects of the current level of
+    immunity), a mean generation time tau, and an array `vaccine_immunity` for the
+    fraction of the population that is immune over time. Must have length n_days, or can
+    be a constant. Runs n_trials separate trials for n_days each. cov_caseload_R_eff, if
+    given, can be a covariance matrix representing the uncertainty in the initial
+    caseload and R_eff. It will be used to randomly draw an initial caseload and R_eff
+    from a multivariate Gaussian distribution each trial. Returns the median and the
+    given confidence interval of daily infections and cumulative infections
+    """
+    if not isinstance(vaccine_immunity, np.ndarray):
+        vaccine_immunity = np.full(vaccine_immunity, n_days)
+    # Our results dataset over all trials, will extract conficence intervals at the end.
+    trials_infected_today = np.zeros((n_trials, n_days))
+    for i in range(n_trials):
+        print(f"trial {i}")
+        # Randomly choose an R_eff and caseload from the distribution
+        if cov_caseload_R_eff is not None:
+            caseload, R_eff = np.random.multivariate_normal(
+                [initial_caseload, initial_R_eff], cov_caseload_R_eff
+            )
+        else:
+            caseload, R_eff = initial_caseload, initial_R_eff
+        cumulative = initial_cumulative_cases
+        # First we back out an R0 from the R_eff and existing immunity. In this context,
+        # R0 is the rate of spread *including* the effects of restrictions and
+        # behavioural change, which are assumed constant here, but excluding immunity
+        # due to vaccines or previous infection.
+        R0 = R_eff / ((1 - vaccine_immunity[0]) * (1 - cumulative / population_size))
+        # Initial pops in each compartment
+        infectious = int(round(caseload * tau / R_eff))
+        recovered = cumulative - infectious
+        for j, vax_immune in enumerate(vaccine_immunity):
+            # vax_immune is as fraction of the population, recovered and infectious are
+            # in absolute nubmers so need to be normalised by population to get
+            # susceptible fraction
+            s = (1 - vax_immune) * (1 - (recovered + infectious) / population_size)
+            R_t = s * R0
+            infected_today = np.random.poisson(infectious * R_t / tau)
+            recovered_today = np.random.binomial(infectious, 1 / tau)
+            infectious += infected_today - recovered_today
+            recovered += recovered_today
+            cumulative += infected_today
+            trials_infected_today[i, j] = infected_today
+
+    trials_infected_today.sort(axis=0)
+    cumulative_infected = trials_infected_today.cumsum(axis=1) + initial_cumulative_cases
+    cumulative_infected.sort(axis=0)
+
+    ix_median = n_trials // 2
+    ix_lower = int((n_trials * (1 - confidence_interval)) // 2)
+    ix_upper = n_trials - ix_lower
+
+    daily_median = trials_infected_today[ix_median, :]
+    daily_lower = trials_infected_today[ix_lower, :]
+    daily_upper = trials_infected_today[ix_upper, :]
+
+    cumulative_median = cumulative_infected[ix_median, :]
+    cumulative_lower = cumulative_infected[ix_lower, :]
+    cumulative_upper = cumulative_infected[ix_upper, :]
+
+    return (
+        daily_median,
+        (daily_lower, daily_upper),
+        cumulative_median,
+        (cumulative_lower, cumulative_upper),
+    )
+
+
+def projected_vaccine_immune_population(t, current_doses_per_100):
+    """compute projected future susceptible population, starting with the current doses
+    per 100 population, and assuming a certain vaccine efficacy and rollout schedule"""
+    AUG = np.datetime64('2021-08-01').astype(int) - dates[-1].astype(int)
+    SEP = np.datetime64('2021-09-01').astype(int) - dates[-1].astype(int)
+    OCT = np.datetime64('2021-10-01').astype(int) - dates[-1].astype(int)
+    NOV = np.datetime64('2021-11-01').astype(int) - dates[-1].astype(int)
+
+    # My national projections of doses per 100 people per day are:
+    # Jul 140k per day = 0.55 %
+    # Aug 165k per day = 0.66 %
+    # Sep 185k per day = 0.74 %
+    # Oct 230k per day = 0.92 %
+    # Nov 280k per day = 1.12 %
+
+    # NSW currently exceeding national rates by 15%, so let's go with that:
+    PRIORITY_FACTOR = 1.15
+
+    if ACCELERATED_VAX:
+        # What if we give NSW double the supply, or if their rollout is prioritised such
+        # that each dose reduces spread twice as much as for an average member of the
+        # population?
+        PRIORITY_FACTOR *= 2
+
+
+    doses_per_100 = np.zeros_like(t)
+    doses_per_100[0] = current_doses_per_100
+    for i in range(1, len(doses_per_100)):
+        if i < AUG:
+            doses_per_100[i] = doses_per_100[i - 1] + 0.55 * PRIORITY_FACTOR
+        elif i < SEP:
+            doses_per_100[i] = doses_per_100[i - 1] + 0.66 * PRIORITY_FACTOR
+        elif i < OCT:
+            doses_per_100[i] = doses_per_100[i - 1] + 0.74 * PRIORITY_FACTOR
+        elif i < NOV:
+            doses_per_100[i] = doses_per_100[i - 1] + 0.92 * PRIORITY_FACTOR
+        else:
+            doses_per_100[i] = doses_per_100[i - 1] + 1.12 * PRIORITY_FACTOR
+
+    doses_per_100 = np.clip(doses_per_100, 0, 85 * 2)
+    immune = 0.4 * doses_per_100 / 100
+    return immune
 
 # dates, new = nswhealth_data()
 
@@ -413,65 +541,25 @@ new_smoothed_lower = new_smoothed_lower.clip(0, None)
 new_smoothed = new_smoothed.clip(0, None)
 
 
-def projected_susceptible_population(t, current_doses_per_100):
-    """compute projected future susceptible population, starting with the current doses
-    per 100 population, and assuming a certain vaccine efficacy and rollout schedule"""
-    AUG = np.datetime64('2021-08-01').astype(int) - dates[-1].astype(int)
-    SEP = np.datetime64('2021-09-01').astype(int) - dates[-1].astype(int)
-    OCT = np.datetime64('2021-10-01').astype(int) - dates[-1].astype(int)
-    NOV = np.datetime64('2021-11-01').astype(int) - dates[-1].astype(int)
-
-    # My national projections of doses per 100 people per day are:
-    # Jul 140k per day = 0.55 %
-    # Aug 165k per day = 0.66 %
-    # Sep 185k per day = 0.74 %
-    # Oct 230k per day = 0.92 %
-    # Nov 280k per day = 1.12 %
-
-    # NSW currently exceeding national rates by 15%, so let's go with that:
-    PRIORITY_FACTOR = 1.15
-
-    if ACCELERATED_VAX:
-        # What if we give NSW double the supply, or if their rollout is prioritised such
-        # that each dose reduces spread twice as much as for an average member of the
-        # population?
-        PRIORITY_FACTOR *= 2
-
-
-    doses_per_100 = np.zeros_like(t)
-    doses_per_100[0] = current_doses_per_100
-    for i in range(1, len(doses_per_100)):
-        if i < AUG:
-            doses_per_100[i] = doses_per_100[i - 1] + 0.55 * PRIORITY_FACTOR
-        elif i < SEP:
-            doses_per_100[i] = doses_per_100[i - 1] + 0.66 * PRIORITY_FACTOR
-        elif i < OCT:
-            doses_per_100[i] = doses_per_100[i - 1] + 0.74 * PRIORITY_FACTOR
-        elif i < NOV:
-            doses_per_100[i] = doses_per_100[i - 1] + 0.92 * PRIORITY_FACTOR
-        else:
-            doses_per_100[i] = doses_per_100[i - 1] + 1.12 * PRIORITY_FACTOR
-
-    doses_per_100 = np.clip(doses_per_100, 0, 85 * 2)
-    susceptible = 1 - 0.4 * doses_per_100 / 100
-    return susceptible
-
 if VAX:
-    # Model including projected effect of vaccines
+    # Model including projected effect of vaccines and immunity from infections
     def log_projection_model(t, A, R):
-        susceptible = projected_susceptible_population(t, current_doses_per_100)
+        susceptible = 1 - projected_vaccine_immune_population(t, current_doses_per_100)
         R0 = R / susceptible[0]
         R_t = susceptible * R0
 
         y = np.zeros_like(t)
         y[0] = A
+        cumulative_cases = new.sum()
         for i in range(1, len(t)):
             dt = t[i] - t[i - 1]
-            y[i] = y[i - 1] * R_t[i] ** (dt / tau)
+            R_with_infections = R_t[i] * (1 - cumulative_cases / POP_OF_NSW)
+            y[i] = y[i - 1] * R_with_infections ** (dt / tau)
+            cumulative_cases += y[i]
         return np.log(y)
 
 else:
-    # Simple model, no vaccines
+    # Simple model, no vaccines or community immunity
     def log_projection_model(t, A, R):
         return np.log(A * R ** (t / tau))
 
@@ -488,22 +576,48 @@ cov = np.array(
     ]
 )
 
-new_projection = np.exp(log_projection_model(t_projection, new_smoothed[-1], R[-1]))
-log_new_projection_uncertainty = model_uncertainty(
-    log_projection_model, t_projection, (new_smoothed[-1], R[-1]), cov
-)
-new_projection_upper = np.exp(np.log(new_projection) + log_new_projection_uncertainty)
-new_projection_lower = np.exp(np.log(new_projection) - log_new_projection_uncertainty)
-
 if VAX:
-    total_cases = new_projection.sum() + new.sum()
-    total_cases_upper = new_projection_upper.sum() + new.sum()
-    total_cases_lower = new_projection_lower.sum() + new.sum()
+    # Fancy stochastic SIR model
+    results = stochastic_sir(
+        initial_caseload=new_smoothed[-1],
+        initial_cumulative_cases=new.sum(),
+        initial_R_eff=R[-1],
+        tau=tau,
+        population_size=POP_OF_NSW,
+        vaccine_immunity=projected_vaccine_immune_population(
+            t_projection, current_doses_per_100
+        ),
+        n_days=days_projection + 1,
+        n_trials=10000,
+        cov_caseload_R_eff=cov,
+        confidence_interval=0.67,
+    )
+    new_projection, ci_new_projection, total_projection, ci_total_projection = results
+    new_projection_lower, new_projection_upper = ci_new_projection
+
+    total_cases = total_projection[-1]
+    total_cases_lower = ci_total_projection[0][-1]
+    total_cases_upper = ci_total_projection[1][-1]
 
     print(f"total cases: {total_cases/1000:.02f}k")
     print(
         f"1 sigma range:  {total_cases_lower/1000:.02f}k—{total_cases_upper/1000:.02f}k"
     )
+
+
+else:
+    new_projection = np.exp(log_projection_model(t_projection, new_smoothed[-1], R[-1]))
+    log_new_projection_uncertainty = model_uncertainty(
+        log_projection_model, t_projection, (new_smoothed[-1], R[-1]), cov
+    )
+    new_projection_upper = np.exp(
+        np.log(new_projection) + log_new_projection_uncertainty
+    )
+    new_projection_lower = np.exp(
+        np.log(new_projection) - log_new_projection_uncertainty
+    )
+
+    
 
 # Examining whether the smoothing and uncertainty look decent
 # plt.bar(dates, new)
