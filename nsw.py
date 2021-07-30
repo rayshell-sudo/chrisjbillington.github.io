@@ -166,40 +166,6 @@ def nonisolating_data():
         2021-06-24 3
         2021-06-25 9
         2021-06-26 12
-        2021-06-27 19
-        2021-06-28 13
-        2021-06-29 12
-        2021-06-30 11
-        2021-07-01 15
-        2021-07-02 15 + 5
-        2021-07-03 12
-        2021-07-04 3
-        2021-07-05 11
-        2021-07-06 7
-        2021-07-07 14
-        2021-07-08 20
-        2021-07-09 27 + 7
-        2021-07-10 37
-        2021-07-11 42 + 3
-        2021-07-12 46 + 18
-        2021-07-13 34
-        2021-07-14 37
-        2021-07-15 36
-        2021-07-16 51
-        2021-07-17 42
-        2021-07-18 36
-        2021-07-19 44
-        2021-07-20 41
-        2021-07-21 73
-        2021-07-22 87
-        2021-07-23 83
-        2021-07-24 90
-        2021-07-25 76
-        2021-07-26 87
-        2021-07-27 111
-        2021-07-28 130
-        2021-07-29 158
-        2021-07-30 105
     """
 
     def unpack_data(s):
@@ -212,8 +178,27 @@ def nonisolating_data():
                 values.append(eval(value))
         return np.array(dates), np.array(values)
 
-    dates, new = unpack_data(DATA)
-    return dates, new
+    manual_dates, manual_cases = unpack_data(DATA)
+
+    df = pd.read_html('https://covidlive.com.au/report/daily-wild-cases/nsw')[1]
+
+    if df['TOTAL'][0] == '-':
+        df = df[1:200]
+
+    cl_dates = np.array(
+        [
+            np.datetime64(datetime.strptime(date, "%d %b %y"), 'D') - 1
+            for date in df['DATE']
+        ]
+    )
+    cl_cases = np.array(df['TOTAL'].astype(int))[::-1]
+    cl_dates = cl_dates[::-1]
+
+    assert cl_dates[0] == np.datetime64('2021-06-26')
+
+    dates = np.concatenate([manual_dates, cl_dates])
+    cases = np.concatenate([manual_cases, cl_cases])
+    return dates, cases
 
 
 def gaussian_smoothing(data, pts):
