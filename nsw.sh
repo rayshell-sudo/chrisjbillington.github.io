@@ -9,3 +9,4 @@ for i in {0..7}
 do
    python nsw.py $i
 done
+python nsw.py $i others

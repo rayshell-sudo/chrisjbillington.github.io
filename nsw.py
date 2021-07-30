@@ -30,8 +30,11 @@ POP_OF_NSW = 8.166e6
 NONISOLATING = 'noniso' in sys.argv
 VAX = 'vax' in sys.argv
 ACCELERATED_VAX = 'accel_vax' in sys.argv
+OTHERS = 'others' in sys.argv
 LGA_IX = None
-if not (NONISOLATING or VAX or ACCELERATED_VAX) and sys.argv[1:]:
+LGA = None
+
+if not (NONISOLATING or VAX or ACCELERATED_VAX or OTHERS) and sys.argv[1:]:
     if len(sys.argv) == 2:
         LGA_IX = int(sys.argv[1])
     else:
@@ -140,20 +143,10 @@ def lga_data(start_date=np.datetime64('2021-06-10')):
 
         cases_by_lga[lga.split(' (')[0]] = new
 
-    
+    # Last day is incomplete data, ignore it:
+    dates = dates[:-1]
+    cases_by_lga = {lga: cases[:-1] for lga, cases in cases_by_lga.items()}
     return dates, cases_by_lga 
-
-if LGA_IX is not None:
-    dates, cases_by_lga = lga_data()
-    # Sort LGAs in reverse order by last 14d cases
-    sorted_lgas = sorted(
-        cases_by_lga.keys(), key=lambda k: -cases_by_lga[k][-14:].sum()
-    )
-    LGA = sorted_lgas[LGA_IX]
-    # for lga in sorted_lgas:
-    #     print(lga, cases_by_lga[lga][-14:].sum())
-else:
-    LGA = None
 
 
 def nonisolating_data():
@@ -388,12 +381,22 @@ def projected_vaccine_immune_population(t, current_doses_per_100):
 # dates = np.append(dates, cl_dates)
 # new = np.append(new, cl_new)
 
-if LGA:
-    dates, new_by_lga = lga_data()
-    new = new_by_lga[LGA]
-    # Last day is incomplete data
-    dates = dates[:-1]
-    new = new[:-1]
+if LGA_IX is not None or OTHERS:
+    dates, cases_by_lga = lga_data()
+    # Sort LGAs in reverse order by last 14d cases
+    sorted_lgas = sorted(
+        cases_by_lga.keys(), key=lambda k: -cases_by_lga[k][-14:].sum()
+    )
+    # for lga in sorted_lgas:
+    #     print(lga, cases_by_lga[lga][-14:].sum())
+if LGA_IX is not None:
+    LGA = sorted_lgas[LGA_IX]
+    new = cases_by_lga[LGA]
+
+if OTHERS:
+    # Sum over all LGAs outside the top 8
+    new = sum(cases_by_lga[sorted_lgas[i]] for i in range(8, len(sorted_lgas)))
+
 elif NONISOLATING:
     dates, new = nonisolating_data()
 else:
@@ -770,6 +773,8 @@ R_eff_string = fR"$R_\mathrm{{eff}}={R[-1]:.02f} \pm {u_R_latest:.02f}$"
 if not VAX:
     if LGA:
         region = LGA
+    elif OTHERS:
+        region = "other LGAs"
     else:
         region = "New South Wales"
     title_lines = [
@@ -896,6 +901,8 @@ elif NONISOLATING:
     suffix = '_noniso'
 elif LGA:
     suffix=f'_LGA_{LGA_IX}'
+elif OTHERS:
+    suffix=f'_LGA_others'
 else:
     suffix = ''
 
