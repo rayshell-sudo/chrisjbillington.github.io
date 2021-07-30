@@ -87,235 +87,248 @@
       Sydney area was placed under lockdown restrictions, and other restrictions were
       imposed in regional New South Wales.
     </p>
+    <p>
+      How have New South Wales' restrictions affected the spread of the virus? The below
+      plot shows how the effective reproduction number of the virus,
+      <i>R</i><sub>eff</sub> has changed over time in New South Wales, as well as how
+      the daily cases have changed over time. A trendline shows the approximate
+      trajectory daily case numbers would follow, were the reproduction number of the
+      virus to remain at its current level.
+    </p>
+    <img src="COVID_NSW.svg">
 
-    How have New South Wales' restrictions affected the spread of the virus? The below
-    plot shows how the effective reproduction number of the virus,
-    <i>R</i><sub>eff</sub> has changed over time in New South Wales, as well as how the
-    daily cases have changed over time. A trendline shows the approximate trajectory
-    daily case numbers would follow, were the reproduction number of the virus to remain
-    at its current level.
-  </p>
-  <img src="COVID_NSW.svg">
+    <h3 id="noniso"><i>R</i><sub>eff</sub> estimate from non-isolating cases only</h3>
+    <p>
+      Cases isolating during their infectious period represent a much lower risk of spread.
+      The growth rate of non-isolating cases represents a more leading indicator of whether
+      NSW is successfully suppressing the outbreak. The below plot is identical to the above
+      one, except it includes only cases that were not isolating for their full infectious
+      period.
+    </p>
+    <img src="COVID_NSW_noniso.svg">
 
-  <h3 id="noniso"><i>R</i><sub>eff</sub> estimate from non-isolating cases only</h3>
-  <p>
-    Cases isolating during their infectious period represent a much lower risk of spread.
-    The growth rate of non-isolating cases represents a more leading indicator of whether
-    NSW is successfully suppressing the outbreak. The below plot is identical to the above
-    one, except it includes only cases that were not isolating for their full infectious
-    period.
-  </p>
-  <img src="COVID_NSW_noniso.svg">
+    <h3 id="vax">Projected effect of standard vaccine rollout</h3>
+    <p>
+      The trendlines in the above plots simply project forward case numbers assuming that
+      <i>R</i><sub>eff</sub> remains at its current estimated value. What about the effect
+      of vaccines? Below is a plot with the projected trend taking into account an
+      estimated reduction of spread due to vaccination levels increasing in New South
+      Wales through the remainder of the year. This projection is a stochastic SIR model,
+      and thus also takes into account immunity due to infections, which would decrease
+      transmission once a non-neglibible fraction of the population has been infected.
+      See the methodology section below for details.
+    </p>
+    <p>
+      This is a conservative model of vaccination in New South Wales assuming the rollout
+      continues roughly according to the same plan that was in place before the outbreak.
+      However, there are various changes to the rollout that could considerably accelerate
+      the effect of vaccines on spread in New South Wales. These include prioritising
+      essential workers who are at higher risk of spreading the virus during lockdown,
+      prioritising based on geographic closeness to where cases are concentrated, or New
+      South Wales receiving a disproportionate allocation of national supply. See below
+      this plot for a projection based on an accelerated or prioritised vaccine rollout.
+    </p>
+    <img src="COVID_NSW_vax.svg">
 
-  <h3 id="vax">Projected effect of standard vaccine rollout</h3>
-  <p>
-    The trendlines in the above plots simply project forward case numbers assuming that
-    <i>R</i><sub>eff</sub> remains at its current estimated value. What about the effect
-    of vaccines? Below is a plot with the projected trend taking into account an
-    estimated reduction of spread due to vaccination levels increasing in New South
-    Wales through the remainder of the year. See the methodology section below for
-    details.
-  </p>
+    <h3 id="accel_vax">Projected effect of 2× accelerated/prioritised vaccine rollout</h3>
 
-    This is a conservative model of vaccination in New South Wales assuming the rollout
-    continues roughly according to the same plan that was in place before the outbreak.
-    However, there are various changes to the rollout that could considerably accelerate
-    the effect of vaccines on spread in New South Wales. These include prioritising
-    essential workers who are at higher risk of spreading the virus during lockdown,
-    prioritising based on geographic closeness to where cases are concentrated, or New
-    South Wales receiving a disproportionate allocation of national supply. See below
-    this plot for a projection based on an accelerated or prioritised vaccine rollout.
-  </p>
-  <img src="COVID_NSW_vax.svg">
+    <p>
+      New South Wales has announced policy to prioritise younger, working members of the
+      population, and based on comments from state governments, seems likely to receive a
+      disproportionate allocation of national vaccine supply in the coming months.
+    </p>
+    <p>
+      Below is a plot with the projected trend taking into account a hypothetical
+      accelerated or prioritised (or both) vaccine rollout in New South Wales, that
+      manages to achieve twice the rate of reduction of spread per day compared to the
+      standard rollout. This could be achieved either with double the vaccine supply, or
+      with doses prioritised toward individuals so that on average the reduction in spread
+      per dose is twice what it would be for a random member of the community, or some
+      combination of the two. The specific assumption of a factor of two is just an
+      example to demonstrate what might be possible: I do not know to what extent their
+      prioritisation of younger workers will be effective, or to what degree they will
+      receive additional supply.
+    </p>
 
-  <h3 id="accel_vax">Projected effect of 2× accelerated/prioritised vaccine rollout</h3>
+    <img src="COVID_NSW_accel_vax.svg">
 
-  <p>
-    New South Wales has announced policy to prioritise younger, working members of the
-    population, and based on comments from state governments, seems likely to receive a
-    disproportionate allocation of national vaccine supply in the coming months.
-  </p>
-  <p>
-    Below is a plot with the projected trend taking into account a hypothetical
-    accelerated or prioritised (or both) vaccine rollout in New South Wales, that
-    manages to achieve twice the rate of reduction of spread per day compared to the
-    standard rollout. This could be achieved either with double the vaccine supply, or
-    with doses prioritised toward individuals so that on average the reduction in spread
-    per dose is twice what it would be for a random member of the community, or some
-    combination of the two. The specific assumption of a factor of two is just an
-    example to demonstrate what might be possible: I do not know to what extent their
-    prioritisation of younger workers will be effective, or to what degree they will
-    receive additional supply.
-  </p>
+    <h3 id="lga"><i>R</i><sub>eff</sub> in select LGAs</h3>
+    <p>
+      Below are plots of daily case numbers and estimated <i>R</i><sub>eff</sub> values in
+      local government areas that have had greater than 50 cumulative cases (as of July
+      27th). The data in these plots may be several days out of date due to the delay in
+      New South Wales Health releasing data
+    </p>
+    <img src="COVID_NSW_Fairfield.svg">
+    <img src="COVID_NSW_Canterbury-Bankstown.svg">
+    <img src="COVID_NSW_Cumberland.svg">
+    <img src="COVID_NSW_Liverpool.svg">
+    <img src="COVID_NSW_Blacktown.svg">
+    <img src="COVID_NSW_Waverley.svg">
+    <img src="COVID_NSW_Georges_River.svg">
+    <img src="COVID_NSW_Randwick.svg">
+    <img src="COVID_NSW_Bayside.svg">
+    <img src="COVID_NSW_Parramatta.svg">
+    <img src="COVID_NSW_Sydney.svg">
 
-  <img src="COVID_NSW_accel_vax.svg">
+    <h3 id="disclaimer">Disclaimer on trends</h3>
+    <p>
+      The plotted trendlines are simple extrapolations of what will happen if
+      <i>R</i><sub>eff</sub> remains at its current value. This does not take into account
+      that things are in a state of flux. As restrictions take effect, the virus should
+      have fewer opportunities for spread, and <i>R</i><sub>eff</sub> will decrease. If
+      restrictions are eased, it may increase. Contact tracing may suppress spread to a
+      greater or lesser degree over time. The above plots specifically showing the effect
+      of vaccines do take into account a reduction in <i>R</i><sub>eff</sub> as
+      vaccination coverage increases, but ignore any other possible future changes in
+      <i>R</i><sub>eff</sub>.
+    </p>
+    <p>
+      Furthermore, when case numbers are small, the random chance of how many people each
+      infected person subsequently infects can cause estimates of <i>R</i><sub>eff</sub>
+      to vary randomly in time. As such the projection should be taken with a grain of
+      salt—it is merely an indication of the trend as it is right now.
+    </p> 
 
-  <h3 id="lga"><i>R</i><sub>eff</sub> in select LGAs</h3>
-  <p>
-    Below are plots of daily case numbers and estimated <i>R</i><sub>eff</sub> values in
-    local government areas that have had greater than 50 cumulative cases (as of July
-    27th). The data in these plots may be several days out of date due to the delay in
-    New South Wales Health releasing data
-  </p>
-  <img src="COVID_NSW_Fairfield.svg">
-  <img src="COVID_NSW_Canterbury-Bankstown.svg">
-  <img src="COVID_NSW_Cumberland.svg">
-  <img src="COVID_NSW_Liverpool.svg">
-  <img src="COVID_NSW_Blacktown.svg">
-  <img src="COVID_NSW_Waverley.svg">
-  <img src="COVID_NSW_Georges_River.svg">
-  <img src="COVID_NSW_Randwick.svg">
-  <img src="COVID_NSW_Bayside.svg">
-  <img src="COVID_NSW_Parramatta.svg">
-  <img src="COVID_NSW_Sydney.svg">
+    <h3 id="methodology">Methodology</h3>
 
-  <h3 id="disclaimer">Disclaimer on trends</h3>
-  <p>
-    The plotted trendlines are simple extrapolations of what will happen if
-    <i>R</i><sub>eff</sub> remains at its current value. This does not take into account
-    that things are in a state of flux. As restrictions take effect, the virus should
-    have fewer opportunities for spread, and <i>R</i><sub>eff</sub> will decrease. If
-    restrictions are eased, it may increase. Contact tracing may suppress spread to a
-    greater or lesser degree over time. The above plots specifically showing the effect
-    of vaccines do take into account a reduction in <i>R</i><sub>eff</sub> as
-    vaccination coverage increases, but ignore any other possible future changes in
-    <i>R</i><sub>eff</sub>.
-  </p>
-  <p>
-    Furthermore, when case numbers are small, the random chance of how many people each
-    infected person subsequently infects can cause estimates of <i>R</i><sub>eff</sub>
-    to vary randomly in time. As such the projection should be taken with a grain of
-    salt—it is merely an indication of the trend as it is right now.
-  </p> 
+    <h4>Smoothing, calculating <i>R</i><sub>eff</sub> and projections</h4>
 
-  <h3 id="methodology">Methodology</h3>
+    <p>
+      Daily case numbers have been smoothed with 4-day Gaussian smoothing:
+      <br>
+      <br>
+      <i>N</i><sub>smoothed</sub>(<i>t</i>) = <i>N</i>(<i>t</i>) ∗
+      (2<i>πT</i><sub>s</sub><sup>2</sup>)<sup>-1/2</sup> exp(-<i>t</i><sup>2</sup> /
+      2<i>T</i><sub>s</sub><sup>2</sup>)
+      <br>
+      <br>
+      where <i>T</i><sub>s</sub> = 4 days
+      and ∗ is the convolution operation.
+    </p>
 
-  <h4>Smoothing, calculating <i>R</i><sub>eff</sub> and projections</h4>
+    <p>
+      Before smoothing, the daily case numbers are padded on the right with an
+      extrapolation based on a exponential fit to the most recent 14 days of data.
+    </p>
 
-  <p>
-    Daily case numbers have been smoothed with 4-day Gaussian smoothing:
-    <br>
-    <br>
-    <i>N</i><sub>smoothed</sub>(<i>t</i>) = <i>N</i>(<i>t</i>) ∗
-    (2<i>πT</i><sub>s</sub><sup>2</sup>)<sup>-1/2</sup> exp(-<i>t</i><sup>2</sup> /
-    2<i>T</i><sub>s</sub><sup>2</sup>)
-    <br>
-    <br>
-    where <i>T</i><sub>s</sub> = 4 days
-    and ∗ is the convolution operation.
-  </p>
+    <p>
+      <i>R</i><sub>eff</sub> is then calculated for each day as:
+      <br>
+      <br>
+      <i>R</i><sub>eff</sub>(<i>t<sub>i</sub></i>) = (<i>N</i><sub>smoothed</sub>(<i>t<sub>i</sub></i>) / <i>N</i><sub>smoothed</sub>(<i>t</i><sub><i>i</i>-1</sub>))<sup><i>T</i><sub>g</sub></sup>
+      <br>
+      <br>
+      where <i>T</i><sub>g</sub> = 5 days is the approximate generation time of the virus.
+    </p>
+    <p>
+      The uncertainty in <i>R</i><sub>eff</sub> has contributions from the uncertainty
+      in the above-mentioned exponential fit, as well as Poisson uncertainty in daily
+      case numbers, and an additional 20% uncertainty in daily case numbers - the latter
+      is just a crude eyeballed figure of observed day-to-day fluctuations.
+    </p>
+    <p>
+      The extrapolation of daily case numbers is based on exponential growth/decay using
+      the most recent value of <i>R</i><sub>eff</sub> and its uncertainty range:
+      <br>
+      <br>
+      <i>N</i><sub>extrap</sub>(<i>t<sub>i</sub></i>) = <i>N</i><sub>smoothed</sub>(<i>t</i><sub>today</sub>) <i>R</i><sub>eff</sub>(<i>t</i><sub>today</sub>)
+      <sup>(<i>t<sub>i</sub></i> - <i>t</i><sub>today</sub>)/<i>T</i><sub>g</sub></sup>
+      <br>
+      <br>
+    </p>
 
-  <p>
-    Before smoothing, the daily case numbers are padded on the right with an
-    extrapolation based on a exponential fit to the most recent 14 days of data.
-  </p>
+    <h4>Vaccination model</h4>
+    <p>
+      <span style="background-color: #FF00FF"><b>Note 2021-07-30</b></span>: I have
+      changed the model used for the projections of the vaccine rollout is a stochastic
+      SIR model, and the description below is out of date. I haven't yet documented the
+      new model on this page, but the code can be seen <a
+      href="https://github.com/chrisjbillington/chrisjbillington.github.io/blob/6451abd3623be9c571120d7e0e1a85b1fdde6242/nsw.py#L253">here</a>
+      in the meantime. The projected outcomes with the new model are very similar to the
+      old model, which was valid in the limit of infections only reaching a small
+      fraction of the total population.
+    </p>
+    <p>
+      For the plot taking into account the effect of vaccinations in the future, I assume
+      that for the case of a "standard" rollout NSW will administer doses at a rate of:
+      <ul>
+        <li>0.63 doses per 100 population per day in July</li>
+        <li>0.76 doses per 100 population per day in August</li>
+        <li>0.85 doses per 100 population per day in September</li>
+        <li>1.06 doses per 100 population per day in October</li>
+        <li>1.29 doses per 100 population per day from November</li>
+      </ul>
+      up to a maximum of 85% of the population. These vaccination rates are about 15%
+      faster than the population-adjusted national rate that we might expect based on
+      future supply (see <a href="https://chrisbillington.net/aus_vaccinations.html">my
+      page on the vaccination rollout</a>), which is roughly how much faster New South
+      Wales' rollout is proceeding compared to the national rollout at the moment.
+    </p> 
+    <p>
+      I assume that one dose of any vaccine reduces spread by 40%, and two doses reduce
+      spread by 80%. The proportion of the population susceptible to the virus is then:
+      <br>
+      <br>
+      <i>s</i>(<i>t<sub>i</sub></i>) = 1 - 0.4 × <i>D</i>(<i>t</i><sub><i>i</i></sub>)
+      <br>
+      <br>
+      where <i>D</i>(<i>t</i><sub><i>i</i></sub>) is the cumulative number of doses per
+      capita on each day.
+    </p>
+    <p>
+      For the case of a hypothetical "2× accelerated/prioritised" vaccine rollout, I assume
+      that the reduction in spread due to vaccines occurs twice as fast. I achieve this is
+      my model by simply doubling the rates of vaccination above, which is one way (with
+      increased supply) that New South Wales might reduce spread more quickly than the
+      "standard" rollout expected prior to the current outbreak.
+    </p>
+    <p>
+      This is also equivalent to New South Wales vaccinating at the slower rates, but with
+      more active members of the community prioritised so as to achieve, on average, twice
+      the reduction in spread per dose than one would get vaccinating a random member of
+      the population.
+    </p>
+    <p>
 
-  <p>
-    <i>R</i><sub>eff</sub> is then calculated for each day as:
-    <br>
-    <br>
-    <i>R</i><sub>eff</sub>(<i>t<sub>i</sub></i>) = (<i>N</i><sub>smoothed</sub>(<i>t<sub>i</sub></i>) / <i>N</i><sub>smoothed</sub>(<i>t</i><sub><i>i</i>-1</sub>))<sup><i>T</i><sub>g</sub></sup>
-    <br>
-    <br>
-    where <i>T</i><sub>g</sub> = 5 days is the approximate generation time of the virus.
-  </p>
-  <p>
-    The uncertainty in <i>R</i><sub>eff</sub> has contributions from the uncertainty
-    in the above-mentioned exponential fit, as well as Poisson uncertainty in daily
-    case numbers, and an additional 20% uncertainty in daily case numbers - the latter
-    is just a crude eyeballed figure of observed day-to-day fluctuations.
-  </p>
-  <p>
-    The extrapolation of daily case numbers is based on exponential growth/decay using the most recent value of <i>R</i><sub>eff</sub> and its uncertainty range:
-    <br>
-    <br>
-    <i>N</i><sub>extrap</sub>(<i>t<sub>i</sub></i>) = <i>N</i><sub>smoothed</sub>(<i>t</i><sub>today</sub>) <i>R</i><sub>eff</sub>(<i>t</i><sub>today</sub>)
-    <sup>(<i>t<sub>i</sub></i> - <i>t</i><sub>today</sub>)/<i>T</i><sub>g</sub></sup>
-    <br>
-    <br>
-  </p>
+      <i>R</i><sub>eff</sub> is then estimated for any future date as:
+      <br>
+      <br>
+      <i>R</i><sub>eff</sub>(<i>t</i><sub><i>i</i></sub>) = 
+      <i>R</i><sub>eff</sub>(<i>t</i><sub>today</sub>)
+      × <i>s</i>(<i>t<sub>i</sub></i>) / <i>s</i>(t<sub>today</sub>)
+      <br>
+      <br>
+    </p>
+    <p>
+      And case numbers extrapolated from one day to the next, beginning with
+      <i>N</i><sub>smoothed</sub>(<i>t</i><sub>today</sub>), according to:
+      <br>
+      <br>
+      <i>N</i><sub>extrap</sub>(<i>t<sub>i</sub></i>) = <i>N</i><sub>extrap</sub>(<i>t<sub>i-1</sub></i>) <i>R</i><sub>eff</sub>(<i>t</i><sub><i>i</i></sub>)
+      <sup>1/<i>T</i><sub>g</sub></sup>
+      <br>
+      <br>
+    </p>
 
-  <h4>Vaccination model</h4>
-  <p>
-    For the plot taking into account the effect of vaccinations in the future, I assume
-    that for the case of a "standard" rollout NSW will administer doses at a rate of:
-    <ul>
-      <li>0.63 doses per 100 population per day in July</li>
-      <li>0.76 doses per 100 population per day in August</li>
-      <li>0.85 doses per 100 population per day in September</li>
-      <li>1.06 doses per 100 population per day in October</li>
-      <li>1.29 doses per 100 population per day from November</li>
-    </ul>
-    up to a maximum of 85% of the population. These vaccination rates are about 15%
-    faster than the population-adjusted national rate that we might expect based on
-    future supply (see <a href="https://chrisbillington.net/aus_vaccinations.html">my
-    page on the vaccination rollout</a>), which is roughly how much faster New South
-    Wales' rollout is proceeding compared to the national rollout at the moment.
-  </p> 
-  <p>
-    I assume that one dose of any vaccine reduces spread by 40%, and two doses reduce
-    spread by 80%. The proportion of the population susceptible to the virus is then:
-    <br>
-    <br>
-    <i>s</i>(<i>t<sub>i</sub></i>) = 1 - 0.4 × <i>D</i>(<i>t</i><sub><i>i</i></sub>)
-    <br>
-    <br>
-    where <i>D</i>(<i>t</i><sub><i>i</i></sub>) is the cumulative number of doses per
-    capita on each day.
-  </p>
-  <p>
-    For the case of a hypothetical "2× accelerated/prioritised" vaccine rollout, I assume
-    that the reduction in spread due to vaccines occurs twice as fast. I achieve this is
-    my model by simply doubling the rates of vaccination above, which is one way (with
-    increased supply) that New South Wales might reduce spread more quickly than the
-    "standard" rollout expected prior to the current outbreak.
-  </p>
-  <p>
-    This is also equivalent to New South Wales vaccinating at the slower rates, but with
-    more active members of the community prioritised so as to achieve, on average, twice
-    the reduction in spread per dose than one would get vaccinating a random member of
-    the population.
-  </p>
-  <p>
+    <h3 id="details">Data sources and contact</h3>
 
-    <i>R</i><sub>eff</sub> is then estimated for any future date as:
-    <br>
-    <br>
-    <i>R</i><sub>eff</sub>(<i>t</i><sub><i>i</i></sub>) = 
-    <i>R</i><sub>eff</sub>(<i>t</i><sub>today</sub>)
-    × <i>s</i>(<i>t<sub>i</sub></i>) / <i>s</i>(t<sub>today</sub>)
-    <br>
-    <br>
-  </p>
-  <p>
-    And case numbers extrapolated from one day to the next, beginning with
-    <i>N</i><sub>smoothed</sub>(<i>t</i><sub>today</sub>), according to:
-    <br>
-    <br>
-    <i>N</i><sub>extrap</sub>(<i>t<sub>i</sub></i>) = <i>N</i><sub>extrap</sub>(<i>t<sub>i-1</sub></i>) <i>R</i><sub>eff</sub>(<i>t</i><sub><i>i</i></sub>)
-    <sup>1/<i>T</i><sub>g</sub></sup>
-    <br>
-    <br>
-  </p>
-  
-  <h3 id="details">Data sources and contact</h3>
-
-  <p>
-    Source for case numbers:
-    <!-- <a href="https://data.nsw.gov.au/data/dataset/nsw-covid-19-cases-by-likely-source-of-infection/resource/2f1ba0f3-8c21-4a86-acaf-444be4401a6d">NSW health</a> and -->
-    <a href="https://covidlive.com.au/report/daily-source-overseas/nsw">covidlive.com.au</a>
-  </p>
-  <p>
-    Source for isolating vs non-isolating case numbers: <a
-    href="https://covid19data.com.au/nsw">covid19data.com.au</a> and <a
-    href="https://covidlive.com.au/report/daily-wild-cases/nsw">covidlive.com.au</a>
-  </p>
-  <p>
-    Plots/analysis by Chris Billington. Contact: chrisjbillington [at] gmail [dot] com
-  </p>
-  <p>
-    Python script for producing the plots can be found at <a href="https://github.com/chrisjbillington/chrisjbillington.github.io/blob/master/nsw.py">GitHub</a>.
-  </p>
-</div>
+    <p>
+      Source for case numbers:
+      <!-- <a href="https://data.nsw.gov.au/data/dataset/nsw-covid-19-cases-by-likely-source-of-infection/resource/2f1ba0f3-8c21-4a86-acaf-444be4401a6d">NSW health</a> and -->
+      <a href="https://covidlive.com.au/report/daily-source-overseas/nsw">covidlive.com.au</a>
+    </p>
+    <p>
+      Source for isolating vs non-isolating case numbers: <a
+      href="https://covid19data.com.au/nsw">covid19data.com.au</a> and <a
+      href="https://covidlive.com.au/report/daily-wild-cases/nsw">covidlive.com.au</a>
+    </p>
+    <p>
+      Plots/analysis by Chris Billington. Contact: chrisjbillington [at] gmail [dot] com
+    </p>
+    <p>
+      Python script for producing the plots can be found at <a href="https://github.com/chrisjbillington/chrisjbillington.github.io/blob/master/nsw.py">GitHub</a>.
+    </p>
+  </div>
 </body>
 </html>
