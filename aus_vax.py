@@ -296,6 +296,9 @@ MAX_AZ_ADMINISTERED = .9 * 5e6 + .4 * 3e6 + .5 * 1e6 + + .5 * 2e6 + 350e3
 # Number of people 12 years old and older, from ABS ERP June 2020
 MAX_ELIGIBLE = 21_852_349
 
+# Number of people 16 years old and older, from ABS ERP June 2020
+POP_16_PLUS = 20_607_204
+
 # Estimated AZ supply. Assume 1M per week locally-produced AZ up to ~10.8M (plus
 # wastage):
 AZ_MAX_DOSES = 2 * MAX_AZ_ADMINISTERED / (1 - WASTAGE)
@@ -801,9 +804,9 @@ plt.gca().yaxis.set_major_locator(ticker.MultipleLocator(2.0))
 ax7 = plt.gca()
 
 twinax = plt.twinx()
-twinax.axis(ymin=0, ymax=100)
+twinax.axis(ymin=0, ymax=100 * MAX_ELIGIBLE / POP_16_PLUS)
 twinax.yaxis.set_major_locator(ticker.MultipleLocator(10.0))
-plt.ylabel("Percentage of population aged 12+")
+plt.ylabel("Percentage of population aged 16+")
 
 
 for ax in [ax1, ax2, ax3, ax4, ax5, ax6, ax7]:
@@ -927,7 +930,6 @@ for ax in [ax1, ax2, ax3, ax4, ax5, ax6, ax7]:
 fig8 = plt.figure(figsize=(8, 6))
 
 doses_by_day = np.diff(doses_by_state['AUS'])
-# import embed
 if len(doses_by_day) % 7:
     doses_by_day = np.append(doses_by_day, [np.nan] * (7 - len(doses_by_day) % 7))
 N_WEEKS = 5
