@@ -392,11 +392,9 @@ if LGA_IX is not None or OTHERS:
 if LGA_IX is not None:
     LGA = sorted_lgas[LGA_IX]
     new = cases_by_lga[LGA]
-
-if OTHERS:
+elif OTHERS:
     # Sum over all LGAs outside the top 8
     new = sum(cases_by_lga[sorted_lgas[i]] for i in range(8, len(sorted_lgas)))
-
 elif NONISOLATING:
     dates, new = nonisolating_data()
 else:
