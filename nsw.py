@@ -381,20 +381,32 @@ def projected_vaccine_immune_population(t, current_doses_per_100):
 # dates = np.append(dates, cl_dates)
 # new = np.append(new, cl_new)
 
+LGAs_of_CONCERN = [
+    'Blacktown',
+    'Campbelltown',
+    'Canterbury-Bankstown',
+    'Cumberland',
+    'Fairfield',
+    'Georges River',
+    'Liverpool',
+    'Parramatta',
+]
+
 if LGA_IX is not None or OTHERS:
     dates, cases_by_lga = lga_data()
     # Sort LGAs in reverse order by last 14d cases
-    sorted_lgas = sorted(
-        cases_by_lga.keys(), key=lambda k: -cases_by_lga[k][-14:].sum()
+    sorted_lgas_of_concern = sorted(
+        LGAs_of_CONCERN, key=lambda k: -cases_by_lga[k][-14:].sum()
     )
+    # print(sorted_lgas_of_concern)
     # for lga in sorted_lgas:
     #     print(lga, cases_by_lga[lga][-14:].sum())
 if LGA_IX is not None:
-    LGA = sorted_lgas[LGA_IX]
+    LGA = sorted_lgas_of_concern[LGA_IX]
     new = cases_by_lga[LGA]
 elif OTHERS:
-    # Sum over all LGAs outside the top 8
-    new = sum(cases_by_lga[sorted_lgas[i]] for i in range(8, len(sorted_lgas)))
+    # Sum over all LGAs not of concern
+    new = sum(cases_by_lga[lga] for lga in cases_by_lga if lga not in LGAs_of_CONCERN)
 elif NONISOLATING:
     dates, new = nonisolating_data()
 else:
@@ -772,11 +784,11 @@ if not VAX:
     if LGA:
         region = LGA
     elif OTHERS:
-        region = "other LGAs"
+        region = "New South Wales (excluding LGAs of concern)"
     else:
         region = "New South Wales"
     title_lines = [
-        f"$R_\\mathrm{{eff}}$ in {region} "
+        f"$R_\\mathrm{{eff}}$ in {region}, "
         "with Sydney restriction levels and daily cases",
         f"Latest estimate: {R_eff_string}",
     ]
@@ -885,7 +897,7 @@ if VAX:
         "\n".join(
             [
                 f"Projected total cases in outbreak:  {total_cases/1000:.0f}k",
-                f"                                  67% range:  {total_cases_range}",
+                f"                                  68% range:  {total_cases_range}",
             ]
         ),
         fontsize='small',
