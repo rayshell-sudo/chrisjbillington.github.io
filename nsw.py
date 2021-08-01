@@ -252,7 +252,7 @@ def stochastic_sir(
     n_days,
     n_trials=10000,
     cov_caseload_R_eff=None,
-    confidence_interval=0.67,
+    confidence_interval=0.68,
 ):
     """Run n trials of a stochastic SIR model, starting from an initial caseload and
     cumulative cases, for a population of the given size, an initial observed R_eff
@@ -602,7 +602,7 @@ if VAX:
         n_days=days_projection + 1,
         n_trials=10000,
         cov_caseload_R_eff=cov,
-        confidence_interval=0.67,
+        confidence_interval=0.68,
     )
     new_projection, ci_new_projection, total_projection, ci_total_projection = results
     new_projection_lower, new_projection_upper = ci_new_projection
