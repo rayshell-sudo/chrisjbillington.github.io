@@ -381,7 +381,7 @@ def projected_vaccine_immune_population(t, current_doses_per_100):
 # dates = np.append(dates, cl_dates)
 # new = np.append(new, cl_new)
 
-LGAs_of_CONCERN = [
+LGAs_OF_CONCERN = [
     'Blacktown',
     'Campbelltown',
     'Canterbury-Bankstown',
@@ -396,7 +396,7 @@ if LGA_IX is not None or OTHERS:
     dates, cases_by_lga = lga_data()
     # Sort LGAs in reverse order by last 14d cases
     sorted_lgas_of_concern = sorted(
-        LGAs_of_CONCERN, key=lambda k: -cases_by_lga[k][-14:].sum()
+        LGAs_OF_CONCERN, key=lambda k: -cases_by_lga[k][-14:].sum()
     )
     # print(sorted_lgas_of_concern)
     # for lga in sorted_lgas:
@@ -406,7 +406,7 @@ if LGA_IX is not None:
     new = cases_by_lga[LGA]
 elif OTHERS:
     # Sum over all LGAs not of concern
-    new = sum(cases_by_lga[lga] for lga in cases_by_lga if lga not in LGAs_of_CONCERN)
+    new = sum(cases_by_lga[lga] for lga in cases_by_lga if lga not in LGAs_OF_CONCERN)
 elif NONISOLATING:
     dates, new = nonisolating_data()
 else:
