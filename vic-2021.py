@@ -337,13 +337,14 @@ new_projection_lower = np.exp(np.log(new_projection) - log_new_projection_uncert
 # plt.show()
 
 
-FIRST_LOCKDOWN = np.datetime64('2021-05-28')
-EASING_1 = FIRST_LOCKDOWN + 21
-EASING_2 = np.datetime64('2021-07-09')
+PREV_LOCKDOWN = np.datetime64('2021-05-28')
+PREV_EASING_1 = PREV_LOCKDOWN + 21
+PREV_EASING_2 = np.datetime64('2021-07-09')
 
 
 LOCKDOWN = np.datetime64('2021-07-16')
-END_LOCKDOWN = np.datetime64('2021-07-28')
+EASING_1 = np.datetime64('2021-07-28')
+EASING_2 = EASING_1 + 14
 
 def whiten(color, f):
     """Mix a color with white where f is how much of the original colour to keep"""
@@ -355,8 +356,8 @@ fig1 = plt.figure(figsize=(10, 6))
 
 plt.fill_betweenx(
     [-10, 10],
-    [FIRST_LOCKDOWN, FIRST_LOCKDOWN],
-    [EASING_1, EASING_1],
+    [PREV_LOCKDOWN, PREV_LOCKDOWN],
+    [PREV_EASING_1, PREV_EASING_1],
     color=whiten("red", 0.35),
     linewidth=0,
     label="Lockdown",
@@ -364,8 +365,8 @@ plt.fill_betweenx(
 
 plt.fill_betweenx(
     [-10, 10],
-    [EASING_1, EASING_1],
-    [EASING_2, EASING_2],
+    [PREV_EASING_1, PREV_EASING_1],
+    [PREV_EASING_2, PREV_EASING_2],
     color=whiten("orange", 0.5),
     linewidth=0,
     label="Eased stay-at-home orders",
@@ -373,7 +374,7 @@ plt.fill_betweenx(
 
 plt.fill_betweenx(
     [-10, 10],
-    [EASING_2, EASING_2],
+    [PREV_EASING_2, PREV_EASING_2],
     [LOCKDOWN, LOCKDOWN],
     color=whiten("yellow", 0.5),
     linewidth=0,
@@ -383,22 +384,27 @@ plt.fill_betweenx(
 plt.fill_betweenx(
     [-10, 10],
     [LOCKDOWN, LOCKDOWN],
-    [END_LOCKDOWN, END_LOCKDOWN],
+    [EASING_1, EASING_1],
     color=whiten("red", 0.35),
     linewidth=0,
     # label="Lockdown",
 )
 
+plt.fill_betweenx(
+    [-10, 10],
+    [EASING_1, EASING_1],
+    [EASING_2, EASING_2],
+    color=whiten("orange", 0.5),
+    linewidth=0,
+    # label="Eased stay-at-home orders",
+)
 
 for i in range(30):
     plt.fill_betweenx(
         [-10, 10],
-        [END_LOCKDOWN.astype(int) + 0.3 * i, END_LOCKDOWN.astype(int) + 0.3 * i],
-        [
-            END_LOCKDOWN.astype(int) + 0.3 * i + 0.3,
-            END_LOCKDOWN.astype(int) + 0.3 * i + 0.3,
-        ],
-        color=whiten("red", 0.25 * (30 - i) / 30),
+        [EASING_2.astype(int) + 0.3 * i] * 2,
+        [EASING_2.astype(int) + 0.3 * i + 0.3] * 2,
+        color=whiten("orange", 0.4 * (30 - i) / 30),
         linewidth=0,
         zorder=-10,
     )
