@@ -765,15 +765,19 @@ ax6 = plt.gca()
 
 # Plot of projection 1st vs 2nd doses
 fig7 = plt.figure(figsize=(8, 6))
+
+proj_first_doses = diff_and_smooth(AZ_first_doses + pfizer_first_doses).cumsum()
+proj_second_doses = diff_and_smooth(AZ_second_doses + pfizer_second_doses).cumsum()
+
 plt.step(
     all_dates + 1,
-    diff_and_smooth(AZ_first_doses + pfizer_first_doses).cumsum() / 1e6,
+    proj_first_doses / 1e6,
     where='pre',
     label="First doses",
 )
 plt.step(
     all_dates + 1,
-    diff_and_smooth(AZ_second_doses + pfizer_second_doses).cumsum() / 1e6,
+    proj_second_doses / 1e6,
     where='pre',
     label="Second doses",
 )
@@ -802,6 +806,22 @@ today = np.datetime64(datetime.now(), 'D')
 plt.axvline(today, linestyle=":", color='k', label=f"Today ({today})")
 plt.gca().yaxis.set_major_locator(ticker.MultipleLocator(2.0))
 ax7 = plt.gca()
+
+PHASE_B_DATE = all_dates[proj_second_doses.searchsorted(0.7 * POP_16_PLUS)] + 1
+PHASE_C_DATE = all_dates[proj_second_doses.searchsorted(0.8 * POP_16_PLUS)] + 1
+
+plt.axhline(
+    0.7 * POP_16_PLUS / 1e6,
+    linestyle="--",
+    color='C4',
+    label=f"Phase B 70% target ({PHASE_B_DATE})",
+)
+plt.axhline(
+    0.8 * POP_16_PLUS / 1e6,
+    linestyle="--",
+    color='C2',
+    label=f"Phase C 80% target ({PHASE_C_DATE})",
+)
 
 twinax = plt.twinx()
 twinax.axis(ymin=0, ymax=100 * MAX_ELIGIBLE / POP_16_PLUS)
@@ -908,11 +928,11 @@ ax6.legend(
 
 
 handles, labels = ax7.get_legend_handles_labels()
-order = [0, 1, 3, 4, 5, 2]
+order = [0, 1, 5, 6, 7, 3, 4, 2]
 ax7.legend(
     [handles[idx] for idx in order],
     [labels[idx] for idx in order],
-    loc='upper left',
+    loc='lower right',
     # ncol=2,
     fontsize="small"
 )
