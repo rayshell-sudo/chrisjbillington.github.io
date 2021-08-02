@@ -31,10 +31,11 @@ NONISOLATING = 'noniso' in sys.argv
 VAX = 'vax' in sys.argv
 ACCELERATED_VAX = 'accel_vax' in sys.argv
 OTHERS = 'others' in sys.argv
+CONCERN = 'concern' in sys.argv
 LGA_IX = None
 LGA = None
 
-if not (NONISOLATING or VAX or ACCELERATED_VAX or OTHERS) and sys.argv[1:]:
+if not (NONISOLATING or VAX or ACCELERATED_VAX or OTHERS or CONCERN) and sys.argv[1:]:
     if len(sys.argv) == 2:
         LGA_IX = int(sys.argv[1])
     else:
@@ -392,7 +393,7 @@ LGAs_OF_CONCERN = [
     'Parramatta',
 ]
 
-if LGA_IX is not None or OTHERS:
+if LGA_IX is not None or OTHERS or CONCERN:
     dates, cases_by_lga = lga_data()
     # Sort LGAs in reverse order by last 14d cases
     sorted_lgas_of_concern = sorted(
@@ -405,8 +406,11 @@ if LGA_IX is not None:
     LGA = sorted_lgas_of_concern[LGA_IX]
     new = cases_by_lga[LGA]
 elif OTHERS:
-    # Sum over all LGAs not of concern
+    # Sum over all LGAs *not* of concern
     new = sum(cases_by_lga[lga] for lga in cases_by_lga if lga not in LGAs_OF_CONCERN)
+elif CONCERN:
+   # Sum over all LGAs of concern
+    new = sum(cases_by_lga[lga] for lga in cases_by_lga if lga in LGAs_OF_CONCERN) 
 elif NONISOLATING:
     dates, new = nonisolating_data()
 else:
@@ -785,6 +789,8 @@ if not VAX:
         region = LGA
     elif OTHERS:
         region = "New South Wales (excluding LGAs of concern)"
+    elif CONCERN:
+        region = "New South Wales LGAs of concern"
     else:
         region = "New South Wales"
     title_lines = [
@@ -913,6 +919,8 @@ elif LGA:
     suffix=f'_LGA_{LGA_IX}'
 elif OTHERS:
     suffix=f'_LGA_others'
+elif CONCERN:
+    suffix = f'_LGA_concern'
 else:
     suffix = ''
 
