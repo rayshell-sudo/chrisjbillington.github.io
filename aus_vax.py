@@ -784,8 +784,8 @@ plt.step(
     
 # all_first_doses = diff_and_smooth(AZ_first_doses + pfizer_first_doses).cumsum()
 # all_second_doses = diff_and_smooth(AZ_second_doses + pfizer_second_doses).cumsum()
-# adult_first_dose_percent = 100 * all_first_doses / 20.61e6
-# adult_second_dose_percent = 100 * all_second_doses / 20.61e6
+# adult_first_dose_percent = 100 * all_first_doses / POP_16_PLUS
+# adult_second_dose_percent = 100 * all_second_doses / POP_16_PLUS
 # for i, date in enumerate(all_dates):
 #     print(
 #         date,
