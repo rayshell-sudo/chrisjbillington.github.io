@@ -685,72 +685,79 @@ def whiten(color, f):
 
 
 fig1 = plt.figure(figsize=(10, 6))
-plt.fill_betweenx(
-    [-10, 10],
-    [MASKS, MASKS],
-    [LGA_LOCKDOWN, LGA_LOCKDOWN],
-    color=whiten("yellow", 0.5),
-    linewidth=0,
-    label="Initial restrictions",
-)
+ax1 = plt.axes()
 
+fig2 = plt.figure(figsize=(10, 6))
+ax3 = plt.axes()
 
-plt.fill_betweenx(
-    [-10, 10],
-    [LGA_LOCKDOWN, LGA_LOCKDOWN],
-    [LOCKDOWN, LOCKDOWN],
-    color=whiten("yellow", 0.5),
-    edgecolor=whiten("orange", 0.5),
-    linewidth=0,
-    hatch="//////",
-    label="East Sydney LGA lockdown",
-)
-plt.fill_betweenx(
-    [-10, 10],
-    [LOCKDOWN, LOCKDOWN],
-    [TIGHTER_LOCKDOWN, TIGHTER_LOCKDOWN],
-    color=whiten("orange", 0.5),
-    linewidth=0,
-    label="Greater Sydney lockdown",
-)
+for ax in [ax1, ax3]:
 
-plt.fill_betweenx(
-    [-10, 10],
-    [TIGHTER_LOCKDOWN, TIGHTER_LOCKDOWN],
-    [NONCRITICAL_RETAIL_CLOSED, NONCRITICAL_RETAIL_CLOSED],
-    color=whiten("orange", 0.5),
-    edgecolor=whiten("red", 0.35),
-    linewidth=0,
-    hatch="//////",
-    label="Lockdown tightened",
-)
-
-plt.fill_betweenx(
-    [-10, 10],
-    [NONCRITICAL_RETAIL_CLOSED, NONCRITICAL_RETAIL_CLOSED],
-    [END_LOCKDOWN, END_LOCKDOWN],
-    color=whiten("red", 0.35),
-    linewidth=0,
-    label="Noncritical retail closed\nConstruction paused",
-)
-
-
-for i in range(30):
-    plt.fill_betweenx(
-        [-10, 10],
-        [END_LOCKDOWN.astype(int) + 0.3 * i, END_LOCKDOWN.astype(int) + 0.3 * i],
-        [
-            END_LOCKDOWN.astype(int) + 0.3 * i + 0.3,
-            END_LOCKDOWN.astype(int) + 0.3 * i + 0.3,
-        ],
-        color=whiten("red", 0.25 * (30 - i) / 30),
+    ax.fill_betweenx(
+        [-10, 10] if ax is ax1 else [0, 5000],
+        [MASKS, MASKS],
+        [LGA_LOCKDOWN, LGA_LOCKDOWN],
+        color=whiten("yellow", 0.5),
         linewidth=0,
-        zorder=-10,
+        label="Initial restrictions",
     )
 
 
+    ax.fill_betweenx(
+        [-10, 10] if ax is ax1 else [0, 5000],
+        [LGA_LOCKDOWN, LGA_LOCKDOWN],
+        [LOCKDOWN, LOCKDOWN],
+        color=whiten("yellow", 0.5),
+        edgecolor=whiten("orange", 0.5),
+        linewidth=0,
+        hatch="//////",
+        label="East Sydney LGA lockdown",
+    )
+    ax.fill_betweenx(
+        [-10, 10] if ax is ax1 else [0, 5000],
+        [LOCKDOWN, LOCKDOWN],
+        [TIGHTER_LOCKDOWN, TIGHTER_LOCKDOWN],
+        color=whiten("orange", 0.5),
+        linewidth=0,
+        label="Greater Sydney lockdown",
+    )
 
-plt.fill_between(
+    ax.fill_betweenx(
+        [-10, 10] if ax is ax1 else [0, 5000],
+        [TIGHTER_LOCKDOWN, TIGHTER_LOCKDOWN],
+        [NONCRITICAL_RETAIL_CLOSED, NONCRITICAL_RETAIL_CLOSED],
+        color=whiten("orange", 0.5),
+        edgecolor=whiten("red", 0.35),
+        linewidth=0,
+        hatch="//////",
+        label="Lockdown tightened",
+    )
+
+    ax.fill_betweenx(
+        [-10, 10] if ax is ax1 else [0, 5000],
+        [NONCRITICAL_RETAIL_CLOSED, NONCRITICAL_RETAIL_CLOSED],
+        [END_LOCKDOWN, END_LOCKDOWN],
+        color=whiten("red", 0.35),
+        linewidth=0,
+        label="Noncritical retail closed\nConstruction paused",
+    )
+
+
+    for i in range(30):
+        ax.fill_betweenx(
+            [-10, 10] if ax is ax1 else [0, 5000],
+            [END_LOCKDOWN.astype(int) + 0.3 * i, END_LOCKDOWN.astype(int) + 0.3 * i],
+            [
+                END_LOCKDOWN.astype(int) + 0.3 * i + 0.3,
+                END_LOCKDOWN.astype(int) + 0.3 * i + 0.3,
+            ],
+            color=whiten("red", 0.25 * (30 - i) / 30),
+            linewidth=0,
+            zorder=-10,
+        )
+
+
+
+ax1.fill_between(
     dates[1:] + 1,
     R,
     label=R"$R_\mathrm{eff}$",
@@ -758,7 +765,7 @@ plt.fill_between(
     color='C0',
 )
 
-plt.fill_between(
+ax1.fill_between(
     dates[1:] + 1,
     R_lower,
     R_upper,
@@ -772,13 +779,12 @@ plt.fill_between(
     hatch="////",
 )
 
-plt.axhline(1.0, color='k', linewidth=1)
-plt.axis(xmin=START_PLOT, xmax=END_PLOT, ymin=0, ymax=4)
-plt.grid(True, linestyle=":", color='k', alpha=0.5)
+ax1.axhline(1.0, color='k', linewidth=1)
+for ax in [ax1, ax3]:
+    ax.axis(xmin=START_PLOT, xmax=END_PLOT, ymin=0, ymax=4)
+    ax.grid(True, linestyle=":", color='k', alpha=0.5)
 
-handles, labels = plt.gca().get_legend_handles_labels()
-
-plt.ylabel(R"$R_\mathrm{eff}$")
+ax1.set_ylabel(R"$R_\mathrm{eff}$")
 
 u_R_latest = (R_upper[-1] - R_lower[-1]) / 2
 
@@ -811,54 +817,65 @@ else:
         f"Starting from currently estimated {R_eff_string}",
     ]
 
-plt.title('\n'.join(title_lines))
+for ax in [ax1, ax3]:
+    ax.set_title('\n'.join(title_lines))
 
-plt.gca().yaxis.set_major_locator(mticker.MultipleLocator(0.25))
-ax2 = plt.twinx()
-plt.step(dates + 1, new + 0.02, color='purple', label='Daily cases')
-plt.semilogy(
-    dates.astype(int) + 0.5,
-    new_smoothed,
-    color='magenta',
-    label='Daily cases (smoothed)',
-)
+ax1.yaxis.set_major_locator(mticker.MultipleLocator(0.25))
+ax3.yaxis.set_major_locator(mticker.MultipleLocator(100))
+ax2 = ax1.twinx()
 
-plt.fill_between(
-    dates.astype(int) + 0.5,
-    new_smoothed_lower,
-    new_smoothed_upper,
-    color='magenta',
-    alpha=0.3,
-    linewidth=0,
-    zorder=10,
-    label='Smoothing/trend uncertainty',
-)
-plt.plot(
-    dates[-1].astype(int) + 0.5 + t_projection,
-    new_projection,
-    color='magenta',
-    linestyle='--',
-    label='Daily cases (trend)',
-)
-plt.fill_between(
-    dates[-1].astype(int) + 0.5 + t_projection,
-    new_projection_lower,
-    new_projection_upper,
-    color='magenta',
-    alpha=0.3,
-    linewidth=0,
-)
-plt.axis(ymin=1, ymax=10000)
-plt.ylabel(f"Daily {'non-isolating' if NONISOLATING else 'confirmed'} cases")
-plt.tight_layout(pad=1.8)
+for ax in [ax2, ax3]:
+    ax.step(dates + 1, new + 0.02, color='purple', label='Daily cases')
+    ax.plot(
+        dates.astype(int) + 0.5,
+        new_smoothed,
+        color='magenta',
+        label='Daily cases (smoothed)',
+    )
 
-handles2, labels2 = plt.gca().get_legend_handles_labels()
+    ax.fill_between(
+        dates.astype(int) + 0.5,
+        new_smoothed_lower,
+        new_smoothed_upper,
+        color='magenta',
+        alpha=0.3,
+        linewidth=0,
+        zorder=10,
+        label=f'Smoothing/{"projection" if VAX else "trend"} uncertainty',
+    )
+    ax.plot(
+        dates[-1].astype(int) + 0.5 + t_projection,
+        new_projection,
+        color='magenta',
+        linestyle='--',
+        label=f'Daily cases ({"projection" if VAX else "trend"})',
+    )
+    ax.fill_between(
+        dates[-1].astype(int) + 0.5 + t_projection,
+        new_projection_lower,
+        new_projection_upper,
+        color='magenta',
+        alpha=0.3,
+        linewidth=0,
+    )
+
+    ax.set_ylabel(f"Daily {'non-isolating' if NONISOLATING else 'confirmed'} cases")
+
+ax2.set_yscale('log')
+ax2.axis(ymin=1, ymax=10000)
+ax3.axis(ymin=0, ymax=1000 if ACCELERATED_VAX else 2000)
+
+for fig in [fig1, fig2]:
+    fig.tight_layout(pad=1.8)
+
+handles, labels = ax1.get_legend_handles_labels()
+handles2, labels2 = ax2.get_legend_handles_labels()
 
 handles += handles2
 labels += labels2
 
 order = [5, 6, 7, 8, 9, 10, 0, 1, 2, 3, 4]
-plt.legend(
+ax1.legend(
     # handles,
     # labels,
     [handles[idx] for idx in order],
@@ -868,47 +885,60 @@ plt.legend(
     prop={'size': 8}
 )
 
-# plt.axhline(2000 / .03 / 17, color='r', linestyle="--")
-
-plt.gca().yaxis.set_major_formatter(mticker.ScalarFormatter())
-plt.gca().yaxis.set_minor_formatter(mticker.ScalarFormatter())
-plt.gca().tick_params(axis='y', which='minor', labelsize='x-small')
-plt.setp(plt.gca().get_yminorticklabels()[1::2], visible=False)
-locator = mdates.DayLocator([1, 15] if VAX else [1, 5, 10, 15, 20, 25])
-plt.gca().xaxis.set_major_locator(locator)
-formatter = mdates.ConciseDateFormatter(locator, show_offset=False)
-plt.gca().xaxis.set_major_formatter(formatter)
-
-axpos = plt.gca().get_position()
-
-text = plt.figtext(
-    axpos.x0 + axpos.width - 0.01,
-    axpos.y0 + 0.02,
-    # 0.625,
-    # 0.13,
-    "@chrisbilbo | chrisbillington.net/COVID_NSW",
-    size=8,
-    alpha=0.5,
-    color=(0, 0, 0.25),
-    fontfamily="monospace",
-    horizontalalignment="right"
+handles, labels = ax3.get_legend_handles_labels()
+order = [0, 1, 2, 8, 3, 4, 5, 6, 7]
+ax3.legend(
+    # handles,
+    # labels,
+    [handles[idx] for idx in order],
+    [labels[idx] for idx in order],
+    loc='upper left',
+    ncol=2,
+    prop={'size': 8}
 )
-text.set_bbox(dict(facecolor='white', alpha=0.8, linewidth=0))
+
+
+ax2.yaxis.set_major_formatter(mticker.ScalarFormatter())
+ax2.yaxis.set_minor_formatter(mticker.ScalarFormatter())
+ax2.tick_params(axis='y', which='minor', labelsize='x-small')
+plt.setp(ax2.get_yminorticklabels()[1::2], visible=False)
+for fig, ax in [(fig1, ax1), (fig2, ax3)]:
+    locator = mdates.DayLocator([1, 15] if VAX else [1, 5, 10, 15, 20, 25])
+    ax.xaxis.set_major_locator(locator)
+    formatter = mdates.ConciseDateFormatter(locator, show_offset=False)
+    ax.xaxis.set_major_formatter(formatter)
+
+    axpos = ax.get_position()
+
+    text = fig.text(
+        # axpos.x0 + axpos.width - 0.01,
+        # axpos.y0 + 0.02,
+        0.99,
+        0.02,
+        "@chrisbilbo | chrisbillington.net/COVID_NSW",
+        size=8,
+        alpha=0.5,
+        color=(0, 0, 0.25),
+        fontfamily="monospace",
+        horizontalalignment="right"
+    )
+    text.set_bbox(dict(facecolor='white', alpha=0.8, linewidth=0))
 
 if VAX:
     total_cases_range = f"{total_cases_lower/1000:.0f}k—{total_cases_upper/1000:.0f}k"
-    text = plt.figtext(
-        0.65,
-        0.83,
-        "\n".join(
-            [
-                f"Projected total cases in outbreak:  {total_cases/1000:.0f}k",
-                f"                                  68% range:  {total_cases_range}",
-            ]
-        ),
-        fontsize='small',
-    )
-    text.set_bbox(dict(facecolor='white', alpha=0.8, linewidth=0))
+    for fig in [fig1, fig2]:
+        text = fig.text(
+            0.65,
+            0.83,
+            "\n".join(
+                [
+                    f"Projected total cases in outbreak:  {total_cases/1000:.0f}k",
+                    f"                                  68% range:  {total_cases_range}",
+                ]
+            ),
+            fontsize='small',
+        )
+        text.set_bbox(dict(facecolor='white', alpha=0.8, linewidth=0))
 
     suffix = '_vax'
     if ACCELERATED_VAX:
@@ -926,6 +956,10 @@ else:
 
 fig1.savefig(f'COVID_NSW{suffix}.svg')
 fig1.savefig(f'COVID_NSW{suffix}.png', dpi=200)
+if VAX:
+    fig2.savefig(f'COVID_NSW{suffix}_linear.svg')
+    fig2.savefig(f'COVID_NSW{suffix}_linear.png', dpi=200)
+
 
 # Update the date in the HTML
 html_file = 'COVID_NSW.html'
