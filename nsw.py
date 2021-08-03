@@ -955,10 +955,10 @@ else:
     suffix = ''
 
 fig1.savefig(f'COVID_NSW{suffix}.svg')
-fig1.savefig(f'COVID_NSW{suffix}.png', dpi=200)
+fig1.savefig(f'COVID_NSW{suffix}.png', dpi=133)
 if VAX:
     fig2.savefig(f'COVID_NSW{suffix}_linear.svg')
-    fig2.savefig(f'COVID_NSW{suffix}_linear.png', dpi=200)
+    fig2.savefig(f'COVID_NSW{suffix}_linear.png', dpi=133)
 
 
 # Update the date in the HTML
