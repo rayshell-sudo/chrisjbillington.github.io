@@ -10,3 +10,4 @@ do
    python nsw.py $i
 done
 python nsw.py others
+python nsw.py concern
