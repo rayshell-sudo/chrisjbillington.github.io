@@ -344,7 +344,9 @@ PREV_EASING_2 = np.datetime64('2021-07-09')
 
 LOCKDOWN = np.datetime64('2021-07-16')
 EASING_1 = np.datetime64('2021-07-28')
-EASING_2 = EASING_1 + 14
+
+LOCKDOWN_AGAIN = np.datetime64('2021-08-06')
+EASING_AGAIN = LOCKDOWN_AGAIN + 7
 
 def whiten(color, f):
     """Mix a color with white where f is how much of the original colour to keep"""
@@ -393,18 +395,26 @@ plt.fill_betweenx(
 plt.fill_betweenx(
     [-10, 10],
     [EASING_1, EASING_1],
-    [EASING_2, EASING_2],
+    [LOCKDOWN_AGAIN, LOCKDOWN_AGAIN],
     color=whiten("orange", 0.5),
     linewidth=0,
     # label="Eased stay-at-home orders",
 )
 
+plt.fill_betweenx(
+    [-10, 10],
+    [LOCKDOWN_AGAIN, LOCKDOWN_AGAIN],
+    [EASING_AGAIN, EASING_AGAIN],
+    color=whiten("red", 0.35),
+    linewidth=0,
+    # label="Eased stay-at-home orders",
+)
 for i in range(30):
     plt.fill_betweenx(
         [-10, 10],
-        [EASING_2.astype(int) + 0.3 * i] * 2,
-        [EASING_2.astype(int) + 0.3 * i + 0.3] * 2,
-        color=whiten("orange", 0.4 * (30 - i) / 30),
+        [EASING_AGAIN.astype(int) + 0.3 * i] * 2,
+        [EASING_AGAIN.astype(int) + 0.3 * i + 0.3] * 2,
+        color=whiten("red", 0.25 * (30 - i) / 30),
         linewidth=0,
         zorder=-10,
     )
