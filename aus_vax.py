@@ -264,7 +264,8 @@ PFIZER_PROJECTED_SHIPMENTS= """ # In thousands per week
 PLOT_END_DATE = (
     np.datetime64('2022-01-31') if LONGPROJECT else dates[-1] + 50 #np.datetime64('2021-05-31')
 )
-CUMULATIVE_YMAX = 18  # million
+CUMULATIVE_YMAX = 26  # million
+DAILY_YMAX = 320 if LONGPROJECT else 240
 
 PROJECT = True
 
@@ -615,7 +616,7 @@ plt.axis(
     xmin=dates[0].astype(int) + 1,
     xmax=PLOT_END_DATE,
     ymin=0,
-    ymax=320 if LONGPROJECT else 200,
+    ymax=DAILY_YMAX,
 )
 plt.gca().yaxis.set_major_locator(ticker.MultipleLocator(20))
 ax2 = plt.gca()
@@ -754,7 +755,7 @@ plt.axis(
     xmin=dates[0].astype(int) + 1,
     xmax=PLOT_END_DATE,
     ymin=0,
-    ymax=320 if LONGPROJECT else 200,
+    ymax=DAILY_YMAX,
 )
 plt.gca().yaxis.set_major_locator(ticker.MultipleLocator(20))
 plt.title('Projected daily doses by type')
@@ -888,7 +889,7 @@ ax1.legend(
     ncol=2,
     fontsize="small"
 )
-ax1.yaxis.set_major_locator(ticker.MultipleLocator(5 if LONGPROJECT else 1))
+ax1.yaxis.set_major_locator(ticker.MultipleLocator(5 if LONGPROJECT else 2))
 
 
 handles, labels = ax2.get_legend_handles_labels()
@@ -906,7 +907,7 @@ ax2.legend(
 
 
 for ax in [ax3, ax4, ax5]:
-    ax.yaxis.set_major_locator(ticker.MultipleLocator(5 if LONGPROJECT else 1))
+    ax.yaxis.set_major_locator(ticker.MultipleLocator(5 if LONGPROJECT else 2))
     handles, labels = ax.get_legend_handles_labels()
     order = [3, 2, 1, 0, 4, 5, 6]
     ax.legend(
@@ -961,6 +962,7 @@ for i in reversed(range(N_WEEKS)):
     date = (dates[start] + 1).astype(datetime).strftime('%B %d')
     plt.plot(days, block / 1e3, 'o-', label=f"Week beginning {date}",  zorder=i)
 plt.grid(True, linestyle=':', color='k', alpha=0.5)
+plt.gca().yaxis.set_major_locator(ticker.MultipleLocator(20))
 # plt.gca().set_xticklabels()
 plt.legend()
 plt.ylabel('Daily doses (thousands)')
