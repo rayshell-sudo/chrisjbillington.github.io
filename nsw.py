@@ -70,8 +70,8 @@ def covidlive_doses_per_100():
     df = pd.read_html("https://covidlive.com.au/report/daily-vaccinations/nsw")[1]
     doses = df['DOSES'][0]
     # We're assuming that doses are evenly distributed NSW-wide. The extent that we want
-    # to assume Sydney is prioritised over regionsl is taken into account by the factor
-    # of two in the "accelerated vaccination" scenario. In the regular scenatio it's
+    # to assume Sydney is prioritised over regional is taken into account by the factor
+    # of two in the "accelerated vaccination" scenario. In the regular scenario it's
     # even state-wide.
     return 100 * doses / POP_OF_NSW
 
