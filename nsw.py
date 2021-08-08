@@ -264,12 +264,14 @@ def stochastic_sir(
     given, can be a covariance matrix representing the uncertainty in the initial
     caseload and R_eff. It will be used to randomly draw an initial caseload and R_eff
     from a multivariate Gaussian distribution each trial. Returns the median and the
-    given confidence interval of daily infections and cumulative infections
+    given confidence interval of daily infections, cumulative infections, and R_eff over
+    time.
     """
     if not isinstance(vaccine_immunity, np.ndarray):
         vaccine_immunity = np.full(n_days, vaccine_immunity)
     # Our results dataset over all trials, will extract conficence intervals at the end.
     trials_infected_today = np.zeros((n_trials, n_days))
+    trials_R_eff = np.zeros((n_trials, n_days))
     for i in range(n_trials):
         print(f"trial {i}")
         # Randomly choose an R_eff and caseload from the distribution
@@ -293,17 +295,19 @@ def stochastic_sir(
             # in absolute nubmers so need to be normalised by population to get
             # susceptible fraction
             s = (1 - vax_immune) * (1 - (recovered + infectious) / population_size)
-            R_t = s * R0
-            infected_today = np.random.poisson(infectious * R_t / tau)
+            R_eff = s * R0
+            infected_today = np.random.poisson(infectious * R_eff / tau)
             recovered_today = np.random.binomial(infectious, 1 / tau)
             infectious += infected_today - recovered_today
             recovered += recovered_today
             cumulative += infected_today
             trials_infected_today[i, j] = infected_today
+            trials_R_eff[i, j] = R_eff 
 
     trials_infected_today.sort(axis=0)
     cumulative_infected = trials_infected_today.cumsum(axis=1) + initial_cumulative_cases
     cumulative_infected.sort(axis=0)
+    trials_R_eff.sort(axis=0)
 
     ix_median = n_trials // 2
     ix_lower = int((n_trials * (1 - confidence_interval)) // 2)
@@ -317,11 +321,17 @@ def stochastic_sir(
     cumulative_lower = cumulative_infected[ix_lower, :]
     cumulative_upper = cumulative_infected[ix_upper, :]
 
+    R_eff_median = trials_R_eff[ix_median, :]
+    R_eff_lower = trials_R_eff[ix_lower, :]
+    R_eff_upper = trials_R_eff[ix_upper, :]
+
     return (
         daily_median,
         (daily_lower, daily_upper),
         cumulative_median,
         (cumulative_lower, cumulative_upper),
+        R_eff_median,
+        (R_eff_lower, R_eff_upper),
     )
 
 
@@ -508,7 +518,7 @@ for i in range(N_monte_carlo):
         maxfev=20000,
     )
     clip_params(params)
-    scenario_params = np.random.multivariate_normal(params, cov)
+    scenario_params = params # np.random.multivariate_normal(params, cov)
     clip_params(scenario_params)
     fit = exponential(pad_x, *scenario_params).clip(0.1, None)
 
@@ -558,29 +568,6 @@ new_smoothed_lower = new_smoothed_lower.clip(0, None)
 new_smoothed = new_smoothed.clip(0, None)
 
 
-if VAX:
-    # Model including projected effect of vaccines and immunity from infections
-    def log_projection_model(t, A, R):
-        susceptible = 1 - projected_vaccine_immune_population(t, current_doses_per_100)
-        R0 = R / susceptible[0]
-        R_t = susceptible * R0
-
-        y = np.zeros_like(t)
-        y[0] = A
-        cumulative_cases = new.sum()
-        for i in range(1, len(t)):
-            dt = t[i] - t[i - 1]
-            R_with_infections = R_t[i] * (1 - cumulative_cases / POP_OF_NSW)
-            y[i] = y[i - 1] * R_with_infections ** (dt / tau)
-            cumulative_cases += y[i]
-        return np.log(y)
-
-else:
-    # Simple model, no vaccines or community immunity
-    def log_projection_model(t, A, R):
-        return np.log(A * R ** (t / tau))
-
-
 # Projection of daily case numbers:
 days_projection = (END_PLOT + 200 - dates[-1]).astype(int)
 t_projection = np.linspace(0, days_projection, days_projection + 1)
@@ -609,8 +596,17 @@ if VAX:
         cov_caseload_R_eff=cov,
         confidence_interval=0.68,
     )
-    new_projection, ci_new_projection, total_projection, ci_total_projection = results
+    (
+        new_projection,
+        ci_new_projection,
+        total_projection,
+        ci_total_projection,
+        R_eff_projection,
+        ci_R_eff_projection,
+    ) = results
+
     new_projection_lower, new_projection_upper = ci_new_projection
+    R_eff_projection_lower, R_eff_projection_upper = ci_R_eff_projection
 
     total_cases = total_projection[-1]
     total_cases_lower = ci_total_projection[0][-1]
@@ -623,6 +619,11 @@ if VAX:
 
 
 else:
+
+    # Simple model, no vaccines or community immunity
+    def log_projection_model(t, A, R):
+        return np.log(A * R ** (t / tau))
+
     new_projection = np.exp(log_projection_model(t_projection, new_smoothed[-1], R[-1]))
     log_new_projection_uncertainty = model_uncertainty(
         log_projection_model, t_projection, (new_smoothed[-1], R[-1]), cov
@@ -739,18 +740,15 @@ for ax in [ax1, ax3]:
         [END_LOCKDOWN, END_LOCKDOWN],
         color=whiten("red", 0.35),
         linewidth=0,
-        label="Noncritical retail closed\nConstruction paused",
+        label="Noncritical retail closed",
     )
 
 
     for i in range(30):
         ax.fill_betweenx(
             [-10, 10] if ax is ax1 else [0, 5000],
-            [END_LOCKDOWN.astype(int) + 0.3 * i, END_LOCKDOWN.astype(int) + 0.3 * i],
-            [
-                END_LOCKDOWN.astype(int) + 0.3 * i + 0.3,
-                END_LOCKDOWN.astype(int) + 0.3 * i + 0.3,
-            ],
+            [END_LOCKDOWN.astype(int) + i / 3] * 2,
+            [END_LOCKDOWN.astype(int) + (i + 1) / 3] * 2,
             color=whiten("red", 0.25 * (30 - i) / 30),
             linewidth=0,
             zorder=-10,
@@ -766,19 +764,44 @@ ax1.fill_between(
     color='C0',
 )
 
-ax1.fill_between(
-    dates[1:] + 1,
-    R_lower,
-    R_upper,
-    label=R"$R_\mathrm{eff}$ uncertainty",
-    color='cyan',
-    edgecolor='blue',
-    alpha=0.2,
-    step='pre',
-    zorder=2,
-    # linewidth=0,
-    hatch="////",
-)
+if VAX:
+    ax1.fill_between(
+        np.concatenate([dates[1:].astype(int), dates[-1].astype(int) + t_projection]) + 1,
+        np.concatenate([R_lower, R_eff_projection_lower]),
+        np.concatenate([R_upper, R_eff_projection_upper]),
+        label=R"$R_\mathrm{eff}$/projection uncertainty",
+        color='cyan',
+        edgecolor='blue',
+        alpha=0.2,
+        step='pre',
+        zorder=2,
+        # linewidth=0,
+        hatch="////",
+    )
+    ax1.fill_between(
+        dates[-1].astype(int) + t_projection + 1,
+        R_eff_projection,
+        label=R"$R_\mathrm{eff}$ (projection)",
+        step='pre',
+        color='C0',
+        linewidth=0,
+        alpha=0.75
+    )
+else:
+    ax1.fill_between(
+        dates[1:] + 1,
+        R_lower,
+        R_upper,
+        label=R"$R_\mathrm{eff}$ uncertainty",
+        color='cyan',
+        edgecolor='blue',
+        alpha=0.2,
+        step='pre',
+        zorder=2,
+        # linewidth=0,
+        hatch="////",
+    )
+
 
 ax1.axhline(1.0, color='k', linewidth=1)
 for ax in [ax1, ax3]:
@@ -875,8 +898,11 @@ handles2, labels2 = ax2.get_legend_handles_labels()
 handles += handles2
 labels += labels2
 
-order = [5, 6, 7, 8, 9, 10, 0, 1, 2, 3, 4]
-ax1.legend(
+if VAX:
+    order = [5, 7, 6, 8, 9, 10, 11, 0, 1, 2, 3, 4]
+else:
+    order = [5, 6, 7, 8, 9, 10, 0, 1, 2, 3, 4]
+ax2.legend(
     # handles,
     # labels,
     [handles[idx] for idx in order],
