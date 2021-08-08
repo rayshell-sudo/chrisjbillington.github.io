@@ -49,7 +49,7 @@
   <div class="content">
     <h1>Australian COVID-19 vaccination rollout</h1>
     <p>
-    Last updated: 2021-08-08-17:21 Melbourne time
+    Last updated: 2021-08-08-18:15 Melbourne time
     </p>
     <p>
       <span style="background-color: #00FF00"><b>See also: <a href="COVID_NSW.html">Progression of the Bondi COVID outbreak in New South Wales</a></b></span>
@@ -143,14 +143,12 @@
     Approximate expected supply of mRNA vaccines (based on the federal allocation
     horizons document <a
     href="https://www.health.gov.au/sites/default/files/documents/2021/06/covid-19-vaccination-covid-vaccination-allocations-horizons.pdf">here</a>,
-    as well as other comments made in press conference) is 300k, 500k, 1M, 1M Pfizer in
-    the weeks of July, then 1125k per week in August, then 1M Pfizer plus 110k Moderna
-    per week in September, then 2M Pfizer plus 520k Moderna per week starting
-    in October.
+    as well as other comments made in press conference) is 1125k per week in August,
+    then 1M Pfizer plus 200k Moderna per week in September, then 2M Pfizer plus 750k
+    Moderna per week starting in October.
   </p>
   <p>
-    Expected supply of the AstraZeneca vaccine is 1M doses per week, which is the
-    current rate of local production
+    Expected supply of the AstraZeneca vaccine is 1M doses per week.
   </p>
   <img src="daily_doses_by_state_longproject.svg">
   <br>
@@ -168,73 +166,76 @@
     assumptions:
     <ul>
       <li>
-        That the number of Pfizer/Moderna and AstraZeneca first doses administered on a given
-        day is in proportion to the number of available doses of each type of vaccine
-        on that day.
+        That the number of Pfizer/Moderna and AstraZeneca first doses administered on a
+        given day is in proportion to the number of available doses of each type of
+        vaccine on that day, weighted by a "demand factor" equal to 2.0 for Pfizer and
+        1.0 for AstraZeneca.
       </li>
       <li>
-        That 50% of Pfizer/Moderna supply is held in reserve for second doses,
-        administered exactly 25 days after the first dose (Pfizer should be 21 days
-        and Moderna 28m, but I'm treating them the same for simplicity).
+        That prior to May 27th, 50% of Pfizer supply is held in reserve for second
+        doses, and after May 27th, that a Pfizer/Moderna reserve is maintained equal to
+        40% of outstanding second doses. Pfizer/Moderna second doses are administered
+        exactly 25 days after the first dose (Pfizer should be 21 days and Moderna 28m,
+        but I'm treating them the same for simplicity),
       </li>
       <li>
-          <!-- That 50% of AstraZeneca supply is held in reserve for second doses,
-            administered exactly 12 weeks after the first dose. -->
-            Prior to mid-April, that 50% of AstraZeneca supply is held in reserve for
-            second doses. After mid-April (when the government became confident enough in
-            local supply to maintain a smaller reserve), that a reserve is maintained with
-            a number of doses equal two thirds of all outstanding second doses. These
-            second doses are administered exactly 12 weeks after the first dose.
-          </li>
-          <li>
-            That doses becoming available in a given week (supply data is only available
-            at the 1-week level) become available at the end of that week.
-          </li>
-          <li>
-            That 12.5% of doses are wasted.
-          </li>
-        </ul>
-      </p>
-      <img src="utilisation.svg">
-      <h2 id="utilisation_by_type">Estimated utilisation by vaccine type</h2>
-      <p>
-        Below is the same utilisation estimates as in the above plot, but separated by
-        vaccine type: AstraZeneca vs Pfizer/Moderna (which are lumped together).
-      </p>
-      <img src="pfizer-moderna_utilisation.svg">
-      <br>
-      <img src="az_utilisation.svg">
-      <h3 id="details">Data sources and contact</h3>
-      <p>
-        Source for vaccine supply and expected supply: <a href="https://www.covid19data.com.au/vaccines">covid19data.com.au</a>
-      </p>
-      <p>
-        Source for daily/cumulative dose numbers: <a href="https://covidlive.com.au">covidlive.com.au</a>.
-      </p>
-      <p>
-        Source for first doses by age group prior to June 30th: <a
-        href="https://www.health.gov.au/using-our-websites/copyright">Department of
-        Health</a>, data extracted from government materials by <a
-        href="https://covidbaseau.com/vaccinations/download">covidbaseau.com</a>.
-      </p>
-      <p>
-        Source for first and second doses by age group from June 30th: <a
-        href="https://www.health.gov.au/using-our-websites/copyright">Department of
-        Health</a>, data extracted from government materials by <a
-        href="https://github.com/jxeeno/aust-govt-covid19-vaccine-pdf">Ken Tsang</a>
-      </p>
-      <p>
-        Population data from the <a
-        href="https://www.abs.gov.au/statistics/people/population/national-state-and-territory-population/jun-2020">Australian
-        Bureau of Statistics Estimated Resident Population, June 2020</a>
-      </p>
-      <p>
-        Plots and analysis by Chris Billington. Contact: chrisjbillington [at] gmail [dot] com
-      </p>
-      <p>
-        Python script for producing the plots is available <a
-        href="https://github.com/chrisjbillington/chrisjbillington.github.io/blob/master/aus_vax.py">on GitHub</a>.
-      </p>
-    </div>
-  </body>
-  </html>
+        Prior to mid-April, that 50% of AstraZeneca supply is held in reserve for second
+        doses. After mid-April (when the government became confident enough in local
+        supply to maintain a smaller reserve), that a reserve is maintained with a
+        number of doses equal top 66% of all outstanding second doses. AstraZeneca
+        second doses are administered exactly 11 weeks after the first dose. (for most
+        people, this is 12 weeks, but for some in areas with active outbreaks it is much
+        earlier, so I'm using an intermediate value to approximate both situations)
+      </li>
+      <li>
+        That doses becoming available in a given week (supply data is only available
+        at the 1-week level) become available at the end of that week.
+      </li>
+      <li>
+        That 12.5% of doses are wasted (these are not shown in the utilisation plots).
+      </li>
+    </ul>
+  </p>
+  <img src="utilisation.svg">
+  <h2 id="utilisation_by_type">Estimated utilisation by vaccine type</h2>
+  <p>
+    Below is the same utilisation estimates as in the above plot, but separated by
+    vaccine type: AstraZeneca vs Pfizer/Moderna (which are lumped together).
+  </p>
+  <img src="pfizer-moderna_utilisation.svg">
+  <br>
+  <img src="az_utilisation.svg">
+  <h3 id="details">Data sources and contact</h3>
+  <p>
+    Source for vaccine supply and expected supply: <a href="https://www.covid19data.com.au/vaccines">covid19data.com.au</a>
+  </p>
+  <p>
+    Source for daily/cumulative dose numbers: <a href="https://covidlive.com.au">covidlive.com.au</a>.
+  </p>
+  <p>
+    Source for first doses by age group prior to June 30th: <a
+    href="https://www.health.gov.au/using-our-websites/copyright">Department of
+  Health</a>, data extracted from government materials by <a
+  href="https://covidbaseau.com/vaccinations/download">covidbaseau.com</a>.
+</p>
+<p>
+  Source for first and second doses by age group from June 30th: <a
+  href="https://www.health.gov.au/using-our-websites/copyright">Department of
+Health</a>, data extracted from government materials by <a
+href="https://github.com/jxeeno/aust-govt-covid19-vaccine-pdf">Ken Tsang</a>
+</p>
+<p>
+  Population data from the <a
+  href="https://www.abs.gov.au/statistics/people/population/national-state-and-territory-population/jun-2020">Australian
+Bureau of Statistics Estimated Resident Population, June 2020</a>
+</p>
+<p>
+  Plots and analysis by Chris Billington. Contact: chrisjbillington [at] gmail [dot] com
+</p>
+<p>
+  Python script for producing the plots is available <a
+  href="https://github.com/chrisjbillington/chrisjbillington.github.io/blob/master/aus_vax.py">on GitHub</a>.
+</p>
+</div>
+</body>
+</html>
