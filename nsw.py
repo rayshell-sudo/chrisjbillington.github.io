@@ -350,29 +350,27 @@ def projected_vaccine_immune_population(t, current_doses_per_100):
     # Oct 230k per day = 0.92 %
     # Nov 280k per day = 1.12 %
 
-    # NSW currently exceeding national rates by 15%, so let's go with that:
-    PRIORITY_FACTOR = 1.15
+    # NSW currently exceeding national rates by 22%, so let's go with that:
+    PRIORITY_FACTOR = 1.22
 
     if ACCELERATED_VAX:
         # What if we give NSW double the supply, or if their rollout is prioritised such
         # that each dose reduces spread twice as much as for an average member of the
         # population?
-        PRIORITY_FACTOR *= 2
+        PRIORITY_FACTOR = 2
 
 
     doses_per_100 = np.zeros_like(t)
     doses_per_100[0] = current_doses_per_100
     for i in range(1, len(doses_per_100)):
-        if i < AUG:
-            doses_per_100[i] = doses_per_100[i - 1] + 0.55 * PRIORITY_FACTOR
-        elif i < SEP:
-            doses_per_100[i] = doses_per_100[i - 1] + 0.66 * PRIORITY_FACTOR
+        if i < SEP:
+            doses_per_100[i] = doses_per_100[i - 1] + 0.83 * PRIORITY_FACTOR
         elif i < OCT:
-            doses_per_100[i] = doses_per_100[i - 1] + 0.74 * PRIORITY_FACTOR
+            doses_per_100[i] = doses_per_100[i - 1] + 0.75 * PRIORITY_FACTOR
         elif i < NOV:
-            doses_per_100[i] = doses_per_100[i - 1] + 0.92 * PRIORITY_FACTOR
+            doses_per_100[i] = doses_per_100[i - 1] + 1.03 * PRIORITY_FACTOR
         else:
-            doses_per_100[i] = doses_per_100[i - 1] + 1.12 * PRIORITY_FACTOR
+            doses_per_100[i] = doses_per_100[i - 1] + 1.03 * PRIORITY_FACTOR
 
     doses_per_100 = np.clip(doses_per_100, 0, 85 * 2)
     immune = 0.4 * doses_per_100 / 100
@@ -837,7 +835,7 @@ elif ACCELERATED_VAX:
     ]
 else:
     title_lines = [
-        "Projected effect of standard New South Wales vaccination rollout",
+        "Projected effect of New South Wales vaccination rollout",
         f"Starting from currently estimated {R_eff_string}",
     ]
 
@@ -887,7 +885,7 @@ for ax in [ax2, ax3]:
 
 ax2.set_yscale('log')
 ax2.axis(ymin=1, ymax=10000)
-ax3.axis(ymin=0, ymax=1000 if ACCELERATED_VAX else 2000)
+ax3.axis(ymin=0, ymax=1000 if ACCELERATED_VAX else 1500)
 
 for fig in [fig1, fig2]:
     fig.tight_layout(pad=1.8)

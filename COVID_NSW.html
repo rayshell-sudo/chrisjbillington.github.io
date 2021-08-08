@@ -49,7 +49,7 @@
 </head>
 <body>
   <div class="content">
-    Last updated: 2021-08-08-21:06 AEST
+    Last updated: 2021-08-08-22:25 AEST
     <br>
     <small>
       Updated daily after NSW announce case numbers
@@ -70,9 +70,9 @@
     <div id="toc_container">
       <p class="toc_title">Contents</p>
       <li><a href="#all"><i>R</i><sub>eff</sub> estimate from all cases</a></li>
-      <li><a href="#noniso"><i>R</i><sub>eff</sub> estimate from non-isolating cases only</a></li>
-      <li><a href="#vax">Projected effect of standard vaccine rollout</a></li>
-      <li><a href="#accel_vax">Projected effect of 2× accelerated/prioritised vaccine rollout</a></li>
+      <!-- <li><a href="#noniso"><i>R</i><sub>eff</sub> estimate from non-isolating cases only</a></li> -->
+      <li><a href="#vax">Projected effect of vaccine rollout</a></li>
+      <!-- <li><a href="#accel_vax">Projected effect of 2× accelerated/prioritised vaccine rollout</a></li> -->
       <li><a href="#concern-vs-others"><i>R</i><sub>eff</sub> in LGAs of concern vs rest of NSW</a></li>
       <li><a href="#lga"><i>R</i><sub>eff</sub> in individual LGAs of concern</a></li>
       <li><a href="#disclaimer">Disclaimer on trends</a></li>
@@ -98,7 +98,7 @@
     </p>
     <img src="COVID_NSW.svg">
 
-    <h3 id="noniso"><i>R</i><sub>eff</sub> estimate from non-isolating cases only</h3>
+<!--     <h3 id="noniso"><i>R</i><sub>eff</sub> estimate from non-isolating cases only</h3>
     <p>
       Cases isolating during their infectious period represent a much lower risk of spread.
       The growth rate of non-isolating cases represents a more leading indicator of whether
@@ -106,39 +106,35 @@
       one, except it excludes cases that were known to be isolating for their full infectious
       period.
     </p>
-    <img src="COVID_NSW_noniso.svg">
+    <img src="COVID_NSW_noniso.svg"> -->
 
-    <h3 id="vax">Projected effect of standard vaccine rollout</h3>
+    <h3 id="vax">Projected effect of vaccine rollout</h3>
     <p>
-      The trendlines in the above plots simply project forward case numbers assuming that
+      The trendline in the above plot simply projects forward case numbers assuming that
       <i>R</i><sub>eff</sub> remains at its current estimated value. What about the effect
       of vaccines? Below is a plot with the projected trend taking into account an
       estimated reduction of spread due to vaccination levels increasing in New South
       Wales through the remainder of the year. This projection is a stochastic SIR model,
       and thus also takes into account immunity due to infections, which would decrease
       transmission once a non-neglibible fraction of the population has been infected.
-      See the methodology section below for details.
     </p>
     <p>
-      This is a conservative model of vaccination in New South Wales assuming the rollout
-      continues roughly according to the same plan that was in place before the outbreak.
-      However, there are various changes to the rollout that could considerably accelerate
-      the effect of vaccines on spread in New South Wales. These include prioritising
-      essential workers who are at higher risk of spreading the virus during lockdown,
-      prioritising based on geographic closeness to where cases are concentrated, or New
-      South Wales receiving a disproportionate allocation of national supply. See below
-      this plot for a projection based on an accelerated or prioritised vaccine rollout.
+      The rate of vaccination assumed in the model is based on national supply
+      expectations, and assumes that New South Wales will exceed the national per-capita
+      average rate of doses per day by 22%, which is how much they are currently
+      exceeding it by at time of writing (August 8th). See the methodology section below
+      for details.
     </p>
     <img src="COVID_NSW_vax.svg">
 
     <p>
-      Below is the same case numbers and projection as above, but without the
+      Below are the same case numbers and projection as above, but without the
       <i>R</i><sub>eff</sub> estimate, and on a linear scale instead of a log scale.
     </p>
 
     <img src="COVID_NSW_vax_linear.svg">
 
-    <h3 id="accel_vax">Projected effect of 2× accelerated/prioritised vaccine rollout</h3>
+    <!-- <h3 id="accel_vax">Projected effect of 2× accelerated/prioritised vaccine rollout</h3>
 
     <p>
       New South Wales has announced policy to prioritise younger, working members of the
@@ -165,7 +161,7 @@
       <i>R</i><sub>eff</sub> estimate, and on a linear scale instead of a log scale.
     </p>
 
-    <img src="COVID_NSW_accel_vax_linear.svg">
+    <img src="COVID_NSW_accel_vax_linear.svg"> -->
 
     <h3 id="concern-vs-others"><i>R</i><sub>eff</sub> in LGAs of concern vs rest of NSW</h3>
     <p>
@@ -283,15 +279,14 @@
     </p>
     <p>
       For the plot taking into account the effect of vaccinations in the future, I assume
-      that for the case of a "standard" rollout NSW will administer doses at a rate of:
+      that NSW will administer doses at a rate of:
       <ul>
-        <li>0.63 doses per 100 population per day in July</li>
-        <li>0.76 doses per 100 population per day in August</li>
-        <li>0.85 doses per 100 population per day in September</li>
-        <li>1.06 doses per 100 population per day in October</li>
-        <li>1.29 doses per 100 population per day from November</li>
+        <li>1.01 doses per 100 population per day in August</li>
+        <li>0.92 doses per 100 population per day in September</li>
+        <li>1.26 doses per 100 population per day in October</li>
+        <li>1.26 doses per 100 population per day from November</li>
       </ul>
-      up to a maximum of 85% of the population. These vaccination rates are about 15%
+      up to a maximum of 85% of the population. These vaccination rates are about 22%
       faster than the population-adjusted national rate that we might expect based on
       future supply (see <a href="https://chrisbillington.net/aus_vaccinations.html">my
       page on the vaccination rollout</a>), which is roughly how much faster New South
@@ -309,20 +304,6 @@
       capita on each day.
     </p>
     <p>
-      For the case of a hypothetical "2× accelerated/prioritised" vaccine rollout, I assume
-      that the reduction in spread due to vaccines occurs twice as fast. I achieve this is
-      my model by simply doubling the rates of vaccination above, which is one way (with
-      increased supply) that New South Wales might reduce spread more quickly than the
-      "standard" rollout expected prior to the current outbreak.
-    </p>
-    <p>
-      This is also equivalent to New South Wales vaccinating at the slower rates, but with
-      more active members of the community prioritised so as to achieve, on average, twice
-      the reduction in spread per dose than one would get vaccinating a random member of
-      the population.
-    </p>
-    <p>
-
       <i>R</i><sub>eff</sub> is then estimated for any future date as:
       <br>
       <br>
