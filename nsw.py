@@ -885,7 +885,7 @@ for ax in [ax2, ax3]:
 
 ax2.set_yscale('log')
 ax2.axis(ymin=1, ymax=10000)
-ax3.axis(ymin=0, ymax=1000 if ACCELERATED_VAX else 1500)
+ax3.axis(ymin=0, ymax=1000 if ACCELERATED_VAX else 800)
 
 for fig in [fig1, fig2]:
     fig.tight_layout(pad=1.8)
