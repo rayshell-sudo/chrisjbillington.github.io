@@ -22,6 +22,8 @@ munits.registry[np.datetime64] = converter
 munits.registry[datetime.date] = converter
 munits.registry[datetime] = converter
 
+NONISOLATING = "noniso" in sys.argv
+
 # Data from covidlive by date announced to public
 def covidlive_data(start_date=np.datetime64('2021-05-10')):
     df = pd.read_html('https://covidlive.com.au/report/daily-source-overseas/vic')[1]
@@ -41,6 +43,23 @@ def covidlive_data(start_date=np.datetime64('2021-05-10')):
     cases = cases[dates >= start_date][::-1]
     dates = dates[dates >= start_date][::-1]
 
+    return dates, cases
+
+
+def nonisolating_data():
+    df = pd.read_html('https://covidlive.com.au/report/daily-wild-cases/vic')[1]
+    df = df[:-5] # Data begins Jul 17th
+    if df['TOTAL'][0] == '-':
+        df = df[1:]
+    dates = np.array(
+        [
+            np.datetime64(datetime.strptime(date, "%d %b %y"), 'D') - 1
+            for date in df['DATE']
+        ]
+    )
+    cases = np.array(df['TOTAL'].astype(int))[::-1]
+    dates = dates[::-1]
+    assert dates[0] == np.datetime64('2021-07-16'), dates[0]
     return dates, cases
 
 
@@ -91,7 +110,11 @@ def model_uncertainty(function, x, params, covariance):
     return np.sqrt(squared_model_uncertainty)
 
 
-dates, new = covidlive_data()
+if NONISOLATING:
+    dates, new = nonisolating_data()
+else:
+    dates, new = covidlive_data()
+
 
 # Current vaccination level:
 current_doses_per_100 = covidlive_doses_per_100()
@@ -123,7 +146,7 @@ tau = 5  # reproductive time of the virus in days
 # fit results prior to smoothing.
 
 FIT_PTS = min(20, len(dates[dates >= START_PLOT]))
-x0 = -10
+x0 = -7
 delta_x = 1
 fit_x = np.arange(-FIT_PTS, 0)
 fit_weights = 1 / (1 + np.exp(-(fit_x - x0) / delta_x))
@@ -180,7 +203,7 @@ for i in range(N_monte_carlo):
         maxfev=20000,
     )
     clip_params(params)
-    scenario_params = np.random.multivariate_normal(params, cov)
+    scenario_params = params # np.random.multivariate_normal(params, cov)
     clip_params(scenario_params)
     fit = exponential(pad_x, *scenario_params).clip(0.1, None)
 
@@ -455,6 +478,7 @@ u_R_latest = (R_upper[-1] - R_lower[-1]) / 2
 
 plt.title(
     "$R_\\mathrm{eff}$ in Victoria with Melbourne restriction levels and daily cases"
+    + (" (nonisolating cases only)" if NONISOLATING else "")
     + ( "\n"
         + fR"Latest estimate: $R_\mathrm{{eff}}={R[-1]:.02f} \pm {u_R_latest:.02f}$"
     )
@@ -525,8 +549,12 @@ plt.gca().xaxis.set_major_locator(mdates.DayLocator([1, 5, 10, 15, 20, 25]))
 plt.gca().get_xaxis().get_major_formatter().show_offset = False
 
 
-fig1.savefig('COVID_VIC_2021.svg')
-fig1.savefig('COVID_VIC_2021.png', dpi=200)
+if NONISOLATING:
+    fig1.savefig('COVID_VIC_2021_noniso.svg')
+    fig1.savefig('COVID_VIC_2021_noniso.png', dpi=133)
+else:
+    fig1.savefig('COVID_VIC_2021.svg')
+    fig1.savefig('COVID_VIC_2021.png', dpi=133)
 
 plt.show()
 
