@@ -369,7 +369,7 @@ LOCKDOWN = np.datetime64('2021-07-16')
 EASING_1 = np.datetime64('2021-07-28')
 
 LOCKDOWN_AGAIN = np.datetime64('2021-08-06')
-EASING_AGAIN = LOCKDOWN_AGAIN + 7
+EASING_AGAIN = np.datetime64('2021-08-20')
 
 def whiten(color, f):
     """Mix a color with white where f is how much of the original colour to keep"""
