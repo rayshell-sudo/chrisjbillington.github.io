@@ -436,7 +436,7 @@ current_doses_per_100 = covidlive_doses_per_100()
 #     new = np.append(new, [98])
 
 START_PLOT = np.datetime64('2021-06-13')
-END_PLOT = np.datetime64('2022-01-01') if VAX else np.datetime64('2021-09-01')
+END_PLOT = np.datetime64('2022-01-01') if VAX else dates[-1] + 28 #np.datetime64('2021-09-01')
 
 SMOOTHING = 4
 PADDING = 3 * int(round(3 * SMOOTHING))
@@ -747,7 +747,9 @@ for ax in [ax1, ax3]:
             [-10, 10] if ax is ax1 else [0, 5000],
             [END_LOCKDOWN.astype(int) + i / 3] * 2,
             [END_LOCKDOWN.astype(int) + (i + 1) / 3] * 2,
-            color=whiten("red", 0.25 * (30 - i) / 30),
+            # color=whiten("red", 0.25 * (30 - i) / 30),
+            color="red",
+            alpha=0.25 * (30 - i) / 30,
             linewidth=0,
             zorder=-10,
         )
