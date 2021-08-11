@@ -881,7 +881,9 @@ for ax in [ax2, ax3]:
         linewidth=0,
     )
 
-    ax.set_ylabel(f"Daily {'non-isolating' if NONISOLATING else 'confirmed'} cases")
+    ax.set_ylabel(
+        f"Daily {'non-isolating' if NONISOLATING else 'confirmed'} cases (log scale)"
+    )
 
 ax2.set_yscale('log')
 ax2.axis(ymin=1, ymax=10000)
@@ -981,9 +983,15 @@ else:
 
 fig1.savefig(f'COVID_NSW{suffix}.svg')
 fig1.savefig(f'COVID_NSW{suffix}.png', dpi=133)
-if VAX:
-    fig2.savefig(f'COVID_NSW{suffix}_linear.svg')
-    fig2.savefig(f'COVID_NSW{suffix}_linear.png', dpi=133)
+ax2.set_yscale('linear')
+ax2.axis(ymin=0, ymax=1600 if VAX else 800)
+ax2.set_ylabel(f"Daily confirmed cases (linear scale)")
+fig1.savefig(f'COVID_NSW{suffix}_linear.svg')
+fig1.savefig(f'COVID_NSW{suffix}_linear.png', dpi=133)
+
+# if VAX:
+#     fig2.savefig(f'COVID_NSW{suffix}_linear.svg')
+#     fig2.savefig(f'COVID_NSW{suffix}_linear.png', dpi=133)
 
 
 # Update the date in the HTML
