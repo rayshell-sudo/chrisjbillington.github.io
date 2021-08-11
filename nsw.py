@@ -985,11 +985,12 @@ else:
 
 fig1.savefig(f'COVID_NSW{suffix}.svg')
 fig1.savefig(f'COVID_NSW{suffix}.png', dpi=133)
-ax2.set_yscale('linear')
-ax2.axis(ymin=0, ymax=1600 if VAX else 800)
-ax2.set_ylabel(f"Daily confirmed cases (linear scale)")
-fig1.savefig(f'COVID_NSW{suffix}_linear.svg')
-fig1.savefig(f'COVID_NSW{suffix}_linear.png', dpi=133)
+if not (LGA or OTHERS or CONCERN):
+    ax2.set_yscale('linear')
+    ax2.axis(ymin=0, ymax=1600 if VAX else 800)
+    ax2.set_ylabel(f"Daily confirmed cases (linear scale)")
+    fig1.savefig(f'COVID_NSW{suffix}_linear.svg')
+    fig1.savefig(f'COVID_NSW{suffix}_linear.png', dpi=133)
 
 # if VAX:
 #     fig2.savefig(f'COVID_NSW{suffix}_linear.svg')
