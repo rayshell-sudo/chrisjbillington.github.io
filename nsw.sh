@@ -5,7 +5,7 @@ python nsw.py
 # python nsw.py noniso
 python nsw.py vax
 # python nsw.py accel_vax
-for i in {0..8}
+for i in {0..11}
 do
    python nsw.py $i
 done

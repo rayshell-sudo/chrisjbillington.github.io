@@ -400,6 +400,9 @@ LGAs_OF_CONCERN = [
     'Liverpool',
     'Parramatta',
     'Penrith',
+    'Bayside',
+    'Strathfield',
+    'Burwood',
 ]
 
 if LGA_IX is not None or OTHERS or CONCERN:
