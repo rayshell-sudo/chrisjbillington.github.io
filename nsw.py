@@ -304,6 +304,13 @@ def stochastic_sir(
             trials_infected_today[i, j] = infected_today
             trials_R_eff[i, j] = R_eff 
 
+    threshold = 1000
+    threshold_exceeded = (
+        (trials_infected_today > threshold).cumsum(axis=1).astype(bool).mean(axis=0)
+    )
+
+    # import embed
+
     trials_infected_today.sort(axis=0)
     cumulative_infected = trials_infected_today.cumsum(axis=1) + initial_cumulative_cases
     cumulative_infected.sort(axis=0)
