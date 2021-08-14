@@ -1086,11 +1086,11 @@ if not (LGA or OTHERS or CONCERN):
     if BIPARTITE:
         ymax = 10000
     elif VAX:
-        ymax = 24000
+        ymax = 2400
     else:
         ymax = 1600
     ax2.axis(ymin=0, ymax=ymax)
-    ax2.yaxis.set_major_locator(mticker.MultipleLocator(ymax / 4))
+    ax2.yaxis.set_major_locator(mticker.MultipleLocator(ymax / 8))
     ax2.set_ylabel(f"Daily confirmed cases (linear scale)")
     fig1.savefig(f'COVID_NSW{suffix}_linear.svg')
     fig1.savefig(f'COVID_NSW{suffix}_linear.png', dpi=133)
