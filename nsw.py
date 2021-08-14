@@ -894,7 +894,7 @@ else:
 
 
 ax1.axhline(1.0, color='k', linewidth=1)
-ax1.axis(xmin=START_PLOT, xmax=END_PLOT, ymin=0, ymax=4)
+ax1.axis(xmin=START_PLOT, xmax=END_PLOT, ymin=0, ymax=5 if BIPARTITE else 4)
 ax1.grid(True, linestyle=":", color='k', alpha=0.5)
 
 ax1.set_ylabel(R"$R_\mathrm{eff}$")
@@ -984,7 +984,7 @@ ax2.set_ylabel(
 )
 
 ax2.set_yscale('log')
-ax2.axis(ymin=1, ymax=10000)
+ax2.axis(ymin=1, ymax=100_000 if BIPARTITE else 10_000)
 
 fig1.tight_layout(pad=1.8)
 
@@ -1037,7 +1037,7 @@ text.set_bbox(dict(facecolor='white', alpha=0.8, linewidth=0))
 if VAX:
     total_cases_range = f"{total_cases_lower/1000:.0f}k—{total_cases_upper/1000:.0f}k"
     text = fig1.text(
-        0.64,
+        0.63,
         0.83,
         "\n".join(
             [
@@ -1067,8 +1067,9 @@ fig1.savefig(f'COVID_NSW{suffix}.svg')
 fig1.savefig(f'COVID_NSW{suffix}.png', dpi=133)
 if not (LGA or OTHERS or CONCERN):
     ax2.set_yscale('linear')
+    ax1.axis(ymax=4) # Was set to 5 for log plot in case of bipartite projection
     if BIPARTITE:
-        ymax = 10000
+        ymax = 12000
     elif VAX:
         ymax = 2400
     else:
