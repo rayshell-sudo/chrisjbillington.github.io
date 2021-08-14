@@ -829,7 +829,7 @@ ax1.fill_betweenx(
     [END_LOCKDOWN, END_LOCKDOWN],
     color=whiten("red", 0.45),
     linewidth=0,
-    label="Statewide lockdown",
+    label="Statewide lockdown\nOperation Stay at Home",
 )
 
 for i in range(30):
