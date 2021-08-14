@@ -2,6 +2,7 @@ import sys
 from datetime import datetime
 from pytz import timezone
 from pathlib import Path
+import pickle
 
 from scipy.optimize import curve_fit
 from scipy.signal import convolve
@@ -32,16 +33,23 @@ VAX = 'vax' in sys.argv
 ACCELERATED_VAX = 'accel_vax' in sys.argv
 OTHERS = 'others' in sys.argv
 CONCERN = 'concern' in sys.argv
+BIPARTITE = 'bipartite' in sys.argv
 LGA_IX = None
 LGA = None
 
-if not (NONISOLATING or VAX or ACCELERATED_VAX or OTHERS or CONCERN) and sys.argv[1:]:
+if (
+    not (NONISOLATING or VAX or ACCELERATED_VAX or OTHERS or CONCERN or BIPARTITE)
+    and sys.argv[1:]
+):
     if len(sys.argv) == 2:
         LGA_IX = int(sys.argv[1])
     else:
         raise ValueError(sys.argv[1:])
 
 if ACCELERATED_VAX:
+    VAX = True
+
+if BIPARTITE:
     VAX = True
 
 # Data from covidlive by date announced to public
@@ -243,6 +251,20 @@ def model_uncertainty(function, x, params, covariance):
     )
     return np.sqrt(squared_model_uncertainty)
 
+def get_confidence_interval(data, confidence_interval=0.68, axis=0):
+    """Return median (lower, upper) for a confidence interval of the data along the
+    given axis"""
+    n = data.shape[axis]
+    ix_median = n // 2
+    ix_lower = int((n * (1 - confidence_interval)) // 2)
+    ix_upper = n - ix_lower
+    sorted_data = np.sort(data, axis=axis)
+    median = sorted_data.take(ix_median, axis=axis)
+    lower = sorted_data.take(ix_lower, axis=axis)
+    upper = sorted_data.take(ix_upper, axis=axis)
+    return median, (lower, upper)
+
+
 def stochastic_sir(
     initial_caseload,
     initial_cumulative_cases,
@@ -253,7 +275,6 @@ def stochastic_sir(
     n_days,
     n_trials=10000,
     cov_caseload_R_eff=None,
-    confidence_interval=0.68,
 ):
     """Run n trials of a stochastic SIR model, starting from an initial caseload and
     cumulative cases, for a population of the given size, an initial observed R_eff
@@ -263,9 +284,9 @@ def stochastic_sir(
     be a constant. Runs n_trials separate trials for n_days each. cov_caseload_R_eff, if
     given, can be a covariance matrix representing the uncertainty in the initial
     caseload and R_eff. It will be used to randomly draw an initial caseload and R_eff
-    from a multivariate Gaussian distribution each trial. Returns the median and the
-    given confidence interval of daily infections, cumulative infections, and R_eff over
-    time.
+    from a multivariate Gaussian distribution each trial. Returns the full dataset of
+    daily infections, cumulative infections, and R_eff over time, with the first axis of
+    each array being the trial number, and the second axis the day.
     """
     if not isinstance(vaccine_immunity, np.ndarray):
         vaccine_immunity = np.full(n_days, vaccine_immunity)
@@ -304,48 +325,29 @@ def stochastic_sir(
             trials_infected_today[i, j] = infected_today
             trials_R_eff[i, j] = R_eff 
 
-    threshold = 1000
-    threshold_exceeded = (
-        (trials_infected_today > threshold).cumsum(axis=1).astype(bool).mean(axis=0)
-    )
-
-    # import embed
-
-    trials_infected_today.sort(axis=0)
+    # threshold = 1000
+    # threshold_exceeded = (
+    #     (trials_infected_today > threshold).cumsum(axis=1).astype(bool).mean(axis=0)
+    # )
     cumulative_infected = trials_infected_today.cumsum(axis=1) + initial_cumulative_cases
-    cumulative_infected.sort(axis=0)
-    trials_R_eff.sort(axis=0)
 
-    ix_median = n_trials // 2
-    ix_lower = int((n_trials * (1 - confidence_interval)) // 2)
-    ix_upper = n_trials - ix_lower
+    return trials_infected_today, cumulative_infected, trials_R_eff
 
-    daily_median = trials_infected_today[ix_median, :]
-    daily_lower = trials_infected_today[ix_lower, :]
-    daily_upper = trials_infected_today[ix_upper, :]
+    
 
-    cumulative_median = cumulative_infected[ix_median, :]
-    cumulative_lower = cumulative_infected[ix_lower, :]
-    cumulative_upper = cumulative_infected[ix_upper, :]
-
-    R_eff_median = trials_R_eff[ix_median, :]
-    R_eff_lower = trials_R_eff[ix_lower, :]
-    R_eff_upper = trials_R_eff[ix_upper, :]
-
-    return (
-        daily_median,
-        (daily_lower, daily_upper),
-        cumulative_median,
-        (cumulative_lower, cumulative_upper),
-        R_eff_median,
-        (R_eff_lower, R_eff_upper),
-    )
+    # return (
+    #     daily_median,
+    #     (daily_lower, daily_upper),
+    #     cumulative_median,
+    #     (cumulative_lower, cumulative_upper),
+    #     R_eff_median,
+    #     (R_eff_lower, R_eff_upper),
+    # )
 
 
 def projected_vaccine_immune_population(t, current_doses_per_100):
     """compute projected future susceptible population, starting with the current doses
     per 100 population, and assuming a certain vaccine efficacy and rollout schedule"""
-    AUG = np.datetime64('2021-08-01').astype(int) - dates[-1].astype(int)
     SEP = np.datetime64('2021-09-01').astype(int) - dates[-1].astype(int)
     OCT = np.datetime64('2021-10-01').astype(int) - dates[-1].astype(int)
     NOV = np.datetime64('2021-11-01').astype(int) - dates[-1].astype(int)
@@ -588,9 +590,15 @@ cov = np.array(
     ]
 )
 
-if VAX:
+if CONCERN or OTHERS:
+    # Save the fit params and covariance to disk so that we can run a projection based
+    # on the sum of the two separate restriction settings (the BIPARTITE mode)
+    with open('concern.pickle' if CONCERN else 'others.pickle', 'wb') as f:
+        pickle.dump([R[-1], new_smoothed[-1], cov, new.sum()], f)
+
+if VAX and not BIPARTITE:
     # Fancy stochastic SIR model
-    results = stochastic_sir(
+    trials_infected_today, trials_cumulative, trials_R_eff  = stochastic_sir(
         initial_caseload=new_smoothed[-1],
         initial_cumulative_cases=new.sum(),
         initial_R_eff=R[-1],
@@ -602,29 +610,97 @@ if VAX:
         n_days=days_projection + 1,
         n_trials=10000,
         cov_caseload_R_eff=cov,
-        confidence_interval=0.68,
-    )
-    (
-        new_projection,
-        ci_new_projection,
-        total_projection,
-        ci_total_projection,
-        R_eff_projection,
-        ci_R_eff_projection,
-    ) = results
-
-    new_projection_lower, new_projection_upper = ci_new_projection
-    R_eff_projection_lower, R_eff_projection_upper = ci_R_eff_projection
-
-    total_cases = total_projection[-1]
-    total_cases_lower = ci_total_projection[0][-1]
-    total_cases_upper = ci_total_projection[1][-1]
-
-    print(f"total cases: {total_cases/1000:.02f}k")
-    print(
-        f"1 sigma range:  {total_cases_lower/1000:.02f}k—{total_cases_upper/1000:.02f}k"
     )
 
+    new_projection, (
+        new_projection_lower,
+        new_projection_upper,
+    ) = get_confidence_interval(trials_infected_today)
+
+    cumulative_median, (cumulative_lower, cumulative_upper) = get_confidence_interval(
+        trials_cumulative,
+    )
+
+    R_eff_projection, (
+        R_eff_projection_lower,
+        R_eff_projection_upper,
+    ) = get_confidence_interval(trials_R_eff)
+
+    total_cases = cumulative_median[-1]
+    total_cases_lower = cumulative_lower[-1]
+    total_cases_upper = cumulative_upper[-1]
+
+elif BIPARTITE:
+
+    # Sum of two models - one for LGAs of concern, and one for the rest of NSW
+    with open('concern.pickle', 'rb') as f:
+        R_concern, new_concern, cov_concern, initial_cumulative_concern = pickle.load(f)
+    with open('others.pickle', 'rb') as f:
+        R_others, new_others, cov_others, initial_cumulative_others =  pickle.load(f)
+
+    # LGA data is a tad out of date. Scale new and cumulative cases proportionally to
+    # match total new and cumulative caseloads.
+    caseload_factor = new_smoothed[-1] / (new_concern + new_others)
+    cumulative_factor = new.sum() / (initial_cumulative_concern + initial_cumulative_others)
+
+    new_concern = caseload_factor * new_concern
+    new_others = caseload_factor * new_others
+    initial_cumulative_concern = cumulative_factor * initial_cumulative_concern
+    initial_cumulative_others = cumulative_factor * initial_cumulative_others
+
+    # Fancy stochastic SIR model
+    concern_infected_today, concern_cumulative, concern_R_eff  = stochastic_sir(
+        initial_caseload=new_concern,
+        initial_cumulative_cases=initial_cumulative_concern,
+        initial_R_eff=R_concern,
+        tau=tau,
+        population_size=POP_OF_SYD,
+        vaccine_immunity=projected_vaccine_immune_population(
+            t_projection, current_doses_per_100
+        ),
+        n_days=days_projection + 1,
+        n_trials=10000,
+        cov_caseload_R_eff=cov_concern,
+    )
+
+    others_infected_today, others_cumulative, others_R_eff  = stochastic_sir(
+        initial_caseload=new_others,
+        initial_cumulative_cases=initial_cumulative_others,
+        initial_R_eff=R_others,
+        tau=tau,
+        population_size=POP_OF_SYD,
+        vaccine_immunity=projected_vaccine_immune_population(
+            t_projection, current_doses_per_100
+        ),
+        n_days=days_projection + 1,
+        n_trials=10000,
+        cov_caseload_R_eff=cov_others,
+    )
+
+    trials_infected_today = concern_infected_today + others_infected_today
+    trials_cumulative = concern_cumulative + others_cumulative
+
+    trials_R_eff = (
+        concern_infected_today * concern_R_eff + others_infected_today * others_R_eff
+    ) / (concern_infected_today + others_infected_today)
+
+    new_projection, (
+        new_projection_lower,
+        new_projection_upper,
+    ) = get_confidence_interval(trials_infected_today)
+
+    cumulative_median, (cumulative_lower, cumulative_upper) = get_confidence_interval(
+        trials_cumulative,
+    )
+
+    R_eff_projection, (
+        R_eff_projection_lower,
+        R_eff_projection_upper,
+    ) = get_confidence_interval(trials_R_eff)
+
+    total_cases = cumulative_median[-1]
+    total_cases_lower = cumulative_lower[-1]
+    total_cases_upper = cumulative_upper[-1]
 
 else:
 
@@ -845,10 +921,20 @@ elif ACCELERATED_VAX:
         "Projected effect of 2× accelerated/prioritised New South Wales vaccination rollout",
         f"Starting from currently estimated {R_eff_string}",
     ]
-else:
+elif not BIPARTITE:
     title_lines = [
         "Projected effect of New South Wales vaccination rollout",
         f"Starting from currently estimated {R_eff_string}",
+    ]
+else:
+    u_R_concern = np.sqrt(cov_concern[1, 1])
+    u_R_others = np.sqrt(cov_others[1, 1])
+    R_eff_str_concern = fR"$R_\mathrm{{eff,concern}}={R_concern:.02f} \pm {u_R_concern:.02f}$"
+    R_eff_str_others = fR"$R_\mathrm{{eff,others}}={R_others:.02f} \pm {u_R_others:.02f}$"
+    title_lines = [
+        "Projected effect of New South Wales vaccination rollout"
+        " assuming status quo outside LGAs of concern",
+        f"Starting from current estimates: {R_eff_str_concern} and {R_eff_str_others}",
     ]
 
 for ax in [ax1, ax3]:
@@ -967,7 +1053,7 @@ if VAX:
     total_cases_range = f"{total_cases_lower/1000:.0f}k—{total_cases_upper/1000:.0f}k"
     for fig in [fig1, fig2]:
         text = fig.text(
-            0.65,
+            0.64,
             0.83,
             "\n".join(
                 [
@@ -979,7 +1065,7 @@ if VAX:
         )
         text.set_bbox(dict(facecolor='white', alpha=0.8, linewidth=0))
 
-    suffix = '_vax'
+    suffix = '_bipartite' if BIPARTITE else '_vax'
     if ACCELERATED_VAX:
         suffix = '_accel_vax'
 elif NONISOLATING:
@@ -987,9 +1073,9 @@ elif NONISOLATING:
 elif LGA:
     suffix=f'_LGA_{LGA_IX}'
 elif OTHERS:
-    suffix=f'_LGA_others'
+    suffix='_LGA_others'
 elif CONCERN:
-    suffix = f'_LGA_concern'
+    suffix = '_LGA_concern'
 else:
     suffix = ''
 
@@ -997,7 +1083,14 @@ fig1.savefig(f'COVID_NSW{suffix}.svg')
 fig1.savefig(f'COVID_NSW{suffix}.png', dpi=133)
 if not (LGA or OTHERS or CONCERN):
     ax2.set_yscale('linear')
-    ax2.axis(ymin=0, ymax=1600 if VAX else 800)
+    if BIPARTITE:
+        ymax = 10000
+    elif VAX:
+        ymax = 24000
+    else:
+        ymax = 1600
+    ax2.axis(ymin=0, ymax=ymax)
+    ax2.yaxis.set_major_locator(mticker.MultipleLocator(ymax / 4))
     ax2.set_ylabel(f"Daily confirmed cases (linear scale)")
     fig1.savefig(f'COVID_NSW{suffix}_linear.svg')
     fig1.savefig(f'COVID_NSW{suffix}_linear.png', dpi=133)
