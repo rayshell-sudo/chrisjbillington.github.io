@@ -59,6 +59,9 @@ nsw_proj_rate = np.zeros(len(t_projection))
 nsw_proj_rate[:] =  1.6 # Oct onward
 nsw_proj_rate[t_projection < OCT] =  1.4 # Sep
 nsw_proj_rate[t_projection < SEP] =  1.2 # Aug
+# clip to 85% fully vaxed
+initial_coverage =  100 * nsw_doses.sum() / POPS[STATE]
+nsw_proj_rate[initial_coverage + nsw_proj_rate.cumsum() > 2 * 85] = 0
 
 plt.figure(figsize=(10, 5))
 plt.subplot(121)
