@@ -194,6 +194,10 @@ pfizer_supply_data = """
 2021-07-18      5_238_190 + 500_000
 2021-07-25      6_238_190 + 500_000
 2021-08-01      7_238_190 + 500_000
+# Below not yet reflected on covid19data.com.au, but pretty sure I heard numbers like
+# this in the federal pressers, and it is what was expected:
+2021-08-08      7_238_190 + 1_125_000
+2021-08-15      7_238_190 + 2 * 1_125_000 + 1_000_000 # Thanks Poland
 """
 
 LONGPROJECT = False or 'project' in sys.argv
@@ -237,8 +241,6 @@ AZ_local_supply_data = """
 #"""
 
 PFIZER_PROJECTED_SHIPMENTS= """ # In thousands per week
-2021-08-08 1125
-2021-08-15 1125
 2021-08-22 1125
 2021-08-29 1125
 2021-09-05 100  + 200  # Pfizer + Moderna
