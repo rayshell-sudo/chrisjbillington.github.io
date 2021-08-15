@@ -49,7 +49,7 @@
 </head>
 <body>
   <div class="content">
-    Last updated: 2021-08-15-15:15 AEST
+    Last updated: 2021-08-15-15:34 AEST
     <br>
     <small>
       Updated daily after NSW announce case numbers
@@ -125,11 +125,11 @@
       transmission once a non-neglibible fraction of the population has been infected.
     </p>
     <p>
-      The rate of vaccination assumed in the model is based on national supply
-      expectations, and assumes that New South Wales will exceed the national per-capita
-      average rate of doses per day by 22%, which is how much they are currently
-      exceeding it by at time of writing (August 8th). See the methodology section below
-      for details.
+      The rate of vaccination assumed in the model is 1.2 doses per 100 population per
+      day in August, 1.4 doses per 100 population per day in September, and 1.6 doses
+      per 100 population per day from October onward, up to a maximum of 85% of the
+      population. See below for plots of how these assumed rates compare to the
+      vaccination rollout in New South Wales so far.
     </p>
     <p>
       This projection shows what might be possible if all other factors effecting
@@ -144,6 +144,12 @@
     </p>
     <img src="COVID_NSW_vax_linear.svg">
     <img src="COVID_NSW_vax.svg">
+    <p>
+      Below are plots of the vaccination rollout in New South Wales to date, in terms of
+      daily and cumulative doses per 100 population, with the assumed future rate used
+      for the above projections also shown.
+    </p>
+    <img src="COVID_NSW_projected_doses.svg">
 
     <!-- <h3 id="accel_vax">Projected effect of 2× accelerated/prioritised vaccine rollout</h3>
 
@@ -299,21 +305,6 @@
       old model, which was valid in the limit of infections only reaching a small
       fraction of the total population.
     </p>
-    <p>
-      For the plot taking into account the effect of vaccinations in the future, I assume
-      that NSW will administer doses at a rate of:
-      <ul>
-        <li>1.01 doses per 100 population per day in August</li>
-        <li>0.92 doses per 100 population per day in September</li>
-        <li>1.26 doses per 100 population per day in October</li>
-        <li>1.26 doses per 100 population per day from November</li>
-      </ul>
-      up to a maximum of 85% of the population. These vaccination rates are about 22%
-      faster than the population-adjusted national rate that we might expect based on
-      future supply (see <a href="https://chrisbillington.net/aus_vaccinations.html">my
-      page on the vaccination rollout</a>), which is roughly how much faster New South
-      Wales' rollout is proceeding compared to the national rollout at the moment.
-    </p> 
     <p>
       I assume that one dose of any vaccine reduces spread by 40%, and two doses reduce
       spread by 80%. The proportion of the population susceptible to the virus is then:

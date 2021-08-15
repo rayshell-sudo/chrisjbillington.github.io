@@ -350,36 +350,16 @@ def projected_vaccine_immune_population(t, current_doses_per_100):
     per 100 population, and assuming a certain vaccine efficacy and rollout schedule"""
     SEP = np.datetime64('2021-09-01').astype(int) - dates[-1].astype(int)
     OCT = np.datetime64('2021-10-01').astype(int) - dates[-1].astype(int)
-    NOV = np.datetime64('2021-11-01').astype(int) - dates[-1].astype(int)
-
-    # My national projections of doses per 100 people per day are:
-    # Jul 140k per day = 0.55 %
-    # Aug 165k per day = 0.66 %
-    # Sep 185k per day = 0.74 %
-    # Oct 230k per day = 0.92 %
-    # Nov 280k per day = 1.12 %
-
-    # NSW currently exceeding national rates by 22%, so let's go with that:
-    PRIORITY_FACTOR = 1.22
-
-    if ACCELERATED_VAX:
-        # What if we give NSW double the supply, or if their rollout is prioritised such
-        # that each dose reduces spread twice as much as for an average member of the
-        # population?
-        PRIORITY_FACTOR = 2
-
 
     doses_per_100 = np.zeros_like(t)
     doses_per_100[0] = current_doses_per_100
     for i in range(1, len(doses_per_100)):
         if i < SEP:
-            doses_per_100[i] = doses_per_100[i - 1] + 0.83 * PRIORITY_FACTOR
+            doses_per_100[i] = doses_per_100[i - 1] + 1.2
         elif i < OCT:
-            doses_per_100[i] = doses_per_100[i - 1] + 0.75 * PRIORITY_FACTOR
-        elif i < NOV:
-            doses_per_100[i] = doses_per_100[i - 1] + 1.03 * PRIORITY_FACTOR
+            doses_per_100[i] = doses_per_100[i - 1] + 1.4
         else:
-            doses_per_100[i] = doses_per_100[i - 1] + 1.03 * PRIORITY_FACTOR
+            doses_per_100[i] = doses_per_100[i - 1] + 1.6
 
     doses_per_100 = np.clip(doses_per_100, 0, 85 * 2)
     immune = 0.4 * doses_per_100 / 100

@@ -12,3 +12,4 @@ done
 python nsw.py others
 python nsw.py concern
 python nsw.py bipartite
+python nsw_vax.py
