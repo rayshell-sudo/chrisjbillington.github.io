@@ -61,9 +61,9 @@ def exponential_smoothing(data, pts):
 
 def get_data():
     COVIDLIVE = 'https://covidlive.com.au/covid-live.json'
-    PDFPARSER = "https://vaccinedata.covid19nearme.com.au/data/all.json"
+    # PDFPARSER = "https://vaccinedata.covid19nearme.com.au/data/all.json"
     covidlivedata = json.loads(requests.get(COVIDLIVE).content)
-    pdfdata = json.loads(requests.get(PDFPARSER).content)[-1]
+    # pdfdata = json.loads(requests.get(PDFPARSER).content)[-1]
 
     START_DATE = np.datetime64('2021-02-21')
 
@@ -80,11 +80,11 @@ def get_data():
     }
 
     # Get data before today from covidlive:
-    YESTERDAY = np.datetime64(datetime.now().strftime('%Y-%m-%d')) - 1
+    # YESTERDAY = np.datetime64(datetime.now().strftime('%Y-%m-%d')) - 1
     for report in covidlivedata:
         date = np.datetime64(report['REPORT_DATE']) - 1
-        if date == YESTERDAY:
-            continue
+        # if date == YESTERDAY:
+        #     continue
         if report['VACC_DOSE_CNT'] is None:
             continue
         state = report['CODE']
@@ -106,14 +106,14 @@ def get_data():
         doses_by_state[state] = doses.astype(float)
 
     # Get data for today, if it exists, from jxeeno/aust-govt-covid19-vaccine-pdf:
-    if np.datetime64(pdfdata['DATE_AS_AT']) == YESTERDAY:
-        dates = np.append(dates, [YESTERDAY])
-        for state in doses_by_state:
-            if state == 'AUS':
-                doses = int(pdfdata['TOTALS_NATIONAL_TOTAL'])
-            else:
-                doses = int(pdfdata[f'STATE_CLINICS_{state}_TOTAL'])
-            doses_by_state[state] = np.append(doses_by_state[state], [doses])
+    # if np.datetime64(pdfdata['DATE_AS_AT']) == YESTERDAY:
+    #     dates = np.append(dates, [YESTERDAY])
+    #     for state in doses_by_state:
+    #         if state == 'AUS':
+    #             doses = int(pdfdata['TOTALS_NATIONAL_TOTAL'])
+    #         else:
+    #             doses = int(pdfdata[f'STATE_CLINICS_{state}_TOTAL'])
+    #         doses_by_state[state] = np.append(doses_by_state[state], [doses])
 
     return dates, doses_by_state
 
@@ -267,7 +267,7 @@ PLOT_END_DATE = (
     np.datetime64('2022-01-31') if LONGPROJECT else dates[-1] + 50 #np.datetime64('2021-05-31')
 )
 CUMULATIVE_YMAX = 26  # million
-DAILY_YMAX = 360 if LONGPROJECT else 240
+DAILY_YMAX = 360 if LONGPROJECT else 260
 
 PROJECT = True
 
