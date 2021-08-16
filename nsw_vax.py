@@ -104,4 +104,5 @@ plt.title(f"{STATE} cumulative vaccinations per capita")
 plt.tight_layout()
 
 plt.savefig("COVID_NSW_projected_doses.svg")
+plt.savefig("COVID_NSW_projected_doses.png", dpi=133)
 plt.show()
