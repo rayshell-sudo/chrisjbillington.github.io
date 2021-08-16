@@ -123,7 +123,7 @@ current_doses_per_100 = covidlive_doses_per_100()
 # new = np.append(new, [98])
 
 START_PLOT = np.datetime64('2021-05-20')
-END_PLOT = np.datetime64('2021-09-01')
+END_PLOT = dates[-1] + 28
 
 SMOOTHING = 4
 PADDING = 3 * int(round(3 * SMOOTHING))
@@ -369,7 +369,8 @@ LOCKDOWN = np.datetime64('2021-07-16')
 EASING_1 = np.datetime64('2021-07-28')
 
 LOCKDOWN_AGAIN = np.datetime64('2021-08-06')
-EASING_AGAIN = np.datetime64('2021-08-20')
+CURFEW = np.datetime64('2021-08-16')
+EASING_AGAIN = np.datetime64('2021-09-03')
 
 def whiten(color, f):
     """Mix a color with white where f is how much of the original colour to keep"""
@@ -427,20 +428,33 @@ plt.fill_betweenx(
 plt.fill_betweenx(
     [-10, 10],
     [LOCKDOWN_AGAIN, LOCKDOWN_AGAIN],
-    [EASING_AGAIN, EASING_AGAIN],
+    [CURFEW, CURFEW],
     color=whiten("red", 0.35),
     linewidth=0,
     # label="Eased stay-at-home orders",
 )
+
+plt.fill_betweenx(
+    [-10, 10],
+    [CURFEW, CURFEW],
+    [EASING_AGAIN, EASING_AGAIN],
+    color=whiten("red", 0.45),
+    linewidth=0,
+    label="Curfew",
+)
+
 for i in range(30):
     plt.fill_betweenx(
         [-10, 10],
-        [EASING_AGAIN.astype(int) + 0.3 * i] * 2,
-        [EASING_AGAIN.astype(int) + 0.3 * i + 0.3] * 2,
-        color=whiten("red", 0.25 * (30 - i) / 30),
+        [EASING_AGAIN.astype(int) + i / 3] * 2,
+        [EASING_AGAIN.astype(int) + (i + 1) / 3] * 2,
+        # color=whiten("red", 0.25 * (30 - i) / 30),
+        color="red",
+        alpha=0.45 * (30 - i) / 30,
         linewidth=0,
         zorder=-10,
     )
+
 
 
 
@@ -528,7 +542,7 @@ handles2, labels2 = plt.gca().get_legend_handles_labels()
 handles += handles2
 labels += labels2
 
-order = [3, 4, 5, 6, 7, 8, 0, 1, 2]
+order = [4, 5, 6, 7, 8, 9, 2, 1, 0, 3]
 plt.legend(
     # handles,
     # labels,
