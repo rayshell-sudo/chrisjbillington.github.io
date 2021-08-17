@@ -293,9 +293,9 @@ WASTAGE = 0.125
 # Number of AZ first doses
 
 # 90% of ~5M over sixties, 40% of ~3M people in their fifties, 50% of 1M NSW residents
-# in their forties, 50% of ~2M NSW residents in their 30s and 20s, plus 350k from early
-# in the rollout
-MAX_AZ_ADMINISTERED = .9 * 5e6 + .4 * 3e6 + .5 * 1e6 + 0.5 * 2e6 + 350e3
+# in their forties, 50% of ~2M NSW residents 18-39, 25% of ~2M VIC residents 20-39 plus
+# 350k from early in the rollout
+MAX_AZ_ADMINISTERED = .9 * 5e6 + .4 * 3e6 + .5 * 1e6 + 0.5 * 2e6 + 0.25 * 2e6 + 350e3
 
 # Number of people 12 years old and older, from ABS ERP June 2020
 MAX_ELIGIBLE = 21_852_349
