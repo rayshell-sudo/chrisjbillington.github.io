@@ -190,9 +190,20 @@ N_monte_carlo = 1000
 variance_R = np.zeros_like(R)
 variance_new_smoothed = np.zeros_like(new_smoothed)
 cov_R_new_smoothed = np.zeros_like(R)
+
+# Uncertainty in new cases is whatever multiple of Poisson noise puts them on average 1
+# sigma away from the smoothed new cases curve. Only use data when smoothed data > 1.0
+valid = new_smoothed > 1.0
+if valid.sum():
+    SHOT_NOISE_FACTOR = np.sqrt(
+        ((new[valid] - new_smoothed[valid]) ** 2 / new_smoothed[valid]).mean()
+    )
+else:
+    SHOT_NOISE_FACTOR = 1.0
+u_new = SHOT_NOISE_FACTOR * np.sqrt(new)
+
 # Monte-carlo of the above with noise to compute variance in R, new_smoothed,
 # and their covariance:
-u_new = np.sqrt((0.2 * new) ** 2 + new)  # sqrt(N) and 20%, added in quadrature
 for i in range(N_monte_carlo):
     new_with_noise = np.random.normal(new, u_new).clip(0.1, None)
     params, cov = curve_fit(
@@ -203,7 +214,7 @@ for i in range(N_monte_carlo):
         maxfev=20000,
     )
     clip_params(params)
-    scenario_params = params # np.random.multivariate_normal(params, cov)
+    scenario_params = np.random.multivariate_normal(params, cov)
     clip_params(scenario_params)
     fit = exponential(pad_x, *scenario_params).clip(0.1, None)
 
