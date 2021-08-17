@@ -392,6 +392,9 @@ LGAs_OF_CONCERN = [
     'Bayside',
     'Strathfield',
     'Burwood',
+    # "Dubbo Regional",
+    # "Newcastle",
+    # "Lake Macquarie",
 ]
 
 if LGA_IX is not None or OTHERS or CONCERN:
@@ -495,9 +498,21 @@ N_monte_carlo = 1000
 variance_R = np.zeros_like(R)
 variance_new_smoothed = np.zeros_like(new_smoothed)
 cov_R_new_smoothed = np.zeros_like(R)
+
+# Uncertainty in new cases is whatever multiple of Poisson noise puts them on average 1
+# sigma away from the smoothed new cases curve. Only use data when smoothed data > 1.0
+valid = new_smoothed > 1.0
+if valid.sum():
+    SHOT_NOISE_FACTOR = np.sqrt(
+        ((new[valid] - new_smoothed[valid]) ** 2 / new_smoothed[valid]).mean()
+    )
+else:
+    SHOT_NOISE_FACTOR = 1.0
+u_new = SHOT_NOISE_FACTOR * np.sqrt(new)
+
 # Monte-carlo of the above with noise to compute variance in R, new_smoothed,
 # and their covariance:
-u_new = np.sqrt((0.2 * new) ** 2 + new)  # sqrt(N) and 20%, added in quadrature
+
 for i in range(N_monte_carlo):
     new_with_noise = np.random.normal(new, u_new).clip(0.1, None)
     params, cov = curve_fit(
@@ -508,7 +523,7 @@ for i in range(N_monte_carlo):
         maxfev=20000,
     )
     clip_params(params)
-    scenario_params = params # np.random.multivariate_normal(params, cov)
+    scenario_params = np.random.multivariate_normal(params, cov)
     clip_params(scenario_params)
     fit = exponential(pad_x, *scenario_params).clip(0.1, None)
 
@@ -983,8 +998,8 @@ ax2.legend(
     # labels,
     [handles[idx] for idx in order],
     [labels[idx] for idx in order],
-    loc='upper left',
-    ncol=2,
+    loc='center right' if VAX else 'upper left',
+    ncol=1 if VAX else 2,
     prop={'size': 8}
 )
 
@@ -1059,6 +1074,18 @@ if not (LGA or OTHERS or CONCERN):
     ax2.set_ylabel(f"Daily confirmed cases (linear scale)")
     fig1.savefig(f'COVID_NSW{suffix}_linear.svg')
     fig1.savefig(f'COVID_NSW{suffix}_linear.png', dpi=133)
+
+# Print case predictions
+for i in range(8):
+    date = dates[-1] + i
+    cases = new_projection[i]
+    lower = new_projection_lower[i]
+    upper = new_projection_upper[i]
+    lower = SHOT_NOISE_FACTOR * (lower - cases) + cases
+    upper = SHOT_NOISE_FACTOR * (upper - cases) + cases
+    # u_cases = (upper - lower) / 2
+    # u_cases = np.sqrt(SHOT_NOISE_FACTOR**2 * cases + u_cases**2)
+    print(f"{cases:.0f} {lower:.0f}—{upper:.0f}")
 
 # Update the date in the HTML
 html_file = 'COVID_NSW.html'

@@ -49,7 +49,7 @@
 </head>
 <body>
   <div class="content">
-    Last updated: 2021-08-17-15:16 AEST
+    Last updated: 2021-08-17-22:45 AEST
     <br>
     <small>
       Updated daily after NSW announce case numbers
@@ -279,9 +279,10 @@
     </p>
     <p>
       The uncertainty in <i>R</i><sub>eff</sub> has contributions from the uncertainty
-      in the above-mentioned exponential fit, as well as Poisson uncertainty in daily
-      case numbers, and an additional 20% uncertainty in daily case numbers - the latter
-      is just a crude eyeballed figure of observed day-to-day fluctuations.
+      in the above-mentioned exponential fit, as well as uncertainty in daily case
+      numbers. The latter is considered to be Poisson noise scaled by a constant, chosen
+      so as to make the reduced chi squared between raw and smoothed daily case numbers
+      equal to 1.0.
     </p>
     <p>
       The extrapolation of daily case numbers is based on exponential growth/decay using
