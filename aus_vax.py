@@ -1068,7 +1068,7 @@ for coverage, label in zip(first_dose_coverage_by_age, labels_by_age):
         first_dose_coverage_dates, coverage, label=f"{label} ({coverage[-1]:.1f} %)"
     )
 
-plt.legend()
+plt.legend(prop={'size': 9})
 plt.grid(True, linestyle=':', color='k', alpha=0.5)
 locator = mdates.DayLocator([1, 15])
 formatter = mdates.ConciseDateFormatter(locator)
@@ -1098,7 +1098,7 @@ for coverage, label in zip(first_dose_coverage_by_age, labels_by_age):
         smoothed_coverage,
         label=f"{label} ({smoothed_coverage[-1]:.1f} %/week)",
     )
-plt.legend()
+plt.legend(prop={'size': 9})
 plt.grid(True, linestyle=':', color='k', alpha=0.5)
 locator = mdates.DayLocator([1, 15])
 formatter = mdates.ConciseDateFormatter(locator)
@@ -1117,7 +1117,7 @@ for coverage, label in zip(second_dose_coverage_by_age, labels_by_age):
         second_dose_coverage_dates, coverage, label=f"{label} ({coverage[-1]:.1f} %)"
     )
 
-plt.legend()
+plt.legend(prop={'size': 9})
 plt.grid(True, linestyle=':', color='k', alpha=0.5)
 locator = mdates.DayLocator([1, 15])
 formatter = mdates.ConciseDateFormatter(locator)
@@ -1139,7 +1139,7 @@ for coverage, label in zip(second_dose_coverage_by_age, labels_by_age):
         smoothed_coverage,
         label=f"{label} ({smoothed_coverage[-1]:.1f} %/week)",
     )
-plt.legend()
+plt.legend(prop={'size': 9})
 plt.grid(True, linestyle=':', color='k', alpha=0.5)
 locator = mdates.DayLocator([1, 15])
 formatter = mdates.ConciseDateFormatter(locator)
