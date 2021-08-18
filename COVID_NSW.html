@@ -49,7 +49,7 @@
 </head>
 <body>
   <div class="content">
-    Last updated: 2021-08-18-14:28 AEST
+    Last updated: 2021-08-18-20:58 AEST
     <br>
     <small>
       Updated daily after NSW announce case numbers
@@ -305,6 +305,22 @@
       in the meantime. The projected outcomes with the new model are very similar to the
       old model, which was valid in the limit of infections only reaching a small
       fraction of the total population.
+    </p>
+    <p>
+      To model vaccines taking effect after a delay, daily vaccine dose numbers
+      <i>V</i><sub>effective</sub>(<i>t</i>) are convolved with a Gaussian offset 1.5
+      weeks in the future, with standard deviation 0.5 weeks:
+      <br>
+      <br>
+      <i>V</i><sub>effective</sub>(<i>t</i>) = <i>V</i>(<i>t</i>) ∗
+      (2<i>πσ</i><sup>2</sup>)<sup>-1/2</sup> exp(-(<i>t</i> - <i>μ</i>)<sup>2</sup> /
+      2<i>σ</i><sup>2</sup>)
+      <br>
+      <br>
+      where <i>μ</i> = 10.5 days, <i>σ</i> = 3.5 days, and ∗ is the convolution
+      operation. This causes the effect of a vaccine dose to over the course of the
+      second week after it is adminsitered, reaching nearly full effectiveness
+      approximately two weeks after administration.
     </p>
     <p>
       I assume that one dose of any vaccine reduces spread by 40%, and two doses reduce

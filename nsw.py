@@ -74,9 +74,10 @@ def covidlive_data(start_date=np.datetime64('2021-06-10')):
     return dates, cases
 
 
-def covidlive_doses_per_100():
+def covidlive_doses_per_100(n):
+    """return NSW cumulative doses for the last n days"""
     df = pd.read_html("https://covidlive.com.au/report/daily-vaccinations/nsw")[1]
-    doses = df['DOSES'][0]
+    doses = np.array(df['DOSES'])[:n][::-1].astype(int)
     # We're assuming that doses are evenly distributed NSW-wide. The extent that we want
     # to assume Sydney is prioritised over regional is taken into account by the factor
     # of two in the "accelerated vaccination" scenario. In the regular scenario it's
@@ -345,14 +346,23 @@ def stochastic_sir(
     # )
 
 
-def projected_vaccine_immune_population(t, current_doses_per_100):
-    """compute projected future susceptible population, starting with the current doses
-    per 100 population, and assuming a certain vaccine efficacy and rollout schedule"""
+def projected_vaccine_immune_population(t, historical_doses_per_100):
+    """compute projected future susceptible population, given an array
+    historical_doses_per_100 for cumulative doses doses per 100 population prior to and
+    including today (length doesn't matter, so long as it goes back longer than
+    VAX_ONSET_MU plus 3 * VAX_ONSET_SIGMA), and assuming a certain vaccine efficacy and
+    rollout schedule"""
+
+    # We assume vaccine effectiveness after each dose ramps up the integral of a Gaussian
+    # with the following mean and stddev in days:
+    VAX_ONSET_MU = 10.5 
+    VAX_ONSET_SIGMA = 3.5
+
     SEP = np.datetime64('2021-09-01').astype(int) - dates[-1].astype(int)
     OCT = np.datetime64('2021-10-01').astype(int) - dates[-1].astype(int)
 
     doses_per_100 = np.zeros_like(t)
-    doses_per_100[0] = current_doses_per_100
+    doses_per_100[0] = historical_doses_per_100[-1]
     for i in range(1, len(doses_per_100)):
         if i < SEP:
             doses_per_100[i] = doses_per_100[i - 1] + 1.2
@@ -362,7 +372,24 @@ def projected_vaccine_immune_population(t, current_doses_per_100):
             doses_per_100[i] = doses_per_100[i - 1] + 1.6
 
     doses_per_100 = np.clip(doses_per_100, 0, 85 * 2)
-    immune = 0.4 * doses_per_100 / 100
+
+    all_doses_per_100 = np.concatenate([historical_doses_per_100, doses_per_100])
+    # The "prepend=0" makes it as if all the doses in the initial day were just
+    # administered all at once, but as long as historical_doses_per_100 is long enough
+    # for it to have taken full effect, it doesn't matter.
+    daily = np.diff(all_doses_per_100, prepend=0)
+
+    # convolve daily doses with a transfer function for delayed effectiveness of vaccnes
+    pts = int(VAX_ONSET_MU + 3 * VAX_ONSET_SIGMA)
+    x = np.arange(-pts, pts + 1, 1)
+    kernel = np.exp(-((x - VAX_ONSET_MU) ** 2) / (2 * VAX_ONSET_SIGMA ** 2))
+    kernel /= kernel.sum()
+    convolved = convolve(daily, kernel, mode='same')
+
+    effective_doses_per_100 = convolved.cumsum()
+
+    immune = 0.4 * effective_doses_per_100[len(historical_doses_per_100):] / 100
+
     return immune
 
 # dates, new = nswhealth_data()
@@ -421,7 +448,7 @@ else:
     dates, new = covidlive_data()
 
 # Current vaccination level:
-current_doses_per_100 = covidlive_doses_per_100()
+doses_per_100 = covidlive_doses_per_100(n=len(dates))
 
 # for d, n in zip(dates, new):
 #     print(d, n)
@@ -593,14 +620,14 @@ if CONCERN or OTHERS:
 
 if VAX and not BIPARTITE:
     # Fancy stochastic SIR model
-    trials_infected_today, trials_cumulative, trials_R_eff  = stochastic_sir(
+    trials_infected_today, trials_cumulative, trials_R_eff = stochastic_sir(
         initial_caseload=new_smoothed[-1],
         initial_cumulative_cases=new.sum(),
         initial_R_eff=R[-1],
         tau=tau,
         population_size=POP_OF_SYD,
         vaccine_immunity=projected_vaccine_immune_population(
-            t_projection, current_doses_per_100
+            t_projection, doses_per_100
         ),
         n_days=days_projection + 1,
         n_trials=10000,
@@ -651,7 +678,7 @@ elif BIPARTITE:
         tau=tau,
         population_size=POP_OF_SYD,
         vaccine_immunity=projected_vaccine_immune_population(
-            t_projection, current_doses_per_100
+            t_projection, doses_per_100
         ),
         n_days=days_projection + 1,
         n_trials=10000,
@@ -665,7 +692,7 @@ elif BIPARTITE:
         tau=tau,
         population_size=POP_OF_SYD,
         vaccine_immunity=projected_vaccine_immune_population(
-            t_projection, current_doses_per_100
+            t_projection, doses_per_100
         ),
         n_days=days_projection + 1,
         n_trials=10000,
