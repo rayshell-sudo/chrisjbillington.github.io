@@ -137,15 +137,13 @@ PHASE_2A = np.datetime64('2021-05-03')
 # proportional to each day's doses from the start of phase 1b until May 23th.
 VIC_DOSES_CORRECTION = -9260
 daily_vic_doses = np.diff(doses_by_state['VIC'], prepend=0)
-daily_aus_doses = np.diff(doses_by_state['AUS'], prepend=0)
 reportedix = np.where(dates == np.datetime64('2021-05-24'))[0][0]
 backdates = (PHASE_1B <= dates) & (dates <= np.datetime64('2021-05-23'))
 daily_vic_doses[reportedix] -= VIC_DOSES_CORRECTION
-daily_aus_doses[reportedix] -= VIC_DOSES_CORRECTION
 total_in_backdate_period = daily_vic_doses[backdates].sum()
 daily_vic_doses[backdates] *= 1 + VIC_DOSES_CORRECTION / total_in_backdate_period
+doses_by_state['AUS'] -= (daily_vic_doses.cumsum() - doses_by_state['VIC'])
 doses_by_state['VIC'] = daily_vic_doses.cumsum()
-doses_by_state['AUS'] = daily_aus_doses.cumsum()
 
 
 doses_by_state['FED'] = doses_by_state['AUS'] - sum(
