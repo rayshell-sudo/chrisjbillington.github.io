@@ -75,14 +75,28 @@ def covidlive_data(start_date=np.datetime64('2021-06-10')):
 
 
 def covidlive_doses_per_100(n):
-    """return NSW cumulative doses for the last n days"""
-    df = pd.read_html("https://covidlive.com.au/report/daily-vaccinations/nsw")[1]
-    doses = np.array(df['DOSES'])[:n][::-1].astype(int)
-    # We're assuming that doses are evenly distributed NSW-wide. The extent that we want
-    # to assume Sydney is prioritised over regional is taken into account by the factor
-    # of two in the "accelerated vaccination" scenario. In the regular scenario it's
-    # even state-wide.
-    return 100 * doses / POP_OF_NSW
+    """return NSW cumulative doses per 100 population for the last n days"""
+
+    url = f"https://covidlive.com.au/report/daily-vaccinations/nsw"
+
+    df = pd.read_html(url)[1]
+    doses = df['DOSES'][::-1]
+    daily_doses = np.diff(doses, prepend=0).astype(float)
+    dates = np.array(
+        [np.datetime64(datetime.strptime(d, '%d %b %y'), 'D') for d in df['DATE'][::-1]]
+    )
+    nsw_dates = dates[:-1]
+    nsw_daily_doses = daily_doses[:-1]
+
+    # Smooth out the data correction made on Aug 16th:
+    CORRECTION_DATE = np.datetime64('2021-08-16')
+    CORRECTION_DOSES = 93000
+    nsw_daily_doses[nsw_dates == CORRECTION_DATE] -= CORRECTION_DOSES
+    sum_prior = nsw_daily_doses[nsw_dates < CORRECTION_DATE].sum()
+    SCALE_FACTOR = 1 + CORRECTION_DOSES / sum_prior
+    nsw_daily_doses[nsw_dates < CORRECTION_DATE] *= SCALE_FACTOR
+
+    return 100 * nsw_daily_doses.cumsum()[-n:] / POP_OF_NSW
 
 
 # Data from NSW Health by test notification date

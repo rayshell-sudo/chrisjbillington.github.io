@@ -48,6 +48,16 @@ STATE = 'NSW'
 
 nsw_dates, nsw_doses = get_data(STATE)
 
+# Smooth out the data correction made on Aug 16th:
+CORRECTION_DATE = np.datetime64('2021-08-16')
+CORRECTION_DOSES = 93000
+nsw_doses = nsw_doses.astype(float)
+nsw_doses[nsw_dates == CORRECTION_DATE] -= CORRECTION_DOSES
+sum_prior = nsw_doses[nsw_dates < CORRECTION_DATE].sum()
+SCALE_FACTOR = 1 + CORRECTION_DOSES / sum_prior
+nsw_doses[nsw_dates < CORRECTION_DATE] *= SCALE_FACTOR
+
+
 days_projection = 200
 t_projection = np.arange(nsw_dates[-1], nsw_dates[-1] + days_projection + 1)
 
