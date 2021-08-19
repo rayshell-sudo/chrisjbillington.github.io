@@ -849,7 +849,9 @@ ax1.fill_betweenx(
     [-10, 10],
     [STATEWIDE, STATEWIDE],
     [END_LOCKDOWN, END_LOCKDOWN],
-    color=whiten("red", 0.45),
+    # color=whiten("red", 0.45),
+    color="red",
+    alpha=0.45,
     linewidth=0,
     label="Statewide lockdown\nOperation Stay at Home",
 )
@@ -987,15 +989,15 @@ ax2.fill_between(
 )
 ax2.plot(
     dates[-1].astype(int) + 0.5 + t_projection,
-    new_projection,
+    new_projection.clip(0, 1e6),  # seen SVG rendering issues when this is big
     color='magenta',
     linestyle='--',
     label=f'Daily cases ({"projection" if VAX else "trend"})',
 )
 ax2.fill_between(
     dates[-1].astype(int) + 0.5 + t_projection,
-    new_projection_lower,
-    new_projection_upper,
+    new_projection_lower.clip(0, 1e6),  # seen SVG rendering issues when this is big
+    new_projection_upper.clip(0, 1e6),
     color='magenta',
     alpha=0.3,
     linewidth=0,
