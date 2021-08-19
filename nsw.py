@@ -455,7 +455,7 @@ doses_per_100 = covidlive_doses_per_100(n=len(dates))
 
 # if not NONISOLATING:
 #     dates = np.append(dates, [dates[-1] + 1])
-#     new = np.append(new, [98])
+#     new = np.append(new, [655])
 
 START_PLOT = np.datetime64('2021-06-13')
 END_PLOT = np.datetime64('2022-01-01') if VAX else dates[-1] + 28 #np.datetime64('2021-09-01')
@@ -1093,9 +1093,9 @@ if not (LGA or OTHERS or CONCERN):
     if BIPARTITE:
         ymax = 12000
     elif VAX:
-        ymax = 2400
+        ymax = 8000
     else:
-        ymax = 1600
+        ymax = 4000
     ax2.axis(ymin=0, ymax=ymax)
     ax2.yaxis.set_major_locator(mticker.MultipleLocator(ymax / 8))
     ax2.set_ylabel(f"Daily confirmed cases (linear scale)")
