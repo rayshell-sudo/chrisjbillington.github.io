@@ -799,7 +799,8 @@ LOCKDOWN = np.datetime64('2021-06-27')
 TIGHTER_LOCKDOWN = np.datetime64('2021-07-10')
 NONCRITICAL_RETAIL_CLOSED = np.datetime64('2021-07-18')
 STATEWIDE = np.datetime64('2021-08-15')
-END_LOCKDOWN = np.datetime64('2021-07-31') + 28 # yeah right
+CURFEW = np.datetime64('2021-08-23')
+END_LOCKDOWN = np.datetime64('2021-10-01')
 
 def whiten(color, f):
     """Mix a color with white where f is how much of the original colour to keep"""
@@ -862,12 +863,23 @@ ax1.fill_betweenx(
 ax1.fill_betweenx(
     [-10, 10],
     [STATEWIDE, STATEWIDE],
+    [CURFEW, CURFEW],
+    color=whiten("red", 0.35),
+    edgecolor=whiten("red", 0.45),
+    hatch="//////",
+    linewidth=0,
+    label="Statewide lockdown\nOperation Stay at Home",
+)
+
+ax1.fill_betweenx(
+    [-10, 10],
+    [CURFEW, CURFEW],
     [END_LOCKDOWN, END_LOCKDOWN],
     # color=whiten("red", 0.45),
     color="red",
     alpha=0.45,
     linewidth=0,
-    label="Statewide lockdown\nOperation Stay at Home",
+    label="LGA curfew",
 )
 
 for i in range(30):
@@ -1033,9 +1045,9 @@ handles += handles2
 labels += labels2
 
 if VAX:
-    order = [6, 8, 7, 9, 10, 11, 12, 0, 1, 2, 3, 4, 5]
+    order = [8, 7, 9, 10, 11, 12, 13, 0, 1, 2, 3, 4, 5, 6]
 else:
-    order = [6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5]
+    order = [7, 8, 9, 10, 11, 12, 0, 1, 2, 3, 4, 5, 6]
 ax2.legend(
     # handles,
     # labels,
