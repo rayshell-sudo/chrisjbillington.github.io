@@ -381,6 +381,7 @@ EASING_1 = np.datetime64('2021-07-28')
 
 LOCKDOWN_AGAIN = np.datetime64('2021-08-06')
 CURFEW = np.datetime64('2021-08-16')
+STATEWIDE = np.datetime64('2021-08-21')
 EASING_AGAIN = np.datetime64('2021-09-03')
 
 def whiten(color, f):
@@ -448,10 +449,22 @@ plt.fill_betweenx(
 plt.fill_betweenx(
     [-10, 10],
     [CURFEW, CURFEW],
-    [EASING_AGAIN, EASING_AGAIN],
-    color=whiten("red", 0.45),
+    [STATEWIDE, STATEWIDE],
+    color=whiten("red", 0.35),
+    edgecolor=whiten("red", 0.45),
+    hatch="//////",
     linewidth=0,
     label="Curfew",
+)
+
+plt.fill_betweenx(
+    [-10, 10],
+    [STATEWIDE, STATEWIDE],
+    [EASING_AGAIN, EASING_AGAIN],
+    color="red",
+    alpha=0.45,
+    linewidth=0,
+    label="Statewide lockdown",
 )
 
 for i in range(30):
@@ -553,7 +566,7 @@ handles2, labels2 = plt.gca().get_legend_handles_labels()
 handles += handles2
 labels += labels2
 
-order = [4, 5, 6, 7, 8, 9, 2, 1, 0, 3]
+order = [5, 6, 7, 8, 9, 10, 2, 1, 0, 3, 4]
 plt.legend(
     # handles,
     # labels,
