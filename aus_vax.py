@@ -265,7 +265,7 @@ PLOT_END_DATE = (
     np.datetime64('2022-01-31') if LONGPROJECT else dates[-1] + 50 #np.datetime64('2021-05-31')
 )
 CUMULATIVE_YMAX = 26  # million
-DAILY_YMAX = 360 if LONGPROJECT else 260
+DAILY_YMAX = 360
 
 PROJECT = True
 
@@ -562,10 +562,12 @@ plt.axis(
     ymax=2*MAX_ELIGIBLE/1e6 if LONGPROJECT else CUMULATIVE_YMAX,
 )
 
+latest_cumulative_doses = doses_by_state["AUS"][-1]
+
 if LONGPROJECT:
     plt.title("Projected cumulative doses")
 else:
-    plt.title(f'AUS cumulative doses. Total to date: {doses_by_state["AUS"][-1]/1e6:.2f}M')
+    plt.title(f'AUS cumulative doses. Total to date: {latest_cumulative_doses/1e6:.2f}M')
 plt.ylabel('Cumulative doses (millions)')
 
 
@@ -1158,6 +1160,18 @@ for i, line in enumerate(html_lines):
     if 'Last updated' in line:
         html_lines[i] = f'    Last updated: {now} Melbourne time'
 Path(html_file).write_text('\n'.join(html_lines) + '\n')
+
+# Save some deets to a file for the auto reddit posting to use:
+with open("latest_vax_stats.json", 'w') as f:
+    json.dump(
+        {
+            'latest_cumulative_doses': latest_cumulative_doses,
+            'latest_daily_doses': latest_daily_doses,
+            'phase_C_date': str(PHASE_C_DATE),
+            'today': str(today),
+        },
+        f,
+    )
 
 for extension in ['png', 'svg']:
     if LONGPROJECT:
