@@ -34,10 +34,10 @@ jobs:
 
       - name: Run
         run: |
-        if ./check-vax-outdated | grep "outdated!"; then
-          python aus_vax.py
-          python aus_vax.py project
-        fi
+          if ./check-vax-outdated | grep "outdated!"; then
+            python aus_vax.py
+            python aus_vax.py project
+          fi
 
       - name: Git pull
         run: git pull --rebase --autostash
