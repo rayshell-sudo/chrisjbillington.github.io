@@ -2,10 +2,10 @@ name: Post
 
 on:
   push:
-    branches:
-      - master
-  # schedule:
-  #   - cron: '0 21 * * *' # Daily at 21:00 UTC (07:00 AEST)
+    # branches:
+    #   - master
+  schedule:
+    - cron: '30 21 * * *' # Daily at 21:30 UTC (07:30 AEST)
 
 defaults:
   run:
