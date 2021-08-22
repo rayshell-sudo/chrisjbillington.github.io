@@ -78,7 +78,7 @@ if __name__ == '__main__':
     subreddit = reddit.subreddit("CoronavirusDownunder")
 
     submission = subreddit.submit_gallery(
-        title=make_title(),
+        title="Test post please ignore",  # make_title(),
         images=[{"image_path": p} for p in IMAGES],
         flair_id=get_flair_id(subreddit),
     )

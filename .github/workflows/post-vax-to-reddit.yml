@@ -4,8 +4,8 @@ on:
   push:
     branches:
       - master
-  schedule:
-    - cron: '0 21 * * *' # Daily at 21:00 UTC (07:00 AEST)
+  # schedule:
+  #   - cron: '0 21 * * *' # Daily at 21:00 UTC (07:00 AEST)
 
 defaults:
   run:
