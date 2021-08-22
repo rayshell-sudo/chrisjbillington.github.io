@@ -1153,7 +1153,7 @@ plt.ylabel("Vaccination rate (% of age group / week)")
 # Update the date in the HTML
 html_file = 'aus_vaccinations.html'
 html_lines = Path(html_file).read_text().splitlines()
-now = datetime.now(timezone('Australia/Melbourne')).strftime('%Y-%m-%d-%H:%M')
+now = datetime.now(timezone('Australia/Melbourne')).strftime('%Y-%m-%d %H:%M')
 for i, line in enumerate(html_lines):
     if 'Last updated' in line:
         html_lines[i] = f'    Last updated: {now} Melbourne time'
