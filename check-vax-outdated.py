@@ -1,7 +1,4 @@
-#!/usr/bin/env python
-
 # script to check if vaccination plots are out of date with respect to covidlive data.
-# returns 0 if up to date. Returns 1 if out of date.
 
 import json
 import requests
