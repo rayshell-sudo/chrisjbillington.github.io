@@ -65,10 +65,6 @@ if __name__ == '__main__':
     client_secret = sys.argv[2]
     password = sys.argv[3]
 
-    # secrets.REDDIT_CLIENT_ID
-    # secrets.REDDIT_CLIENT_SECRET
-    # secrets.REDDIT_PASSWORD
-
     user_agent = "linux:cvdu-chrisjbillington-autoposter:1.0.0 (by /u/chrisjbillington)"
 
     reddit = praw.Reddit(
