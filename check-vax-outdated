@@ -29,7 +29,7 @@ def latest_html_update():
     raise RuntimeError(f"update date not found in {html_file}")
 
 if __name__ == '__main__':
-    if latest_covidlive_date() >= latest_html_update():
+    if latest_covidlive_date() > latest_html_update():
         print("outdated!")
     else:
         print("up to date!")
