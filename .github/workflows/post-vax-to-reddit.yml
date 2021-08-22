@@ -1,7 +1,7 @@
 name: Post
 
 on:
-  push:
+  # push:
     # branches:
     #   - master
   schedule:
