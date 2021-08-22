@@ -47,7 +47,12 @@ IMAGES = [
     "projection_cumulative_by_type.png",
 ]
 
-COMMENT_TEXT = """\
+this_script_url = (
+    "https://github.com/chrisjbillington/chrisjbillington.github.io/"
+    + "blob/master/post-vax-to-reddit.py"
+)
+
+COMMENT_TEXT = f"""\
 More info/methodology: https://chrisbillington.net/aus_vaccinations.html
 
 FAQ:
@@ -64,7 +69,8 @@ A. Funky numbers last Sunday were a data adjustment - feds are now using the the
    Australian Immunisation Register instead of numbers reported to them directly from
    states.
 
-This post was made by a bot 🤖. Please let me know if something looks broken."""
+This post was made by a [bot]({this_script_url}) 🤖. Please let me know if something
+looks broken."""
 
 
 def get_flair_id(subreddit):
