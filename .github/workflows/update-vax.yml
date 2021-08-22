@@ -1,4 +1,4 @@
-name: Update
+name: Vax Update 
 
 on:
   # push:
@@ -14,8 +14,8 @@ defaults:
 
 
 jobs:
-  update:
-    name: Update
+  vaxupdate:
+    name: Vax Update
     runs-on: ubuntu-latest
     env:
       MPLBACKEND: Agg
