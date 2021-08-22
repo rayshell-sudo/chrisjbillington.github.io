@@ -50,6 +50,20 @@ IMAGES = [
 COMMENT_TEXT = """\
 More info/methodology: https://chrisbillington.net/aus_vaccinations.html
 
+FAQ:
+
+Q. What's with the dip?
+
+A. The projected dip is the end of AZ first doses, and may or may not happen depending
+   on how many people still want AZ. If October Pfizer supply increases are brought
+   forward a month, that also would mean an overall dip won't happen.
+
+Q. What's with high dose numbers last Sunday?
+
+A. Funky numbers last Sunday were a data adjustment - feds are now using the the
+   Australian Immunisation Register instead of numbers reported to them directly from
+   states.
+
 This post was made by a bot 🤖. Please let me know if something looks broken."""
 
 
