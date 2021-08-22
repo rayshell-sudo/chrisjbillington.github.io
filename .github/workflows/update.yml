@@ -41,6 +41,9 @@ jobs:
           scour -i COVID_US.svg -o COVID_US_o.svg --enable-viewboxing --enable-id-stripping --enable-comment-stripping --shorten-ids --indent=none
           mv COVID_US_o.svg COVID_US.svg
 
+      - name: Git pull
+        run: git pull --rebase --autostash
+        
       - name: Commit
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
