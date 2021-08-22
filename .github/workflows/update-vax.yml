@@ -5,8 +5,8 @@ on:
   #   branches:
   #     - master
   schedule:
-    - cron: '0-59/30 * * * *' # Every 30 minutes
-    # - cron: '0 6 * * *' # Daily at 06:00 UTC
+     # Half past every hour from 04:30 UTC to 11:30 UTC (14:30 - 21:30 AEST) each day
+    - cron: '30 4-11 * * *'
 
 defaults:
   run:
