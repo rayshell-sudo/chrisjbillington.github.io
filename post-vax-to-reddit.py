@@ -42,7 +42,7 @@ IMAGES = [
     "coverage_by_agegroup.png",
     "coverage_2nd_by_agegroup.png",
     "cumulative_doses.png",
-    "daily_doses_by_state.png",
+    "daily_doses_by_state_longproject.png",
     "projection_by_type.png",
     "projection_cumulative_by_type.png",
 ]
