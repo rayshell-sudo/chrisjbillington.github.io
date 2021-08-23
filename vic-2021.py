@@ -381,7 +381,7 @@ EASING_1 = np.datetime64('2021-07-28')
 
 LOCKDOWN_AGAIN = np.datetime64('2021-08-06')
 CURFEW = np.datetime64('2021-08-16')
-STATEWIDE = np.datetime64('2021-08-21')
+STATEWIDE = np.datetime64('2021-08-20')
 EASING_AGAIN = np.datetime64('2021-09-03')
 
 def whiten(color, f):
