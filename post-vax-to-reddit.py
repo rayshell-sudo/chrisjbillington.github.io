@@ -63,11 +63,30 @@ A. The projected dip is the end of AZ first doses, and may or may not happen dep
    on how many people still want AZ. If October Pfizer supply increases are brought
    forward a month, that also would mean an overall dip won't happen.
 
-Q. What's with high dose numbers last Sunday?
+Q. What's with high dose numbers the other Sunday?
 
-A. Funky numbers last Sunday were a data adjustment - feds are now using the the
+A. Funky numbers the other Sunday were a data adjustment - feds are now using the the
    Australian Immunisation Register instead of numbers reported to them directly from
    states.
+
+Q. Why does the number go greater than 100% in the last plot?
+
+A. I'm plotting total 1st/2nd doses as a percentage of the population aged 16+, but am
+   assuming ages 12-15 will get vaccinated too later in the year. Of course, some
+   hesitancy may be a factor at those very high uptake levels, but that's why it goes
+   higher than 100%.
+
+Q. What about hesitancy?
+
+A. These projections completely ignore hesitancy, and represent what would be possible
+   if everyone steps up for a dose when it's their turn. Without knowing what level of
+   hesitancy there will be, I can't take it into account - so you should just mentally
+   draw a horizontal line at whatever level of hesitancy you think there will be. For
+   what it's worth, I am personally sceptical that anything like the 20% levels of
+   hesitancy often cited will eventuate in Australia. Given Australia's past track
+   record on vaccinations, I expect we'll end up one of the most highly vaccinated
+   countries in the world against COVID—the lower takeup seen in many other
+   countries is not indicative of what we can achieve here.
 
 This post was made by a [bot]({this_script_url}) 🤖. Please let me know if something
 looks broken."""
