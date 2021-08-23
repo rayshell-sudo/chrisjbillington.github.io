@@ -34,7 +34,7 @@ jobs:
 
       - name: Run
         run: |
-          if python check-vax-outdated | grep "outdated!"; then
+          if python check-vax-outdated.py | grep "outdated!"; then
             python aus_vax.py
             python aus_vax.py project
           fi
