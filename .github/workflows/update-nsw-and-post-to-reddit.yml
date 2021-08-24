@@ -1,9 +1,9 @@
 name: NSW update and post
 
 on:
-  push:
-    branches:
-      - master
+  # push:
+  #   branches:
+  #     - master
   schedule:
     - cron: '30 00 * * *' # Daily at 00:30 UTC (10:30 AEST)
 
@@ -39,10 +39,10 @@ jobs:
       - name: Git pull
         run: git pull --rebase --autostash
 
-      # - name: Commit
-      #   uses: stefanzweifel/git-auto-commit-action@v4
-      #   with:
-      #     commit_message: NSW update
+      - name: Commit
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: NSW update
           
       - name: Post
         run: |
