@@ -1171,6 +1171,7 @@ with open("latest_vax_stats.json", 'w') as f:
             'today': str(today),
         },
         f,
+        indent=4,
     )
 
 for extension in ['png', 'svg']:

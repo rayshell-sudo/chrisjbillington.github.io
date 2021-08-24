@@ -3,6 +3,7 @@ from datetime import datetime
 from pytz import timezone
 from pathlib import Path
 import pickle
+import json
 
 from scipy.optimize import curve_fit
 from scipy.signal import convolve
@@ -615,7 +616,7 @@ new_smoothed = new_smoothed.clip(0, None)
 
 
 # Projection of daily case numbers:
-days_projection = (END_PLOT + 200 - dates[-1]).astype(int)
+days_projection = (np.datetime64('2022-02-01') - dates[-1]).astype(int)
 t_projection = np.linspace(0, days_projection, days_projection + 1)
 
 # Construct a covariance matrix for the latest estimate in new_smoothed and R:
@@ -1121,7 +1122,7 @@ if not (LGA or OTHERS or CONCERN):
     if BIPARTITE:
         ymax = 12000
     elif VAX:
-        ymax = 16000
+        ymax = 8000
     else:
         ymax = 4000
     ax2.axis(ymin=0, ymax=ymax)
@@ -1130,17 +1131,46 @@ if not (LGA or OTHERS or CONCERN):
     fig1.savefig(f'COVID_NSW{suffix}_linear.svg')
     fig1.savefig(f'COVID_NSW{suffix}_linear.png', dpi=133)
 
-# Print case predictions
-for i in range(8):
-    date = dates[-1] + i
-    cases = new_projection[i]
-    lower = new_projection_lower[i]
-    upper = new_projection_upper[i]
-    lower = SHOT_NOISE_FACTOR * (lower - cases) + cases
-    upper = SHOT_NOISE_FACTOR * (upper - cases) + cases
-    # u_cases = (upper - lower) / 2
-    # u_cases = np.sqrt(SHOT_NOISE_FACTOR**2 * cases + u_cases**2)
-    print(f"{cases:.0f} {lower:.0f}—{upper:.0f}")
+
+# Save some deets to a file for the auto reddit posting to use:
+try:
+    # Add to existing file if already present
+    stats = json.loads(Path("latest_nsw_stats.json").read_text())
+except FileNotFoundError:
+    stats = {}
+
+if CONCERN:
+    stats['R_eff_concern'] = R[-1] 
+    stats['u_R_eff_concern'] = u_R_latest
+elif OTHERS:
+    stats['R_eff_others'] = R[-1] 
+    stats['u_R_eff_others'] = u_R_latest
+elif not LGA:
+    stats['R_eff'] = R[-1] 
+    stats['u_R_eff'] = u_R_latest
+    stats['today'] = str(np.datetime64(datetime.now(), 'D'))
+
+if VAX:
+    # Case number predictions
+    stats['projection'] = []
+    # in case I ever want to get the orig projection range not expanded - like to
+    # compare past projections:
+    stats['SHOT_NOISE_FACTOR'] = SHOT_NOISE_FACTOR 
+    for i, cases in enumerate(new_projection):
+        date = dates[-1] + i
+        lower = new_projection_lower[i]
+        upper = new_projection_upper[i]
+        lower = SHOT_NOISE_FACTOR * (lower - cases) + cases
+        upper = SHOT_NOISE_FACTOR * (upper - cases) + cases
+        stats['projection'].append(
+            {'date': str(date), 'cases': cases, 'upper': upper, 'lower': lower}
+        )
+        # u_cases = (upper - lower) / 2
+        # u_cases = np.sqrt(SHOT_NOISE_FACTOR**2 * cases + u_cases**2)
+        if i < 8:
+            print(f"{cases:.0f} {lower:.0f}—{upper:.0f}")
+
+Path("latest_nsw_stats.json").write_text(json.dumps(stats, indent=4))
 
 # Update the date in the HTML
 html_file = 'COVID_NSW.html'
