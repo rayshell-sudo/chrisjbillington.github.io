@@ -28,7 +28,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install numpy scipy matplotlib pandas requests praw
+          pip install numpy scipy matplotlib pandas lxml requests praw
 
       - name: Update
         run: |
