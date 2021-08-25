@@ -1,11 +1,11 @@
 name: NSW update and post
 
 on:
-  # push:
-  #   branches:
-  #     - master
-  schedule:
-    - cron: '30 00 * * *' # Daily at 00:30 UTC (10:30 AEST)
+  push:
+    branches:
+      - master
+  # schedule:
+  #   - cron: '30 00 * * *' # Daily at 00:30 UTC (10:30 AEST)
 
 defaults:
   run:
