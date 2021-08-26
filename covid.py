@@ -134,6 +134,13 @@ if US_STATES:
                 dtype=float,  # Work around an errant unicode character in data
             ),
         }
+        # Work around the presence of some very small values in the datasets. This only
+        # keeps an entry if it is larger than the previous one.
+        monotonic = np.append(False , vax_data[state]['vaccinated'][1:] > vax_data[state]['vaccinated'][:-1])
+        
+        vax_data[state]['dates'] = vax_data[state]['dates'][monotonic]
+        vax_data[state]['vaccinated'] = vax_data[state]['vaccinated'][monotonic]
+        del monotonic
 
 
 else:
