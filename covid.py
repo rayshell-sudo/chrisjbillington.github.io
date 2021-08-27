@@ -121,6 +121,7 @@ if US_STATES:
     REPO_URL = "https://raw.githubusercontent.com/govex/COVID-19/master"
     DATA_DIR = "data_tables/vaccine_data/us_data/time_series/"
     df = pd.read_csv(f"{REPO_URL}/{DATA_DIR}/vaccine_data_us_timeline.csv")
+    df=df[df['Vaccine_Type']=='All']
 
     vax_data = {}
     for state, subdf in df.groupby('Province_State'):
@@ -134,13 +135,7 @@ if US_STATES:
                 dtype=float,  # Work around an errant unicode character in data
             ),
         }
-        # Work around the presence of some very small values in the datasets. This only
-        # keeps an entry if it is larger than the previous one.
-        monotonic = np.append(False , vax_data[state]['vaccinated'][1:] > vax_data[state]['vaccinated'][:-1])
-        
-        vax_data[state]['dates'] = vax_data[state]['dates'][monotonic]
-        vax_data[state]['vaccinated'] = vax_data[state]['vaccinated'][monotonic]
-        del monotonic
+
 
 
 else:
