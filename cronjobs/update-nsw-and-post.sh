@@ -4,13 +4,10 @@ set -euxo
 # Source our secrets, clone a temporary copy of the repo and cd to it:
 source "$(dirname "$0")/common.sh"
 
-# Wait for NSW data to become available:
-# if python wait-for-nsw-update.py | grep "ready!"; then
-#     ./nsw.sh
-# fi
-
-# a quick test
-python nsw.py
+Wait for NSW data to become available:
+if python wait-for-nsw-update.py | grep "ready!"; then
+    ./nsw.sh
+fi
 
 # Post to reddit:
 python post-nsw-to-reddit.py \
