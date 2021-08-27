@@ -5,12 +5,22 @@ set -euxo
 source "$(dirname "$0")/common.sh"
 
 # Wait for NSW data to become available:
-if python wait-for-nsw-update.py | grep "ready!"; then
-    ./nsw.sh
-fi
+# if python wait-for-nsw-update.py | grep "ready!"; then
+#     ./nsw.sh
+# fi
+
+# a quick test
+python nsw.py
 
 # Post to reddit:
 python post-nsw-to-reddit.py \
-  '${REDDIT_CLIENT_ID}' \
-  '${REDDIT_CLIENT_SECRET}' \
-  '${REDDIT_PASSWORD}'
+  "${REDDIT_CLIENT_ID}" \
+  "${REDDIT_CLIENT_SECRET}" \
+  "${REDDIT_PASSWORD}"
+
+# Commit and push
+git commit --all -m "NSW update"
+
+# pull first to decrease the chances of a collision
+git pull --rebase --autostash
+git push
