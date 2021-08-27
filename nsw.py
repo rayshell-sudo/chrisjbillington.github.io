@@ -1122,7 +1122,7 @@ if not (LGA or OTHERS or CONCERN):
     if BIPARTITE:
         ymax = 12000
     elif VAX:
-        ymax = 6000
+        ymax = 4000
     else:
         ymax = 4000
     ax2.axis(ymin=0, ymax=ymax)
