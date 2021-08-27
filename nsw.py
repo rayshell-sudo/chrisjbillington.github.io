@@ -310,7 +310,7 @@ def stochastic_sir(
     trials_infected_today = np.zeros((n_trials, n_days))
     trials_R_eff = np.zeros((n_trials, n_days))
     for i in range(n_trials):
-        print(f"trial {i}")
+        # print(f"trial {i}")
         # Randomly choose an R_eff and caseload from the distribution
         if cov_caseload_R_eff is not None:
             caseload, R_eff = np.random.multivariate_normal(

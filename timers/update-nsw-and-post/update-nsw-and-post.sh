@@ -2,9 +2,9 @@
 set -euxo
 
 # Source our secrets, clone a temporary copy of the repo and cd to it:
-source "$(dirname "$0")/../common.sh"
+source "$(dirname "$BASH_SOURCE")/../common.sh"
 
-Wait for NSW data to become available:
+# Wait for NSW data to become available:
 if python wait-for-nsw-update.py | grep "ready!"; then
     ./nsw.sh
 fi

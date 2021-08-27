@@ -2,7 +2,7 @@
 set -euxo pipefail
 
 # chdir to the main repo directory:
-cd "$(dirname "$0")/.."
+cd "$(dirname "$BASH_SOURCE")/.."
 
 # Get our secrets
 source ../secrets.sh
