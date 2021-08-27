@@ -2,7 +2,7 @@ name: NSW
 
 on:
   schedule:
-    - cron: '50 12 * * *' # Daily at 12:50 UTC (10:15 AEST)
+    - cron: '10 0 * * *' # Daily at 00:10 UTC (10:10 AEST)
 
 defaults:
   run:
@@ -36,10 +36,10 @@ jobs:
       - name: Git pull
         run: git pull --rebase --autostash
 
-      # - name: Commit
-      #   uses: stefanzweifel/git-auto-commit-action@v4
-      #   with:
-      #     commit_message: NSW update
+      - name: Commit
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: NSW update
           
       - name: Post
         run: |
