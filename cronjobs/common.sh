@@ -21,8 +21,11 @@ trap finish EXIT
 # Sync with any remote changes. The way this works is that the main repo only ever pulls
 # from remote, our temporary clones are the ones pushing to remote. We would just clone
 # the entire repo from remote to a tempdir for each job, but it's actually very large so
-# we use the local one as an optimisation.
-git pull --rebase --autostash
+# we use the local one as an optimisation. The individual jobs can't just work on the
+# same git repo because that would create a collision. There is still a risk of
+# collision if two of them push at the same time, but it's much smaller since they all
+# issue a 'pull --rebase' immediately prior.
+git pull
 
 # clone, cd, and set remote
 git clone .git "$scratch"

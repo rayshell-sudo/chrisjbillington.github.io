@@ -1,5 +1,5 @@
 #! /bin/bash
-set -euxo pipefail
+set -euxo
 
 # Source our secrets, clone a temporary copy of the repo and cd to it:
 source "$(dirname "$0")/common.sh"
