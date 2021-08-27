@@ -66,9 +66,9 @@ OCT = np.datetime64('2021-10-01')
 
 nsw_proj_rate = np.zeros(len(t_projection))
 
-nsw_proj_rate[:] =  1.6 # Oct onward
-nsw_proj_rate[t_projection < OCT] =  1.4 # Sep
-nsw_proj_rate[t_projection < SEP] =  1.2 # Aug
+nsw_proj_rate[:] =  1.8 # Oct onward
+nsw_proj_rate[t_projection < OCT] =  1.6 # Sep
+nsw_proj_rate[t_projection < SEP] =  1.4 # Aug
 # clip to 85% fully vaxed
 initial_coverage =  100 * nsw_doses.sum() / POPS[STATE]
 nsw_proj_rate[initial_coverage + nsw_proj_rate.cumsum() > 2 * 85] = 0
@@ -85,7 +85,7 @@ plt.gca().xaxis.set_major_locator(locator)
 plt.gca().xaxis.set_major_formatter(formatter)
 plt.grid(True, color='k', linestyle=":", alpha=0.5)
 plt.axis(
-    xmin=np.datetime64('2021-05-01'), xmax=np.datetime64('2021-12-31'), ymax=1.7, ymin=0
+    xmin=np.datetime64('2021-05-01'), xmax=np.datetime64('2021-12-31'), ymax=2.2, ymin=0
 )
 plt.ylabel('7d avg doses per hundred population per day')
 plt.title(f"{STATE} daily vaccinations per capita")

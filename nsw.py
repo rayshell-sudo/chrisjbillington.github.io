@@ -380,11 +380,11 @@ def projected_vaccine_immune_population(t, historical_doses_per_100):
     doses_per_100[0] = historical_doses_per_100[-1]
     for i in range(1, len(doses_per_100)):
         if i < SEP:
-            doses_per_100[i] = doses_per_100[i - 1] + 1.2
-        elif i < OCT:
             doses_per_100[i] = doses_per_100[i - 1] + 1.4
-        else:
+        elif i < OCT:
             doses_per_100[i] = doses_per_100[i - 1] + 1.6
+        else:
+            doses_per_100[i] = doses_per_100[i - 1] + 1.8
 
     doses_per_100 = np.clip(doses_per_100, 0, 85 * 2)
 
