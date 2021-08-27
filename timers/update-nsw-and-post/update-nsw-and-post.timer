@@ -1,0 +1,8 @@
+[Unit]
+Description=Timer for update-nsw-and-post.service
+
+[Timer]
+OnCalendar=*-*-* 22:00:00
+
+[Install]
+WantedBy=timers.target

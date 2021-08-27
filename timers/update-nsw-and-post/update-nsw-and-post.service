@@ -1,0 +1,5 @@
+[Unit]
+Description=Update NSW plots and post to reddit
+
+[Service]
+ExecStart=/home/bilbo/chrisbillington.net/chrisjbillington.github.io/timers/update-nsw-and-post/update-nsw-and-post.sh

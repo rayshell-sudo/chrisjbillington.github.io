@@ -1,0 +1,6 @@
+[Unit]
+Description=Hello
+
+[Service]
+ExecStart=/home/bilbo/chrisbillington.net/chrisjbillington.github.io/cronjobs/hello/hello.sh
+User=bilbo
