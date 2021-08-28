@@ -73,12 +73,12 @@ def covidlive_doses_per_100(n):
     vic_daily_doses = daily_doses[:-1]
 
     # Smooth out the data correction made on Aug 16th:
-    # CORRECTION_DATE = np.datetime64('2021-08-16')
-    # CORRECTION_DOSES = 93000
-    # nsw_daily_doses[nsw_dates == CORRECTION_DATE] -= CORRECTION_DOSES
-    # sum_prior = nsw_daily_doses[nsw_dates < CORRECTION_DATE].sum()
-    # SCALE_FACTOR = 1 + CORRECTION_DOSES / sum_prior
-    # nsw_daily_doses[nsw_dates < CORRECTION_DATE] *= SCALE_FACTOR
+    CORRECTION_DATE = np.datetime64('2021-08-16')
+    CORRECTION_DOSES = -75000
+    vic_daily_doses[vic_dates == CORRECTION_DATE] -= CORRECTION_DOSES
+    sum_prior = vic_daily_doses[vic_dates < CORRECTION_DATE].sum()
+    SCALE_FACTOR = 1 + CORRECTION_DOSES / sum_prior
+    vic_daily_doses[vic_dates < CORRECTION_DATE] *= SCALE_FACTOR
 
     return 100 * vic_daily_doses.cumsum()[-n:] / POP_OF_VIC
 
@@ -238,11 +238,11 @@ def projected_vaccine_immune_population(t, historical_doses_per_100):
     doses_per_100[0] = historical_doses_per_100[-1]
     for i in range(1, len(doses_per_100)):
         if i < SEP:
-            doses_per_100[i] = doses_per_100[i - 1] + 1.4
+            doses_per_100[i] = doses_per_100[i - 1] + 1.0
         elif i < OCT:
-            doses_per_100[i] = doses_per_100[i - 1] + 1.6
+            doses_per_100[i] = doses_per_100[i - 1] + 1.2
         else:
-            doses_per_100[i] = doses_per_100[i - 1] + 1.8
+            doses_per_100[i] = doses_per_100[i - 1] + 1.4
 
     doses_per_100 = np.clip(doses_per_100, 0, 85 * 2)
 
@@ -770,22 +770,24 @@ if VAX:
     text.set_bbox(dict(facecolor='white', alpha=0.8, linewidth=0))
 
     suffix = '_vax'
+elif NONISOLATING:
+    suffix = "_noniso"
 else:
     suffix = ''
 
-fig1.savefig(f'COVID_VIC{suffix}.svg')
-fig1.savefig(f'COVID_VIC{suffix}.png', dpi=133)
-if False: # Just to keep the diff with nsw.py sensible here
+fig1.savefig(f'COVID_VIC_2021{suffix}.svg')
+fig1.savefig(f'COVID_VIC_2021{suffix}.png', dpi=133)
+if True: # Just to keep the diff with nsw.py sensible here
     ax2.set_yscale('linear')
     if VAX:
-        ymax = 4000
+        ymax = 400
     else:
-        ymax = 4000
+        ymax = 400
     ax2.axis(ymin=0, ymax=ymax)
     ax2.yaxis.set_major_locator(mticker.MultipleLocator(ymax / 8))
     ax2.set_ylabel("Daily confirmed cases (linear scale)")
-    fig1.savefig(f'COVID_VIC{suffix}_linear.svg')
-    fig1.savefig(f'COVID_VIC{suffix}_linear.png', dpi=133)
+    fig1.savefig(f'COVID_VIC_2021{suffix}_linear.svg')
+    fig1.savefig(f'COVID_VIC_2021{suffix}_linear.png', dpi=133)
 
 # Save some deets to a file for the auto reddit posting to use:
 try:
