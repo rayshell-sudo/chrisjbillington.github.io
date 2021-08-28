@@ -31,27 +31,19 @@ POP_OF_NSW = 8.166e6
 
 NONISOLATING = 'noniso' in sys.argv
 VAX = 'vax' in sys.argv
-ACCELERATED_VAX = 'accel_vax' in sys.argv
 OTHERS = 'others' in sys.argv
 CONCERN = 'concern' in sys.argv
-BIPARTITE = 'bipartite' in sys.argv
 LGA_IX = None
 LGA = None
 
 if (
-    not (NONISOLATING or VAX or ACCELERATED_VAX or OTHERS or CONCERN or BIPARTITE)
+    not (NONISOLATING or VAX or OTHERS or CONCERN)
     and sys.argv[1:]
 ):
     if len(sys.argv) == 2:
         LGA_IX = int(sys.argv[1])
     else:
         raise ValueError(sys.argv[1:])
-
-if ACCELERATED_VAX:
-    VAX = True
-
-if BIPARTITE:
-    VAX = True
 
 # Data from covidlive by date announced to public
 def covidlive_data(start_date=np.datetime64('2021-06-10')):
@@ -98,41 +90,6 @@ def covidlive_doses_per_100(n):
     nsw_daily_doses[nsw_dates < CORRECTION_DATE] *= SCALE_FACTOR
 
     return 100 * nsw_daily_doses.cumsum()[-n:] / POP_OF_NSW
-
-
-# Data from NSW Health by test notification date
-def nswhealth_data(start_date=np.datetime64('2021-06-10')):
-    url = (
-        "https://data.nsw.gov.au/data/dataset/"
-        "c647a815-5eb7-4df6-8c88-f9c537a4f21e/"
-        "resource/2f1ba0f3-8c21-4a86-acaf-444be4401a6d/"
-        "download/confirmed_cases_table3_likely_source.csv"
-    )
-    df = pd.read_csv(url)
-
-    LOCAL = [
-        'Locally acquired - no links to known case or cluster',
-        'Locally acquired - investigation ongoing',
-        'Locally acquired - linked to known case or cluster',
-    ]
-
-    cases_by_date = {
-        d: 0
-        for d in np.arange(
-            np.datetime64(df['notification_date'].min()),
-            np.datetime64(df['notification_date'].max()) + 1,
-        )
-    }
-
-    for _, row in df.iterrows():
-        if row['likely_source_of_infection'] in LOCAL:
-            cases_by_date[np.datetime64(row['notification_date'])] += 1
-
-
-    dates = np.array(list(cases_by_date.keys()))
-    new = np.array(list(cases_by_date.values()))
-
-    return dates[dates >= start_date], new[dates >= start_date]
 
 # Data from NSW Health by LGA and test notification date
 def lga_data(start_date=np.datetime64('2021-06-10')):
@@ -407,19 +364,6 @@ def projected_vaccine_immune_population(t, historical_doses_per_100):
 
     return immune
 
-# dates, new = nswhealth_data()
-
-# for d, n in zip(dates, new):
-#     print(d, n)
-
-# Last day is incomplete data
-# dates = dates[:-1]
-# new = new[:-1]
-
-# If NSW health data not updated yet, use covidlive data:
-# cl_dates, cl_new = covidlive_data(start_date=dates[-1] + 1)
-# dates = np.append(dates, cl_dates)
-# new = np.append(new, cl_new)
 
 LGAs_OF_CONCERN = [
     'Blacktown',
@@ -465,9 +409,6 @@ else:
 # Current vaccination level:
 doses_per_100 = covidlive_doses_per_100(n=len(dates))
 
-# for d, n in zip(dates, new):
-#     print(d, n)
-
 # if not NONISOLATING:
 #     dates = np.append(dates, [dates[-1] + 1])
 #     new = np.append(new, [655])
@@ -483,10 +424,6 @@ new_padded[: -PADDING] = new
 
 def exponential(x, A, k):
     return A * np.exp(k * x)
-
-
-# def linear(x, A, B):
-#     return A * x + B
 
 
 tau = 5  # reproductive time of the virus in days
@@ -515,26 +452,9 @@ params, cov = curve_fit(exponential, fit_x, new[-FIT_PTS:], sigma=1 / fit_weight
 clip_params(params)
 fit = exponential(pad_x, *params).clip(0.1, None)
 
-# Linear fit for now
-# params, cov = curve_fit(linear, fit_x, new[-FIT_PTS:], sigma=1 / fit_weights)
-# fit = linear(pad_x, *params).clip(0.1, None)
-
-
 new_padded[-PADDING:] = fit
 new_smoothed = gaussian_smoothing(new_padded, SMOOTHING)[: -PADDING]
-# new_smoothed = gaussian_smoothing(new, SMOOTHING)
 R = (new_smoothed[1:] / new_smoothed[:-1]) ** tau
-
-# def correct_smoothing(new_smoothed, R):
-#     # Gaussian smoothing creates a consistent bias whenever there is curvature. Measure
-#     # and correct for it
-#     f = R ** (SMOOTHING / 5)
-#     bias =  (new_smoothed[1:] * f - new_smoothed[1:] / f) / 2 - new_smoothed[1:]
-#     new_smoothed[1:] -= bias
-#     new_smoothed[0] -= bias[0]
-#     return new_smoothed
-
-# new_smoothed = correct_smoothing(new_smoothed, R)
 
 N_monte_carlo = 1000
 variance_R = np.zeros_like(R)
@@ -568,18 +488,6 @@ for i in range(N_monte_carlo):
     scenario_params = np.random.multivariate_normal(params, cov)
     clip_params(scenario_params)
     fit = exponential(pad_x, *scenario_params).clip(0.1, None)
-
-    # Linear for now:
-    # params, cov = curve_fit(
-    #     linear,
-    #     fit_x,
-    #     new_with_noise[-FIT_PTS:],
-    #     sigma=1 / fit_weights,
-    #     maxfev=20000,
-    # )
-    # scenario_params = np.random.multivariate_normal(params, cov)
-    # fit = linear(pad_x, *scenario_params).clip(0.1, None)
-
 
     new_padded[:-PADDING] = new_with_noise
     new_padded[-PADDING:] = fit
@@ -627,13 +535,7 @@ cov = np.array(
     ]
 )
 
-if CONCERN or OTHERS:
-    # Save the fit params and covariance to disk so that we can run a projection based
-    # on the sum of the two separate restriction settings (the BIPARTITE mode)
-    with open('concern.pickle' if CONCERN else 'others.pickle', 'wb') as f:
-        pickle.dump([R[-1], new_smoothed[-1], cov, new.sum()], f)
-
-if VAX and not BIPARTITE:
+if VAX:
     # Fancy stochastic SIR model
     trials_infected_today, trials_cumulative, trials_R_eff = stochastic_sir(
         initial_caseload=new_smoothed[-1],
@@ -667,80 +569,7 @@ if VAX and not BIPARTITE:
     total_cases_lower = cumulative_lower[-1]
     total_cases_upper = cumulative_upper[-1]
 
-elif BIPARTITE:
-
-    # Sum of two models - one for LGAs of concern, and one for the rest of NSW
-    with open('concern.pickle', 'rb') as f:
-        R_concern, new_concern, cov_concern, initial_cumulative_concern = pickle.load(f)
-    with open('others.pickle', 'rb') as f:
-        R_others, new_others, cov_others, initial_cumulative_others =  pickle.load(f)
-
-    # LGA data is a tad out of date. Scale new and cumulative cases proportionally to
-    # match total new and cumulative caseloads.
-    caseload_factor = new_smoothed[-1] / (new_concern + new_others)
-    cumulative_factor = new.sum() / (initial_cumulative_concern + initial_cumulative_others)
-
-    new_concern = caseload_factor * new_concern
-    new_others = caseload_factor * new_others
-    initial_cumulative_concern = cumulative_factor * initial_cumulative_concern
-    initial_cumulative_others = cumulative_factor * initial_cumulative_others
-
-    # Fancy stochastic SIR model
-    concern_infected_today, concern_cumulative, concern_R_eff  = stochastic_sir(
-        initial_caseload=new_concern,
-        initial_cumulative_cases=initial_cumulative_concern,
-        initial_R_eff=R_concern,
-        tau=tau,
-        population_size=POP_OF_SYD,
-        vaccine_immunity=projected_vaccine_immune_population(
-            t_projection, doses_per_100
-        ),
-        n_days=days_projection + 1,
-        n_trials=10000,
-        cov_caseload_R_eff=cov_concern,
-    )
-
-    others_infected_today, others_cumulative, others_R_eff  = stochastic_sir(
-        initial_caseload=new_others,
-        initial_cumulative_cases=initial_cumulative_others,
-        initial_R_eff=R_others,
-        tau=tau,
-        population_size=POP_OF_SYD,
-        vaccine_immunity=projected_vaccine_immune_population(
-            t_projection, doses_per_100
-        ),
-        n_days=days_projection + 1,
-        n_trials=10000,
-        cov_caseload_R_eff=cov_others,
-    )
-
-    trials_infected_today = concern_infected_today + others_infected_today
-    trials_cumulative = concern_cumulative + others_cumulative
-
-    trials_R_eff = (
-        concern_infected_today * concern_R_eff + others_infected_today * others_R_eff
-    ) / (concern_infected_today + others_infected_today)
-
-    new_projection, (
-        new_projection_lower,
-        new_projection_upper,
-    ) = get_confidence_interval(trials_infected_today)
-
-    cumulative_median, (cumulative_lower, cumulative_upper) = get_confidence_interval(
-        trials_cumulative,
-    )
-
-    R_eff_projection, (
-        R_eff_projection_lower,
-        R_eff_projection_upper,
-    ) = get_confidence_interval(trials_R_eff)
-
-    total_cases = cumulative_median[-1]
-    total_cases_lower = cumulative_lower[-1]
-    total_cases_upper = cumulative_upper[-1]
-
 else:
-
     # Simple model, no vaccines or community immunity
     def log_projection_model(t, A, R):
         return np.log(A * R ** (t / tau))
@@ -756,7 +585,6 @@ else:
         np.log(new_projection) - log_new_projection_uncertainty
     )
 
-    
 
 # Examining whether the smoothing and uncertainty look decent
 # plt.bar(dates, new)
@@ -945,7 +773,7 @@ else:
 
 
 ax1.axhline(1.0, color='k', linewidth=1)
-ax1.axis(xmin=START_PLOT, xmax=END_PLOT, ymin=0, ymax=5 if BIPARTITE else 4)
+ax1.axis(xmin=START_PLOT, xmax=END_PLOT, ymin=0, ymax=4)
 ax1.grid(True, linestyle=":", color='k', alpha=0.5)
 
 ax1.set_ylabel(R"$R_\mathrm{eff}$")
@@ -954,7 +782,12 @@ u_R_latest = (R_upper[-1] - R_lower[-1]) / 2
 
 R_eff_string = fR"$R_\mathrm{{eff}}={R[-1]:.02f} \pm {u_R_latest:.02f}$"
 
-if not VAX:
+if VAX:
+    title_lines = [
+        "Projected effect of New South Wales vaccination rollout",
+        f"Starting from currently estimated {R_eff_string}",
+    ]
+else:
     if LGA:
         region = LGA
     elif OTHERS:
@@ -968,29 +801,7 @@ if not VAX:
         "with restriction levels and daily cases",
         f"Latest estimate: {R_eff_string}",
     ]
-    if NONISOLATING:
-        title_lines[0] += ' (non-isolating cases only)'
-elif ACCELERATED_VAX:
-    title_lines = [
-        "Projected effect of 2× accelerated/prioritised New South Wales vaccination rollout",
-        f"Starting from currently estimated {R_eff_string}",
-    ]
-elif not BIPARTITE:
-    title_lines = [
-        "Projected effect of New South Wales vaccination rollout",
-        f"Starting from currently estimated {R_eff_string}",
-    ]
-else:
-    u_R_concern = np.sqrt(cov_concern[1, 1])
-    u_R_others = np.sqrt(cov_others[1, 1])
-    R_eff_str_concern = fR"$R_\mathrm{{eff,concern}}={R_concern:.02f} \pm {u_R_concern:.02f}$"
-    R_eff_str_others = fR"$R_\mathrm{{eff,others}}={R_others:.02f} \pm {u_R_others:.02f}$"
-    title_lines = [
-        "Projected effect of New South Wales vaccination rollout"
-        " assuming status quo outside LGAs of concern",
-        f"Starting from current estimates: {R_eff_str_concern} and {R_eff_str_others}",
-    ]
-
+    
 ax1.set_title('\n'.join(title_lines))
 
 ax1.yaxis.set_major_locator(mticker.MultipleLocator(0.25))
@@ -1035,7 +846,7 @@ ax2.set_ylabel(
 )
 
 ax2.set_yscale('log')
-ax2.axis(ymin=1, ymax=100_000 if BIPARTITE else 10_000)
+ax2.axis(ymin=1, ymax=10_000)
 
 fig1.tight_layout(pad=1.8)
 
@@ -1072,8 +883,6 @@ ax1.xaxis.set_major_formatter(formatter)
 axpos = ax1.get_position()
 
 text = fig1.text(
-    # axpos.x0 + axpos.width - 0.01,
-    # axpos.y0 + 0.02,
     0.99,
     0.02,
     "@chrisbilbo | chrisbillington.net/COVID_NSW",
@@ -1100,11 +909,7 @@ if VAX:
     )
     text.set_bbox(dict(facecolor='white', alpha=0.8, linewidth=0))
 
-    suffix = '_bipartite' if BIPARTITE else '_vax'
-    if ACCELERATED_VAX:
-        suffix = '_accel_vax'
-elif NONISOLATING:
-    suffix = '_noniso'
+    suffix = '_vax'
 elif LGA:
     suffix=f'_LGA_{LGA_IX}'
 elif OTHERS:
@@ -1118,19 +923,15 @@ fig1.savefig(f'COVID_NSW{suffix}.svg')
 fig1.savefig(f'COVID_NSW{suffix}.png', dpi=133)
 if not (LGA or OTHERS or CONCERN):
     ax2.set_yscale('linear')
-    ax1.axis(ymax=4) # Was set to 5 for log plot in case of bipartite projection
-    if BIPARTITE:
-        ymax = 12000
-    elif VAX:
+    if VAX:
         ymax = 4000
     else:
         ymax = 4000
     ax2.axis(ymin=0, ymax=ymax)
     ax2.yaxis.set_major_locator(mticker.MultipleLocator(ymax / 8))
-    ax2.set_ylabel(f"Daily confirmed cases (linear scale)")
+    ax2.set_ylabel("Daily confirmed cases (linear scale)")
     fig1.savefig(f'COVID_NSW{suffix}_linear.svg')
     fig1.savefig(f'COVID_NSW{suffix}_linear.png', dpi=133)
-
 
 # Save some deets to a file for the auto reddit posting to use:
 try:
@@ -1165,8 +966,6 @@ if VAX:
         stats['projection'].append(
             {'date': str(date), 'cases': cases, 'upper': upper, 'lower': lower}
         )
-        # u_cases = (upper - lower) / 2
-        # u_cases = np.sqrt(SHOT_NOISE_FACTOR**2 * cases + u_cases**2)
         if i < 8:
             print(f"{cases:.0f} {lower:.0f}—{upper:.0f}")
 
