@@ -2,7 +2,6 @@ import sys
 from datetime import datetime
 from pytz import timezone
 from pathlib import Path
-import pickle
 import json
 
 from scipy.optimize import curve_fit
@@ -36,10 +35,7 @@ CONCERN = 'concern' in sys.argv
 LGA_IX = None
 LGA = None
 
-if (
-    not (NONISOLATING or VAX or OTHERS or CONCERN)
-    and sys.argv[1:]
-):
+if not (NONISOLATING or VAX or OTHERS or CONCERN) and sys.argv[1:]:
     if len(sys.argv) == 2:
         LGA_IX = int(sys.argv[1])
     else:
@@ -70,7 +66,7 @@ def covidlive_data(start_date=np.datetime64('2021-06-10')):
 def covidlive_doses_per_100(n):
     """return NSW cumulative doses per 100 population for the last n days"""
 
-    url = f"https://covidlive.com.au/report/daily-vaccinations/nsw"
+    url = "https://covidlive.com.au/report/daily-vaccinations/nsw"
 
     df = pd.read_html(url)[1]
     doses = df['DOSES'][::-1]
@@ -167,7 +163,7 @@ def nonisolating_data():
     df = pd.read_html('https://covidlive.com.au/report/daily-wild-cases/nsw')[1]
 
     if df['TOTAL'][0] == '-':
-        df = df[1:200]
+        df = df[1:]
 
     cl_dates = np.array(
         [
@@ -223,6 +219,7 @@ def model_uncertainty(function, x, params, covariance):
         for j in range(len(params))
     )
     return np.sqrt(squared_model_uncertainty)
+
 
 def get_confidence_interval(data, confidence_interval=0.68, axis=0):
     """Return median (lower, upper) for a confidence interval of the data along the
@@ -298,24 +295,9 @@ def stochastic_sir(
             trials_infected_today[i, j] = infected_today
             trials_R_eff[i, j] = R_eff 
 
-    # threshold = 1000
-    # threshold_exceeded = (
-    #     (trials_infected_today > threshold).cumsum(axis=1).astype(bool).mean(axis=0)
-    # )
     cumulative_infected = trials_infected_today.cumsum(axis=1) + initial_cumulative_cases
 
     return trials_infected_today, cumulative_infected, trials_R_eff
-
-    
-
-    # return (
-    #     daily_median,
-    #     (daily_lower, daily_upper),
-    #     cumulative_median,
-    #     (cumulative_lower, cumulative_upper),
-    #     R_eff_median,
-    #     (R_eff_lower, R_eff_upper),
-    # )
 
 
 def projected_vaccine_immune_population(t, historical_doses_per_100):
@@ -406,6 +388,7 @@ elif NONISOLATING:
 else:
     dates, new = covidlive_data()
 
+
 # Current vaccination level:
 doses_per_100 = covidlive_doses_per_100(n=len(dates))
 
@@ -414,7 +397,7 @@ doses_per_100 = covidlive_doses_per_100(n=len(dates))
 #     new = np.append(new, [655])
 
 START_PLOT = np.datetime64('2021-06-13')
-END_PLOT = np.datetime64('2022-01-01') if VAX else dates[-1] + 28 #np.datetime64('2021-09-01')
+END_PLOT = np.datetime64('2022-01-01') if VAX else dates[-1] + 28
 
 SMOOTHING = 4
 PADDING = 3 * int(round(3 * SMOOTHING))
@@ -451,6 +434,7 @@ def clip_params(params):
 params, cov = curve_fit(exponential, fit_x, new[-FIT_PTS:], sigma=1 / fit_weights)
 clip_params(params)
 fit = exponential(pad_x, *params).clip(0.1, None)
+
 
 new_padded[-PADDING:] = fit
 new_smoothed = gaussian_smoothing(new_padded, SMOOTHING)[: -PADDING]
@@ -492,7 +476,6 @@ for i in range(N_monte_carlo):
     new_padded[:-PADDING] = new_with_noise
     new_padded[-PADDING:] = fit
     new_smoothed_noisy = gaussian_smoothing(new_padded, SMOOTHING)[:-PADDING]
-    # new_smoothed_noisy = gaussian_smoothing(new_with_noise, SMOOTHING)
     variance_new_smoothed += (new_smoothed_noisy - new_smoothed) ** 2 / N_monte_carlo
     R_noisy = (new_smoothed_noisy[1:] / new_smoothed_noisy[:-1]) ** tau
     variance_R += (R_noisy - R) ** 2 / N_monte_carlo
@@ -505,6 +488,7 @@ for i in range(N_monte_carlo):
 # cov_R_new_smoothed[-1] *= 0.05 / np.sqrt(variance_R[-1])
 # R[-1] = 0.75
 # variance_R[-1] = 0.05**2
+
 
 u_R = np.sqrt(variance_R)
 R_upper = R + u_R
@@ -649,7 +633,6 @@ ax1.fill_betweenx(
     label="Initial restrictions",
 )
 
-
 ax1.fill_betweenx(
     [-10, 10],
     [LGA_LOCKDOWN, LGA_LOCKDOWN],
@@ -660,6 +643,7 @@ ax1.fill_betweenx(
     hatch="//////",
     label="East Sydney LGA lockdown",
 )
+
 ax1.fill_betweenx(
     [-10, 10],
     [LOCKDOWN, LOCKDOWN],
@@ -704,7 +688,6 @@ ax1.fill_betweenx(
     [-10, 10],
     [CURFEW, CURFEW],
     [END_LOCKDOWN, END_LOCKDOWN],
-    # color=whiten("red", 0.45),
     color="red",
     alpha=0.45,
     linewidth=0,
@@ -716,13 +699,11 @@ for i in range(30):
         [-10, 10],
         [END_LOCKDOWN.astype(int) + i / 3] * 2,
         [END_LOCKDOWN.astype(int) + (i + 1) / 3] * 2,
-        # color=whiten("red", 0.25 * (30 - i) / 30),
         color="red",
         alpha=0.45 * (30 - i) / 30,
         linewidth=0,
         zorder=-10,
     )
-
 
 
 ax1.fill_between(
@@ -744,7 +725,6 @@ if VAX:
         alpha=0.2,
         step='pre',
         zorder=2,
-        # linewidth=0,
         hatch="////",
     )
     ax1.fill_between(
@@ -767,7 +747,6 @@ else:
         alpha=0.2,
         step='pre',
         zorder=2,
-        # linewidth=0,
         hatch="////",
     )
 
@@ -797,8 +776,7 @@ else:
     else:
         region = "New South Wales"
     title_lines = [
-        f"$R_\\mathrm{{eff}}$ in {region}, "
-        "with restriction levels and daily cases",
+        f"$R_\\mathrm{{eff}}$ in {region}, with restriction levels and daily cases",
         f"Latest estimate: {R_eff_string}",
     ]
     
@@ -847,7 +825,6 @@ ax2.set_ylabel(
 
 ax2.set_yscale('log')
 ax2.axis(ymin=1, ymax=10_000)
-
 fig1.tight_layout(pad=1.8)
 
 handles, labels = ax1.get_legend_handles_labels()
@@ -974,7 +951,7 @@ Path("latest_nsw_stats.json").write_text(json.dumps(stats, indent=4))
 # Update the date in the HTML
 html_file = 'COVID_NSW.html'
 html_lines = Path(html_file).read_text().splitlines()
-now = datetime.now(timezone('Australia/Melbourne')).strftime('%Y-%m-%d-%H:%M')
+now = datetime.now(timezone('Australia/Melbourne')).strftime('%Y-%m-%d %H:%M')
 for i, line in enumerate(html_lines):
     if 'Last updated' in line:
         html_lines[i] = f'    Last updated: {now} AEST'
