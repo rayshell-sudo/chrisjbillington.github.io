@@ -1,0 +1,8 @@
+[Unit]
+Description=Timer for update-vic-and-post.service
+
+[Timer]
+OnCalendar=*-*-* 08:30:00
+
+[Install]
+WantedBy=timers.target

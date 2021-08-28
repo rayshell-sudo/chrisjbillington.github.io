@@ -718,14 +718,16 @@ handles2, labels2 = ax2.get_legend_handles_labels()
 
 handles += handles2
 labels += labels2
-
-order = [5, 6, 7, 8, 9, 10, 2, 1, 0, 3, 4]
+if VAX:
+    order = [5, 7, 6, 8, 9, 10, 11, 2, 1, 0, 3, 4]
+else:
+    order = [5, 6, 7, 8, 9, 10, 2, 1, 0, 3, 4]
 ax2.legend(
     # handles,
     # labels,
     [handles[idx] for idx in order],
     [labels[idx] for idx in order],
-    loc='center right' if VAX else 'upper left',
+    loc='upper left',
     ncol=1 if VAX else 2,
     prop={'size': 8}
 )
@@ -797,8 +799,8 @@ except FileNotFoundError:
     stats = {}
 
 if NONISOLATING:
-    stats['R_eff_nonisolating'] = R[-1] 
-    stats['u_R_eff_nonisolating'] = u_R_latest
+    stats['R_eff_noniso'] = R[-1] 
+    stats['u_R_eff_noniso'] = u_R_latest
 else:
     stats['R_eff'] = R[-1] 
     stats['u_R_eff'] = u_R_latest

@@ -17,26 +17,26 @@ def th(n):
 
 def make_title():
     """Title of the reddit post"""
-    stats = json.loads(Path("latest_nsw_stats.json").read_text())
+    stats = json.loads(Path("latest_vic_stats.json").read_text())
     today = stats['today']  # The date of the last update - should be today
     R_eff = stats['R_eff']
     u_R_eff = stats['u_R_eff']
+    R_eff_noniso = stats['R_eff_noniso']
+    u_R_eff_noniso = stats['R_eff_noniso']
 
     today = datetime.fromisoformat(today)
     today = f'{today.strftime("%B")} {th(today.day)}'
 
-    title=f"""NSW R_eff as of {today}, with daily cases and restrictions. Latest
-        estimate: R_eff = {R_eff:.02f} ± {u_R_eff:.02f}. Plus projected effect of
-        vaccination rollout. (images with both linear and log scales)
+    title=f"""VIC R_eff as of {today}, with daily cases and restrictions. Latest
+        estimate: R_eff = {R_eff:.02f} ± {u_R_eff:.02f}. More leading estimate from
+        nonisolating cases only: R_eff = {R_eff_noniso:.02f} ±
+        {u_R_eff_noniso:.02f}. Plus projected effect of vaccination rollout. (images
+        with both linear and log scales)
     """
     return " ".join(title.split())
 
 def make_comment():
-    stats = json.loads(Path("latest_nsw_stats.json").read_text())
-    R_eff_concern = stats['R_eff_concern']
-    u_R_eff_concern = stats['u_R_eff_concern']
-    R_eff_others = stats['R_eff_others']
-    u_R_eff_others = stats['u_R_eff_others']
+    stats = json.loads(Path("latest_vic_stats.json").read_text())
 
     proj_lines = [
         "day  cases  68% range",
@@ -59,24 +59,14 @@ def make_comment():
 
     this_script_url = (
         "https://github.com/chrisjbillington/chrisjbillington.github.io/"
-        + "blob/master/post-nsw-to-reddit.py"
+        + "blob/master/post-vic-to-reddit.py"
     )
 
     COMMENT_TEXT = f"""\
-    More info/methodology: https://chrisbillington.net/COVID_NSW.html
+    More info/methodology: https://chrisbillington.net/COVID_VIC_2021.html
 
-    First two plots have case numbers on a linear scale, next two plots are exactly the
-    same but with case numbers on a log scale.
-
-    R_eff in LGAs of concern* vs the rest of NSW (*all of Penrith included):
-
-    [LGAs of concern](https://chrisbillington.net/COVID_NSW_LGA_concern.png): R_eff =
-    {R_eff_concern:.02f} ± {u_R_eff_concern:.02f}
-
-    [Rest of NSW](https://chrisbillington.net/COVID_NSW_LGA_others.png): R_eff =
-    {R_eff_others:.02f} ± {u_R_eff_others:.02f}
-
-    Note: LGA data is several days out of date compared to total numbers.
+    First three plots have case numbers on a linear scale, next three plots are exactly
+    the same but with case numbers on a log scale.
 
     Expected case numbers if the current  trend continues:
 
@@ -112,10 +102,12 @@ def get_flair_id(subreddit):
 
 
 IMAGES = [
-    "COVID_NSW_linear.png",
-    "COVID_NSW_vax_linear.png",
-    "COVID_NSW.png",
-    "COVID_NSW_vax.png",
+    "COVID_VIC_2021_linear.png",
+    "COVID_VIC_2021_noniso_linear.png",
+    "COVID_VIC_2021_vax_linear.png",
+    "COVID_VIC_2021.png",
+    "COVID_VIC_2021_noniso.png",
+    "COVID_VIC_2021_vax.png",
 ]
 
 if __name__ == '__main__':
@@ -134,7 +126,7 @@ if __name__ == '__main__':
         password=password,
     )
 
-    subreddit = reddit.subreddit("CoronavirusDownunder")
+    subreddit = reddit.subreddit("test") #"CoronavirusDownunder")
 
     submission = subreddit.submit_gallery(
         title=make_title(),

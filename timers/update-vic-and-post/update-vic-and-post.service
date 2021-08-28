@@ -1,0 +1,6 @@
+[Unit]
+Description=Update VIC plots and post to reddit
+
+[Service]
+ExecStart=/home/bilbo/chrisbillington.net/chrisjbillington.github.io/timers/update-vic-and-post/update-vic-and-post.sh
+User=bilbo
