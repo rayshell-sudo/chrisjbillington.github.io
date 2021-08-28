@@ -52,7 +52,7 @@
     Last updated: 2021-08-28-11:06 AEST
     <br>
     <small>
-      Updated daily after NSW announce case numbers
+      Updates daily at 11AM Sydney time
     </small>
     <h1>
       Progression of the Bondi COVID outbreak in New South Wales
@@ -61,10 +61,16 @@
       <mark><b><a href="COVID.html">←Back to per-country plots</a></b></mark>
     </p>
     <p>
-      <span style="background-color: #FF00FF"><b>See also: <a href="COVID_VIC.html">The road to a COVID-free Victoria</a></b></span>
+      <span style="background-color: #FFA000"><b>New: <a href="COVID_VIC_2021.html">Progression of the COVID outbreak in Victoria</a></b></span>
     </p>
+<!--     <p>
+      <span style="background-color: #00FF00"><b>See also: <a href="COVID_NSW.html">Progression of the Bondi COVID outbreak in New South Wales</a></b></span>
+    </p> -->
     <p>
       <span style="background-color: #00FFFF"><b>See also: <a href="aus_vaccinations.html">Australian vaccination rollout</a></b></span>
+    </p>
+    <p>
+      <span style="background-color: #FF00FF"><b>See also: <a href="COVID_VIC.html">The road to a COVID-free Victoria (old 2020 second wave plots)</a></b></span>
     </p>
 
     <div id="toc_container">
@@ -72,7 +78,6 @@
       <li><a href="#all"><i>R</i><sub>eff</sub> estimate from all cases</a></li>
       <!-- <li><a href="#noniso"><i>R</i><sub>eff</sub> estimate from non-isolating cases only</a></li> -->
       <li><a href="#vax">Projected effect of vaccine rollout</a></li>
-      <!-- <li><a href="#accel_vax">Projected effect of 2× accelerated/prioritised vaccine rollout</a></li> -->
       <li><a href="#concern-vs-others"><i>R</i><sub>eff</sub> in LGAs of concern vs rest of NSW</a></li>
       <li><a href="#lga"><i>R</i><sub>eff</sub> in individual LGAs of concern</a></li>
       <li><a href="#disclaimer">Disclaimer on trends</a></li>
@@ -129,10 +134,13 @@
       day in August, 1.6 doses per 100 population per day in September, and 1.8 doses
       per 100 population per day from October onward, up to a maximum of 85% of the
       population. See below for plots of how these assumed rates compare to the
-      vaccination rollout in New South Wales so far.
+      vaccination rollout in New South Wales so far. The vaccines are assumed to reduce
+      <i>R</i><sub>eff</sub> by 40% per dose per capita—that is, overall spread is
+      reduced by 40% for a partly-vaccinated individual and 80% for a fully vaccinated
+      individual.
     </p>
     <p>
-      This projection shows what might be possible if all other factors effecting
+      This projection shows what might be possible if all other factors affecting
       <i>R</i><sub>eff</sub>—such as restrictions—are held constant. If New South Wales
       eases restrictions, however, then <i>R</i><sub>eff</sub> will likely increase and
       the effect of vaccines in reducing spread will be delayed compared to this
@@ -150,35 +158,6 @@
       for the above projections also shown.
     </p>
     <img src="COVID_NSW_projected_doses.svg">
-
-    <!-- <h3 id="accel_vax">Projected effect of 2× accelerated/prioritised vaccine rollout</h3>
-
-    <p>
-      New South Wales has announced policy to prioritise younger, working members of the
-      population, and based on comments from state governments, seems likely to receive a
-      disproportionate allocation of national vaccine supply in the coming months.
-    </p>
-    <p>
-      Below is a plot with the projected trend taking into account a hypothetical
-      accelerated or prioritised (or both) vaccine rollout in New South Wales, that
-      manages to achieve twice the rate of reduction of spread per day compared to the
-      standard rollout. This could be achieved either with double the vaccine supply, or
-      with doses prioritised toward individuals so that on average the reduction in spread
-      per dose is twice what it would be for a random member of the community, or some
-      combination of the two. The specific assumption of a factor of two is just an
-      example to demonstrate what might be possible: I do not know to what extent their
-      prioritisation of younger workers will be effective, or to what degree they will
-      receive additional supply.
-    </p>
-
-    <img src="COVID_NSW_accel_vax.svg">
-
-    <p>
-      Below is the same case numbers and projection as above, but without the
-      <i>R</i><sub>eff</sub> estimate, and on a linear scale instead of a log scale.
-    </p>
-
-    <img src="COVID_NSW_accel_vax_linear.svg"> -->
 
     <h3 id="concern-vs-others"><i>R</i><sub>eff</sub> in LGAs of concern vs rest of NSW</h3>
     <p>
@@ -358,7 +337,6 @@
 
     <p>
       Source for case numbers:
-      <!-- <a href="https://data.nsw.gov.au/data/dataset/nsw-covid-19-cases-by-likely-source-of-infection/resource/2f1ba0f3-8c21-4a86-acaf-444be4401a6d">NSW health</a> and -->
       <a href="https://covidlive.com.au/report/daily-source-overseas/nsw">covidlive.com.au</a>
     </p>
     <p>
