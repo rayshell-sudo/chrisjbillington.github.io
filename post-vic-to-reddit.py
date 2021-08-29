@@ -22,7 +22,7 @@ def make_title():
     R_eff = stats['R_eff']
     u_R_eff = stats['u_R_eff']
     R_eff_noniso = stats['R_eff_noniso']
-    u_R_eff_noniso = stats['R_eff_noniso']
+    u_R_eff_noniso = stats['u_R_eff_noniso']
 
     today = datetime.fromisoformat(today)
     today = f'{today.strftime("%B")} {th(today.day)}'
