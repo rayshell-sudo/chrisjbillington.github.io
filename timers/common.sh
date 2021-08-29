@@ -27,8 +27,8 @@ trap finish EXIT
 git pull
 
 # clone, cd, and set remote. --depth 1 is important because the repository is huge, so
-# even though it's a local copy, we don't wan /tmp to fill up - it's a RAMdisk so can't
+# even though it's a local copy, we don't want /tmp to fill up - it's a RAMdisk so can't
 # fit much.
-git clone --depth 1 .git "$scratch"
-cd "$scratch"
+git clone --depth 1 "file://${PWD}/.git" "${scratch}"
+cd "${scratch}"
 git remote set-url origin git@github.com:chrisjbillington/chrisjbillington.github.io
