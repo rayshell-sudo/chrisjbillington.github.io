@@ -501,7 +501,7 @@ EASING_1 = np.datetime64('2021-07-28')
 LOCKDOWN_AGAIN = np.datetime64('2021-08-06')
 CURFEW = np.datetime64('2021-08-16')
 STATEWIDE = np.datetime64('2021-08-20')
-EASING_AGAIN = np.datetime64('2021-09-03')
+EASING_AGAIN = dates[-1] + 14 # just two more weeks
 
 def whiten(color, f):
     """Mix a color with white where f is how much of the original colour to keep"""
