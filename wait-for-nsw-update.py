@@ -6,7 +6,11 @@ import time
 def covidlive_updated_today():
     """Check covidlive for NSW case numbers for today, and return bool for whether
     they're there."""
-    df = pd.read_html('https://covidlive.com.au/report/daily-source-overseas/nsw')[1]
+    try:
+        df = pd.read_html('https://covidlive.com.au/report/daily-source-overseas/nsw')[1]
+    except Exception as e:
+        print(str(e))
+        return False
     return df['NET'][0] != '-'
 
 if __name__ == '__main__':
