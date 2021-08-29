@@ -35,49 +35,48 @@ def get_data(state):
 
 POPS = {
     'AUS': 25.36e6,
-    'NSW': 8.166e6,
     'VIC': 6.681e6,
     'QLD': 5.185e6,
     'SA': 1.771e6,
     'WA': 2.667e6,
     'TAS': 541071,
     'NT': 246500,
+    'ACT': 431215
 }
 
-STATE = 'VIC'
+STATE = 'ACT'
 
-vic_dates, vic_doses = get_data(STATE)
+act_dates, act_doses = get_data(STATE)
 
 # Smooth out the data correction made on Aug 16th:
 CORRECTION_DATE = np.datetime64('2021-08-16')
-CORRECTION_DOSES = -75000
-vic_doses = vic_doses.astype(float)
-vic_doses[vic_dates == CORRECTION_DATE] -= CORRECTION_DOSES
-sum_prior = vic_doses[vic_dates < CORRECTION_DATE].sum()
+CORRECTION_DOSES = 40000
+act_doses = act_doses.astype(float)
+act_doses[act_dates == CORRECTION_DATE] -= CORRECTION_DOSES
+sum_prior = act_doses[act_dates < CORRECTION_DATE].sum()
 SCALE_FACTOR = 1 + CORRECTION_DOSES / sum_prior
-vic_doses[vic_dates < CORRECTION_DATE] *= SCALE_FACTOR
-
+act_doses[act_dates < CORRECTION_DATE] *= SCALE_FACTOR
 
 days_projection = 200
-t_projection = np.arange(vic_dates[-1], vic_dates[-1] + days_projection + 1)
+t_projection = np.arange(act_dates[-1], act_dates[-1] + days_projection + 1)
 
 SEP = np.datetime64('2021-09-01')
 OCT = np.datetime64('2021-10-01')
 
-vic_proj_rate = np.zeros(len(t_projection))
+act_proj_rate = np.zeros(len(t_projection))
 
-vic_proj_rate[:] =  1.4 # Oct onward
-vic_proj_rate[t_projection < OCT] =  1.2 # Sep
-vic_proj_rate[t_projection < SEP] =  1.0 # Aug
+act_proj_rate[:] =  1.6 # Oct onward
+act_proj_rate[t_projection < OCT] =  1.4 # Sep
+act_proj_rate[t_projection < SEP] =  1.2 # Aug
 # clip to 85% fully vaxed
-initial_coverage =  100 * vic_doses.sum() / POPS[STATE]
-vic_proj_rate[initial_coverage + vic_proj_rate.cumsum() > 2 * 85] = 0
+initial_coverage =  100 * act_doses.sum() / POPS[STATE]
+act_proj_rate[initial_coverage + act_proj_rate.cumsum() > 2 * 85] = 0
 
 plt.figure(figsize=(10, 5))
 plt.subplot(121)
-vic_rate = 100 * seven_day_average(vic_doses) / POPS[STATE]
-plt.step(vic_dates, vic_rate, label="Actual")
-plt.step(t_projection, vic_proj_rate, label="Assumed for projection")
+act_rate = 100 * seven_day_average(act_doses) / POPS[STATE]
+plt.step(act_dates, act_rate, label="Actual")
+plt.step(t_projection, act_proj_rate, label="Assumed for projection")
 plt.legend()
 locator = mdates.DayLocator([1, 15])
 formatter = mdates.ConciseDateFormatter(locator)
@@ -91,11 +90,11 @@ plt.ylabel('7d avg doses per hundred population per day')
 plt.title(f"{STATE} daily vaccinations per capita")
 
 plt.subplot(122)
-vic_cumulative = 100 * vic_doses.cumsum() / POPS[STATE]
-plt.step(vic_dates, vic_cumulative, label="Actual")
+act_cumulative = 100 * act_doses.cumsum() / POPS[STATE]
+plt.step(act_dates, act_cumulative, label="Actual")
 plt.step(
     t_projection,
-    (vic_proj_rate.cumsum() + vic_cumulative[-1]).clip(0, 2 * 85),
+    (act_proj_rate.cumsum() + act_cumulative[-1]).clip(0, 2 * 85),
     label="Assumed for projection",
 )
 plt.legend()
@@ -113,6 +112,6 @@ plt.title(f"{STATE} cumulative vaccinations per capita")
 
 plt.tight_layout()
 
-plt.savefig("COVID_VIC_projected_doses.svg")
-plt.savefig("COVID_VIC_projected_doses.png", dpi=133)
+plt.savefig("COVID_act_projected_doses.svg")
+plt.savefig("COVID_act_projected_doses.png", dpi=133)
 plt.show()
