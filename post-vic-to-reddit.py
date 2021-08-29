@@ -21,18 +21,18 @@ def make_title():
     today = stats['today']  # The date of the last update - should be today
     R_eff = stats['R_eff']
     u_R_eff = stats['u_R_eff']
-    R_eff_noniso = stats['R_eff_noniso']
-    u_R_eff_noniso = stats['u_R_eff_noniso']
+    # R_eff_noniso = stats['R_eff_noniso']
+    # u_R_eff_noniso = stats['u_R_eff_noniso']
 
     today = datetime.fromisoformat(today)
     today = f'{today.strftime("%B")} {th(today.day)}'
 
     title=f"""VIC R_eff as of {today}, with daily cases and restrictions. Latest
-        estimate: R_eff = {R_eff:.02f} ± {u_R_eff:.02f}. More leading estimate from
-        nonisolating cases only: R_eff = {R_eff_noniso:.02f} ±
-        {u_R_eff_noniso:.02f}. Plus projected effect of vaccination rollout. (images
-        with both linear and log scales)
+        estimate: R_eff = {R_eff:.02f} ± {u_R_eff:.02f}. Plus projected effect of
+        vaccination rollout. (images with both linear and log scales)
     """
+    # More leading estimate from nonisolating cases only: R_eff = {R_eff_noniso:.02f} ±
+    # {u_R_eff_noniso:.02f}.
     return " ".join(title.split())
 
 def make_comment():
@@ -65,7 +65,7 @@ def make_comment():
     COMMENT_TEXT = f"""\
     More info/methodology: https://chrisbillington.net/COVID_VIC_2021.html
 
-    First three plots have case numbers on a linear scale, next three plots are exactly
+    First two plots have case numbers on a linear scale, next two plots are exactly
     the same but with case numbers on a log scale.
 
     Expected case numbers if the current  trend continues:
@@ -103,10 +103,10 @@ def get_flair_id(subreddit):
 
 IMAGES = [
     "COVID_VIC_2021_linear.png",
-    "COVID_VIC_2021_noniso_linear.png",
+    # "COVID_VIC_2021_noniso_linear.png",
     "COVID_VIC_2021_vax_linear.png",
     "COVID_VIC_2021.png",
-    "COVID_VIC_2021_noniso.png",
+    # "COVID_VIC_2021_noniso.png",
     "COVID_VIC_2021_vax.png",
 ]
 
