@@ -1,0 +1,8 @@
+[Unit]
+Description=Timer for update-act-and-post.service
+
+[Timer]
+OnCalendar=*-*-* 11:45:00
+
+[Install]
+WantedBy=timers.target
