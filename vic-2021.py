@@ -189,6 +189,8 @@ def stochastic_sir(
             caseload, R_eff = np.random.multivariate_normal(
                 [initial_caseload, initial_R_eff], cov_caseload_R_eff
             )
+            R_eff = max(0.1, R_eff)
+            caseload = max(0, caseload)
         else:
             caseload, R_eff = initial_caseload, initial_R_eff
         cumulative = initial_cumulative_cases
