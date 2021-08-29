@@ -65,9 +65,9 @@ OCT = np.datetime64('2021-10-01')
 
 act_proj_rate = np.zeros(len(t_projection))
 
-act_proj_rate[:] =  1.6 # Oct onward
-act_proj_rate[t_projection < OCT] =  1.4 # Sep
-act_proj_rate[t_projection < SEP] =  1.2 # Aug
+act_proj_rate[:] =  1.8 # Oct onward
+act_proj_rate[t_projection < OCT] =  1.6 # Sep
+act_proj_rate[t_projection < SEP] =  1.4 # Aug
 # clip to 85% fully vaxed
 initial_coverage =  100 * act_doses.sum() / POPS[STATE]
 act_proj_rate[initial_coverage + act_proj_rate.cumsum() > 2 * 85] = 0
@@ -112,6 +112,6 @@ plt.title(f"{STATE} cumulative vaccinations per capita")
 
 plt.tight_layout()
 
-plt.savefig("COVID_act_projected_doses.svg")
-plt.savefig("COVID_act_projected_doses.png", dpi=133)
+plt.savefig("COVID_ACT_projected_doses.svg")
+plt.savefig("COVID_ACT_projected_doses.png", dpi=133)
 plt.show()
