@@ -13,10 +13,10 @@
 
   <meta charset="UTF-8">
   <meta property="og:type" content="website" />
-  <meta property="og:image" content="http://chrisbillington.net/COVID_VIC_2021.png">
-  <meta property="og:title" content="Progression of the COVID outbreak in Victoria"/>
-  <meta property="og:description" content="Plot of cases and estimated R_eff for the COVID outbreak in Victoria"/>
-  <meta property="og:url" content="http://chrisbillington.net/COVID_VIC_2021.html">
+  <meta property="og:image" content="http://chrisbillington.net/COVID_ACT.png">
+  <meta property="og:title" content="Progression of the COVID outbreak in the Australian Capital Territory"/>
+  <meta property="og:description" content="Plot of cases and estimated R_eff for the COVID outbreak in the Australian Capital Territory"/>
+  <meta property="og:url" content="http://chrisbillington.net/COVID_ACT.html">
 
 
   <style type="text/css">
@@ -52,17 +52,17 @@
     Last updated: 2021-08-29 13:28 AEST
     <br>
     <small>
-      Updates daily near 9am Melbourne time
+      Updates daily near 12pm Canberra time
     </small>
     <h1>
-      Progression of the COVID outbreak in Victoria
+      Progression of the COVID outbreak in the Australian Capital Territory
     </h1>
     <p>
       <mark><b><a href="COVID.html">←Back to per-country plots</a></b></mark>
     </p>
-    <!-- <p>
+    <p>
       <span style="background-color: #FFA000"><b>New: <a href="COVID_VIC_2021.html">Progression of the COVID outbreak in Victoria</a></b></span>
-    </p> -->
+    </p>
     <p>
       <span style="background-color: #00FF00"><b>See also: <a href="COVID_NSW.html">Progression of the Bondi COVID outbreak in New South Wales</a></b></span>
     </p>
@@ -76,7 +76,7 @@
     <div id="toc_container">
       <p class="toc_title">Contents</p>
       <li><a href="#all"><i>R</i><sub>eff</sub> estimate from all cases</a></li>
-      <li><a href="#noniso"><i>R</i><sub>eff</sub> estimate from non-isolating cases only</a></li>
+      <!-- <li><a href="#noniso"><i>R</i><sub>eff</sub> estimate from non-isolating cases only</a></li> -->
       <li><a href="#vax">Projected effect of vaccine rollout</a></li>
       <li><a href="#disclaimer">Disclaimer on trends</a></li>
       <li><a href="#methodology">Methodology</a></li>
@@ -86,14 +86,14 @@
     <h3 id="all"><i>R</i><sub>eff</sub> estimate from all cases</h3>
 
     <p>
-      Victoria is currently experiencing an outbreak of COVID, due to the delta
-      variant. Since August 6th, metropolitan Melbourne has been under lockdown restrictions, and
-      regional Victoria since August 20th.
+      The Australian Capital Territory is currently experiencing an outbreak of COVID,
+      due to the delta variant. Since August 12th, the Australian Capital Territory has
+      been under lockdown restrictions.
     </p>
     <p>
-      How have Victoria's restrictions affected the spread of the virus? The below
+      How have restrictions in the ACT affected the spread of the virus? The below
       plot shows how the effective reproduction number of the virus,
-      <i>R</i><sub>eff</sub> has changed over time in Victoria, as well as how
+      <i>R</i><sub>eff</sub> has changed over time in the ACT, as well as how
       the daily cases have changed over time. A trendline shows the approximate
       trajectory daily case numbers would follow, were the reproduction number of the
       virus to remain at its current level.
@@ -103,10 +103,10 @@
       second on a log scale—the latter showing how consistently the caseload has
       followed exponential growth (which forms a straight line on a log scale).
     </p>
-    <img src="COVID_VIC_2021_linear.svg">
-    <img src="COVID_VIC_2021.svg">
+    <img src="COVID_ACT.svg">
+    <img src="COVID_ACT.svg">
 
-    <h3 id="noniso"><i>R</i><sub>eff</sub> estimate from non-isolating cases only</h3>
+<!--     <h3 id="noniso"><i>R</i><sub>eff</sub> estimate from non-isolating cases only</h3>
     <p>
       Cases isolating during their infectious period represent a much lower risk of spread.
       The growth rate of non-isolating cases is a more leading indicator of whether
@@ -121,14 +121,14 @@
     </p>
 
     <img src="COVID_VIC_2021_noniso_linear.svg">
-    <img src="COVID_VIC_2021_noniso.svg">
+    <img src="COVID_VIC_2021_noniso.svg"> -->
 
     <h3 id="vax">Projected effect of vaccine rollout</h3>
     <p>
       The trendlines in the above plots simply project forward case numbers assuming that
       <i>R</i><sub>eff</sub> remains at its current estimated value. What about the effect
       of vaccines? Below is a plot with the projected trend taking into account an
-      estimated reduction of spread due to vaccination levels increasing in Victoria
+      estimated reduction of spread due to vaccination levels increasing in the ACT
       through the remainder of the year. This projection is a stochastic SIR model,
       and thus also takes into account immunity due to infections, which would decrease
       transmission once a non-neglibible fraction of the population has been infected.
@@ -138,14 +138,14 @@
       day in August, 1.2 doses per 100 population per day in September, and 1.4 doses
       per 100 population per day from October onward, up to a maximum of 85% of the
       population. See below for plots of how these assumed rates compare to the
-      vaccination rollout in Victoria so far. The vaccines are assumed to reduce
+      vaccination rollout in the ACT so far. The vaccines are assumed to reduce
       <i>R</i><sub>eff</sub> by 40% per dose per capita—that is, overall spread is
       reduced by 40% for a partly-vaccinated individual and 80% for a fully vaccinated
       individual.
     </p>
     <p>
       This projection shows what might be possible if all other factors affecting
-      <i>R</i><sub>eff</sub>—such as restrictions—are held constant. If Victoria
+      <i>R</i><sub>eff</sub>—such as restrictions—are held constant. If the ACT
       eases restrictions, however, then <i>R</i><sub>eff</sub> will likely increase and
       the effect of vaccines in reducing spread will be delayed compared to this
       projection. On the other hand, if contact tracing is successful in decreasing
@@ -155,14 +155,14 @@
       The same plot is shown twice, the first with cases on a linear scale, and the
       second on a log scale.
     </p>
-    <img src="COVID_VIC_2021_vax_linear.svg">
-    <img src="COVID_VIC_2021_vax.svg">
+    <img src="COVID_ACT_vax_linear.svg">
+    <img src="COVID_ACT_vax.svg">
     <p>
-      Below are plots of the vaccination rollout in Victoria to date, in terms of
+      Below are plots of the vaccination rollout in the ACT to date, in terms of
       daily and cumulative doses per 100 population, with the assumed future rate used
       for the above projections also shown.
     </p>
-    <img src="COVID_VIC_projected_doses.svg">
+    <img src="COVID_ACT_projected_doses.svg">
 
 
     <h3 id="disclaimer">Disclaimer on trends</h3>
@@ -296,17 +296,17 @@
 
     <p>
       Source for case numbers:
-      <a href="https://covidlive.com.au/report/daily-source-overseas/vic">covidlive.com.au</a>
+      <a href="https://covidlive.com.au/report/daily-source-overseas/act">covidlive.com.au</a>
     </p>
-    <p>
+    <p><!-- 
       Source for isolating vs non-isolating case numbers: <a
       href="https://covidlive.com.au/report/daily-wild-cases/vic">covidlive.com.au</a>
-    </p>
+    </p> -->
     <p>
       Plots/analysis by Chris Billington. Contact: chrisjbillington [at] gmail [dot] com
     </p>
     <p>
-      Python script for producing the plots can be found at <a href="https://github.com/chrisjbillington/chrisjbillington.github.io/blob/master/vic.py">GitHub</a>.
+      Python script for producing the plots can be found at <a href="https://github.com/chrisjbillington/chrisjbillington.github.io/blob/master/act.py">GitHub</a>.
     </p>
   </div>
 </body>

@@ -491,18 +491,8 @@ else:
 # plt.show()
 
 
-PREV_LOCKDOWN = np.datetime64('2021-05-28')
-PREV_EASING_1 = PREV_LOCKDOWN + 21
-PREV_EASING_2 = np.datetime64('2021-07-09')
-
-
-LOCKDOWN = np.datetime64('2021-07-16')
-EASING_1 = np.datetime64('2021-07-28')
-
-LOCKDOWN_AGAIN = np.datetime64('2021-08-06')
-CURFEW = np.datetime64('2021-08-16')
-STATEWIDE = np.datetime64('2021-08-20')
-EASING_AGAIN = dates[-1] + 14 # just two more weeks
+LOCKDOWN = np.datetime64('2021-08-13')
+END_LOCKDOWN = np.datetime64('2021-09-03')
 
 def whiten(color, f):
     """Mix a color with white where f is how much of the original colour to keep"""
@@ -513,86 +503,22 @@ def whiten(color, f):
 fig1 = plt.figure(figsize=(10, 6))
 ax1 = plt.axes()
 
-ax1.fill_betweenx(
-    [-10, 10],
-    [PREV_LOCKDOWN, PREV_LOCKDOWN],
-    [PREV_EASING_1, PREV_EASING_1],
-    color=whiten("red", 0.35),
-    linewidth=0,
-    label="Lockdown",
-)
-
-ax1.fill_betweenx(
-    [-10, 10],
-    [PREV_EASING_1, PREV_EASING_1],
-    [PREV_EASING_2, PREV_EASING_2],
-    color=whiten("orange", 0.5),
-    linewidth=0,
-    label="Eased stay-at-home orders",
-)
-
-ax1.fill_betweenx(
-    [-10, 10],
-    [PREV_EASING_2, PREV_EASING_2],
-    [LOCKDOWN, LOCKDOWN],
-    color=whiten("yellow", 0.5),
-    linewidth=0,
-    label="Eased gathering/mask requirements",
-)
 
 ax1.fill_betweenx(
     [-10, 10],
     [LOCKDOWN, LOCKDOWN],
-    [EASING_1, EASING_1],
-    color=whiten("red", 0.35),
-    linewidth=0,
-    # label="Lockdown",
-)
-
-ax1.fill_betweenx(
-    [-10, 10],
-    [EASING_1, EASING_1],
-    [LOCKDOWN_AGAIN, LOCKDOWN_AGAIN],
-    color=whiten("orange", 0.5),
-    linewidth=0,
-    # label="Eased stay-at-home orders",
-)
-
-ax1.fill_betweenx(
-    [-10, 10],
-    [LOCKDOWN_AGAIN, LOCKDOWN_AGAIN],
-    [CURFEW, CURFEW],
-    color=whiten("red", 0.35),
-    linewidth=0,
-    # label="Eased stay-at-home orders",
-)
-
-ax1.fill_betweenx(
-    [-10, 10],
-    [CURFEW, CURFEW],
-    [STATEWIDE, STATEWIDE],
-    color=whiten("red", 0.35),
-    edgecolor=whiten("red", 0.45),
-    hatch="//////",
-    linewidth=0,
-    label="Curfew",
-)
-
-ax1.fill_betweenx(
-    [-10, 10],
-    [STATEWIDE, STATEWIDE],
-    [EASING_AGAIN, EASING_AGAIN],
+    [END_LOCKDOWN, END_LOCKDOWN],
     color="red",
     alpha=0.45,
     linewidth=0,
-    label="Statewide lockdown",
+    label="Lockdown",
 )
 
 for i in range(30):
     ax1.fill_betweenx(
         [-10, 10],
-        [EASING_AGAIN.astype(int) + i / 3] * 2,
-        [EASING_AGAIN.astype(int) + (i + 1) / 3] * 2,
+        [END_LOCKDOWN.astype(int) + i / 3] * 2,
+        [END_LOCKDOWN.astype(int) + (i + 1) / 3] * 2,
         color="red",
         alpha=0.45 * (30 - i) / 30,
         linewidth=0,
@@ -646,7 +572,7 @@ else:
 
 
 ax1.axhline(1.0, color='k', linewidth=1)
-ax1.axis(xmin=START_PLOT, xmax=END_PLOT, ymin=0, ymax=4)
+ax1.axis(xmin=START_PLOT, xmax=END_PLOT, ymin=0, ymax=3)
 ax1.grid(True, linestyle=":", color='k', alpha=0.5)
 
 ax1.set_ylabel(R"$R_\mathrm{eff}$")
@@ -661,7 +587,7 @@ if VAX:
         f"Starting from currently estimated {R_eff_string}",
     ]
 else:
-    region = "Australian Capital Territory"
+    region = "the Australian Capital Territory"
     title_lines = [
         f"$R_\\mathrm{{eff}}$ in {region}, with restriction levels and daily cases"
         + (" (nonisolating cases only)" if NONISOLATING else ""),
@@ -712,7 +638,7 @@ ax2.set_ylabel(
 )
 
 ax2.set_yscale('log')
-ax2.axis(ymin=1, ymax=10_000)
+ax2.axis(ymin=1, ymax=1_000)
 fig1.tight_layout(pad=1.8)
 
 handles, labels = ax1.get_legend_handles_labels()
@@ -721,17 +647,17 @@ handles2, labels2 = ax2.get_legend_handles_labels()
 handles += handles2
 labels += labels2
 if VAX:
-    order = [5, 7, 6, 8, 9, 10, 11, 2, 1, 0, 3, 4]
+    order = [1, 3, 2, 4, 5, 6, 7, 0]
 else:
-    order = [5, 6, 7, 8, 9, 10, 2, 1, 0, 3, 4]
+    order = [1, 2, 3, 4, 5, 6, 0]
 ax2.legend(
-    handles,
-    labels,
-    # [handles[idx] for idx in order],
-    # [labels[idx] for idx in order],
+    # handles,
+    # labels,
+    [handles[idx] for idx in order],
+    [labels[idx] for idx in order],
     loc='upper left',
     ncol=1 if VAX else 2,
-    prop={'size': 8}
+    prop={'size': 8},
 )
 
 
@@ -759,13 +685,13 @@ text = fig1.text(
 text.set_bbox(dict(facecolor='white', alpha=0.8, linewidth=0))
 
 if VAX:
-    total_cases_range = f"{total_cases_lower/1000:.0f}k—{total_cases_upper/1000:.0f}k"
+    total_cases_range = f"{total_cases_lower/1000:.1f}k—{total_cases_upper/1000:.1f}k"
     text = fig1.text(
         0.63,
         0.83,
         "\n".join(
             [
-                f"Projected total cases in outbreak:  {total_cases/1000:.0f}k",
+                f"Projected total cases in outbreak:  {total_cases/1000:.1f}k",
                 f"                                  68% range:  {total_cases_range}",
             ]
         ),
@@ -784,9 +710,9 @@ fig1.savefig(f'COVID_ACT{suffix}.png', dpi=133)
 if True: # Just to keep the diff with nsw.py sensible here
     ax2.set_yscale('linear')
     if VAX:
-        ymax = 80
+        ymax = 40
     else:
-        ymax = 80
+        ymax = 40
     ax2.axis(ymin=0, ymax=ymax)
     ax2.yaxis.set_major_locator(mticker.MultipleLocator(ymax / 8))
     ax2.set_ylabel("Daily confirmed cases (linear scale)")
