@@ -4,12 +4,11 @@ I really would prefer to run these as GitHub Actions jobs, but it turns out that
 Actions scheduled jobs don't run anywhere near the scheduled time, and when that time is
 within the hour or two after 0:00 UTC, often don't run at all.
 
-GitHub doesn't offer guarantees on scheduled jobs running in a timely manner or at all,
-so this is no good. So back to cronjobs on personal servers.
+This is no good. So back to timers on personal servers.
 
-The scripts that post to reddit and twitter need secrets and api keys etc, they source
+The scripts that post to reddit and twitter need secrets and API keys etc, they source
 them as environment variables from a file `secrets.sh` one directory up from the main
-repository, these are not stored publically in the repository for obvious reasons.
+repository, these are not stored publicly in the repository for obvious reasons.
 
 Notes for how to make and enable timers:
 ========================================
@@ -53,6 +52,16 @@ sudo systemctl disable foo.timer
 sudo systemctl disable foo.service
 ```
 
+to manually run a job (with the .service file already linked)
+```
+sudo systemctl start foo
+```
+
+to stop a job that's currently running
+```
+sudo systemctl stop foo
+```
+
 to reload after changing the unit file(s):
 ```
 sudo systemctl daemon-reload
@@ -60,7 +69,7 @@ sudo systemctl daemon-reload
 
 to list timers and see when they ran last/will run next:
 ```
-systemctl list-timers --all
+systemctl list-timers
 ```
 
 to view logs for a unit:
