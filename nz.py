@@ -576,7 +576,7 @@ if VAX:
 else:
     region = "New Zealand"
     title_lines = [
-        f"$R_\\mathrm{{eff}}$ in {region}, with alert level and daily cases"
+        f"$R_\\mathrm{{eff}}$ in {region}, with Auckland alert level and daily cases"
         + (" (nonisolating cases only)" if NONISOLATING else ""),
         f"Latest estimate: {R_eff_string}",
     ]
