@@ -72,7 +72,8 @@ def make_comment():
 
         {proj_lines}
 
-    The current doubling time is {doubling_time:.01f} days.
+    The current {"doubling" if doubling_time > 0 else "halving"} time is
+    {abs(doubling_time):.01f} days.
 
     Usual disclaimer about trendlines:
 
