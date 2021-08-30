@@ -98,6 +98,13 @@ def get_data():
         dates, doses = [np.array(a) for a in zip(*data)]
         doses_by_state[state] = dates[dates >= START_DATE], doses[dates >= START_DATE]
 
+    # Truncate all to most recent date all jurisdictions have data for:
+    valid_n_dates = min(len(d) for d, _ in doses_by_state.values())
+    doses_by_state = {
+        k: (dates[:valid_n_dates], doses[:valid_n_dates])
+        for k, (dates, doses) in doses_by_state.items()
+    }
+
     for dates, _ in doses_by_state.values():
         assert np.array_equal(dates, doses_by_state['AUS'][0])
 
@@ -286,7 +293,8 @@ AZ_OS_supply_dates, AZ_OS_suppy = unpack_data(AZ_OS_supply_data)
 AZ_local_supply_dates, AZ_local_supply = unpack_data(AZ_local_supply_data)
 #distributed_doses_dates, distributed_doses = unpack_data(distributed_doses_data)
 
-WASTAGE = 0.125
+AZ_WASTAGE = 0.125
+PFIZER_WASTAGE = 0.05
 
 # Number of AZ first doses
 
@@ -303,7 +311,7 @@ POP_16_PLUS = 20_607_204
 
 # Estimated AZ supply. Assume 1M per week locally-produced AZ up to ~10.8M (plus
 # wastage):
-AZ_MAX_DOSES = 2 * MAX_AZ_ADMINISTERED / (1 - WASTAGE)
+AZ_MAX_DOSES = 2 * MAX_AZ_ADMINISTERED / (1 - AZ_WASTAGE)
 n_weeks = int((AZ_MAX_DOSES - AZ_local_supply[-1]) // 1000000) + 1
 AZ_local_supply_dates = np.append(
     AZ_local_supply_dates,
@@ -364,32 +372,32 @@ for i, date in enumerate(all_dates):
     if date in pfizer_supply_dates:
         pfizer_lot = pfizer_shipments[pfizer_supply_dates == date][0]
         if date < np.datetime64('2021-06-27'):
-            pfizer_available[i:] +=  0.5 * (1 - WASTAGE) * pfizer_lot
-            pfizer_reserved[i:] += 0.5 * (1 - WASTAGE) * pfizer_lot
-            wasted[i:] += WASTAGE * pfizer_lot
+            pfizer_available[i:] +=  0.5 * (1 - PFIZER_WASTAGE) * pfizer_lot
+            pfizer_reserved[i:] += 0.5 * (1 - PFIZER_WASTAGE) * pfizer_lot
+            wasted[i:] += PFIZER_WASTAGE * pfizer_lot
         else:
             outstanding_pfizer_second_doses = pfizer_first_doses[i] - pfizer_second_doses[i]
             reserve_allocation = 0.4 * outstanding_pfizer_second_doses - pfizer_reserved[i]
-            pfizer_available[i:] += (1 - WASTAGE) * pfizer_lot - reserve_allocation
+            pfizer_available[i:] += (1 - PFIZER_WASTAGE) * pfizer_lot - reserve_allocation
             pfizer_reserved[i:] += reserve_allocation
-            wasted[i:] += WASTAGE * pfizer_lot
+            wasted[i:] += PFIZER_WASTAGE * pfizer_lot
 
     if date in AZ_OS_supply_dates:
         AZ_lot = AZ_shipments[AZ_OS_supply_dates == date][0]
-        AZ_available[i:] += 0.5 * (1 - WASTAGE) * AZ_lot
-        AZ_reserved[i:] += 0.5 * (1 - WASTAGE) * AZ_lot
-        wasted[i:] += WASTAGE * AZ_lot
+        AZ_available[i:] += 0.5 * (1 - AZ_WASTAGE) * AZ_lot
+        AZ_reserved[i:] += 0.5 * (1 - AZ_WASTAGE) * AZ_lot
+        wasted[i:] += AZ_WASTAGE * AZ_lot
     if date in AZ_local_supply_dates:
         AZ_lot = AZ_production[AZ_local_supply_dates == date][0]
         if date < np.datetime64('2021-04-11'):
-            AZ_available[i:] += 0.5 * (1 - WASTAGE) * AZ_lot
-            AZ_reserved[i:] += 0.5 * (1 - WASTAGE) * AZ_lot
+            AZ_available[i:] += 0.5 * (1 - AZ_WASTAGE) * AZ_lot
+            AZ_reserved[i:] += 0.5 * (1 - AZ_WASTAGE) * AZ_lot
         else:
             outstanding_AZ_second_doses = AZ_first_doses[i] - AZ_second_doses[i]
             reserve_allocation = 0.66 * outstanding_AZ_second_doses - AZ_reserved[i]
-            AZ_available[i:] += (1 - WASTAGE) * AZ_lot - reserve_allocation
+            AZ_available[i:] += (1 - AZ_WASTAGE) * AZ_lot - reserve_allocation
             AZ_reserved[i:] += reserve_allocation
-            wasted[i:] += WASTAGE * AZ_lot
+            wasted[i:] += AZ_WASTAGE * AZ_lot
             # Once we're finished our 5M local (plus 350k imported) AZ first doses, all
             # remaining supply is reserved for 2nd doses:
             if AZ_available[i] + AZ_first_doses[i] > MAX_AZ_ADMINISTERED:
@@ -412,8 +420,8 @@ for i, date in enumerate(all_dates):
         # of available doses each day on first doses. Since a dose will be reserved as
         # well, this means we're always 10 days away from running out of vaccine at the
         # current rate - which is approximately what we see in the data.
-        AZ_first_doses_today = 1 / 21 * AZ_available[i]
-        pfizer_first_doses_today = 1 / 21 * pfizer_available[i]
+        AZ_first_doses_today = 1 / 14 * AZ_available[i]
+        pfizer_first_doses_today = 1 / 14 * pfizer_available[i]
 
         first_doses_today = AZ_first_doses_today + pfizer_first_doses_today
         total_first_doses = AZ_first_doses[i] + pfizer_first_doses[i]
@@ -896,7 +904,7 @@ ax1.legend(
     [handles[idx] for idx in order],
     [labels[idx] for idx in order],
     loc='upper left',
-    ncol=2,
+    # ncol=2,
     fontsize="small"
 )
 ax1.yaxis.set_major_locator(ticker.MultipleLocator(5 if LONGPROJECT else 2))
@@ -911,7 +919,7 @@ ax2.legend(
     [handles[idx] for idx in order],
     [labels[idx] for idx in order],
     loc='upper left',
-    ncol=2,
+    # ncol=2,
     fontsize="small"
 )
 
