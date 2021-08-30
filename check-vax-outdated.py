@@ -10,11 +10,21 @@ def latest_covidlive_date():
     vaccination data"""
     COVIDLIVE = 'https://covidlive.com.au/covid-live.json'
     covidlivedata = json.loads(requests.get(COVIDLIVE).content)
-    return max(
-        np.datetime64(report['REPORT_DATE'])
-        for report in covidlivedata
-        if report['VACC_DOSE_CNT'] is not None
-    )
+
+    STATES = ['AUS', 'NSW', 'VIC', 'SA', 'WA', 'TAS', 'QLD', 'NT', 'ACT']
+
+    # We want the most recent date common to all jurisdictions
+    maxdates = []
+    for state in STATES:
+        maxdate = max(
+            np.datetime64(report['REPORT_DATE'])
+            for report in covidlivedata
+            if report['CODE'] == state and report['VACC_DOSE_CNT'] is not None
+        )
+        maxdates.append(maxdate)
+
+    return min(maxdates)
+
 
 def latest_html_update():
     """Return the Last updated date in aus_vaccinations.html as a np.datetime64"""
