@@ -201,12 +201,11 @@ pfizer_supply_data = """
 2021-08-01      7_238_190 + 500_000
 # Below not yet reflected on covid19data.com.au, but pretty sure I heard numbers like
 # this in the federal pressers, and it is what was expected:
-2021-08-08      7_238_190 + 1_125_000
-2021-08-15      7_238_190 + 2 * 1_125_000 + 1_000_000 # Thanks Poland
-2021-08-22      7_238_190 + 3 * 1_125_000 + 1_000_000
-2021-08-29      7_238_190 + 4 * 1_125_000 + 1_000_000
-#                                           poland_pfizer  pfizer_pfizer    moderna    singapore_pfizer
-2021-09-05      7_238_190 + 4 * 1_125_000 + 1_000_000 +    1_000_000      + 200_000 +  500_000
+2021-08-08      7_238_190 + 500_000 +     1_125_000
+2021-08-15      7_238_190 + 500_000 + 2 * 1_125_000 + 1_000_000 # Thanks Poland
+2021-08-22      7_238_190 + 500_000 + 3 * 1_125_000 + 1_000_000
+2021-08-29      7_238_190 + 500_000 + 4 * 1_125_000 + 1_000_000
+2021-09-05      7_238_190 + 500_000 + 4 * 1_125_000 + 1_000_000 + 1_000_000 + 200_000 + 500_000 # Regular, Moderna, and Singapore Pfizer
 """
 
 LONGPROJECT = False or 'project' in sys.argv
@@ -424,8 +423,8 @@ for i, date in enumerate(all_dates):
         # of available doses each day on first doses. Since a dose will be reserved as
         # well, this means we're always 10 days away from running out of vaccine at the
         # current rate - which is approximately what we see in the data.
-        AZ_first_doses_today = 1 / 14 * AZ_available[i]
-        pfizer_first_doses_today = 1 / 14 * pfizer_available[i]
+        AZ_first_doses_today = 1 / 21 * AZ_available[i]
+        pfizer_first_doses_today = 1 / 21 * pfizer_available[i]
 
         first_doses_today = AZ_first_doses_today + pfizer_first_doses_today
         total_first_doses = AZ_first_doses[i] + pfizer_first_doses[i]
