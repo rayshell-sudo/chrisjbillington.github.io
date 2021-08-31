@@ -203,6 +203,10 @@ pfizer_supply_data = """
 # this in the federal pressers, and it is what was expected:
 2021-08-08      7_238_190 + 1_125_000
 2021-08-15      7_238_190 + 2 * 1_125_000 + 1_000_000 # Thanks Poland
+2021-08-22      7_238_190 + 3 * 1_125_000 + 1_000_000
+2021-08-29      7_238_190 + 4 * 1_125_000 + 1_000_000
+#                                           poland_pfizer  pfizer_pfizer    moderna    singapore_pfizer
+2021-09-05      7_238_190 + 4 * 1_125_000 + 1_000_000 +    1_000_000      + 200_000 +  500_000
 """
 
 LONGPROJECT = False or 'project' in sys.argv
@@ -232,6 +236,9 @@ AZ_local_supply_data = """
 2021-07-18     10_564_600
 2021-07-25     11_500_000
 2021-08-01     12_300_000
+2021-08-08     13_200_000
+2021-08-15     14_000_000
+2021-08-22     14_900_000
 """
 
 # Doses distributed by the feds (scroll to weekly updates):
@@ -246,9 +253,6 @@ AZ_local_supply_data = """
 #"""
 
 PFIZER_PROJECTED_SHIPMENTS= """ # In thousands per week
-2021-08-22 1125
-2021-08-29 1125
-2021-09-05 100  + 200  # Pfizer + Moderna
 2021-09-12 1000 + 200  # Pfizer + Moderna
 2021-09-19 1000 + 200
 2021-09-26 1000 + 200

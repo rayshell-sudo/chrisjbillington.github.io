@@ -500,6 +500,13 @@ u_new_smoothed = np.sqrt(variance_new_smoothed)
 new_smoothed_upper = new_smoothed + u_new_smoothed
 new_smoothed_lower = new_smoothed - u_new_smoothed
 
+# for i in range(len(dates) - 1):
+#     # print(dates[i], new[i])
+#     total = sum(v[i + 1] for v in cases_by_lga.values())
+#     print(
+#         f"{dates[i+1]}    {str(new[i+1]).rjust(2)}    {R[i]:.2f}    {R_lower[i]:.2f}    {R_upper[i]:.2f}   {str(total).rjust(4)}"
+#     )
+
 R_upper = R_upper.clip(0, 10)
 R_lower = R_lower.clip(0, 10)
 R = R.clip(0, None)
