@@ -52,25 +52,25 @@ this_script_url = (
     + "blob/master/post-vax-to-reddit.py"
 )
 
-extra = """
-Some changes in the projection.
+# extra = """
+# Some changes in the projection.
 
-1. +500k doses from Singapore. Thanks, Singapore! These have been added to supply
-   arriving by end of this week.
+# 1. +500k doses from Singapore. Thanks, Singapore! These have been added to supply
+#    arriving by end of this week.
 
-2. I found some doses under the couch pillows: The 500k COVAX doses from a few months
-   ago, I managed to accidentally misplace at some point. So I have added them back in.
-   Also, I typod a 1M doses projected Pfizer shipment in early September as only 100k
-   doses 😬. So I've bumped it back up to +1M. These two mistakes account for 1.4M doses.
+# 2. I found some doses under the couch pillows: The 500k COVAX doses from a few months
+#    ago, I managed to accidentally misplace at some point. So I have added them back in.
+#    Also, I typod a 1M doses projected Pfizer shipment in early September as only 100k
+#    doses 😬. So I've bumped it back up to +1M. These two mistakes account for 1.4M doses.
 
-Apologies for the mistakes. After correcting these and adding the Singapore doses, the
-"dip" is all but gone. And the October spike is reduced, because at that point, we'll be
-running out of people to vaccinate.
-"""
+# Apologies for the mistakes. After correcting these and adding the Singapore doses, the
+# "dip" is all but gone. And the October spike is reduced, because at that point, we'll be
+# running out of people to vaccinate.
+# """
 
-# Schedule some extra text:
-if datetime.now().strftime('%Y-%m-%d') != '2021-09-01':
-    extra = ""
+# # Schedule some extra text:
+# if datetime.now().strftime('%Y-%m-%d') != '2021-09-01':
+extra = ""
 
 COMMENT_TEXT = f"""\
 More info/methodology: https://chrisbillington.net/aus_vaccinations.html
