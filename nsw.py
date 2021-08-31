@@ -34,12 +34,19 @@ OTHERS = 'others' in sys.argv
 CONCERN = 'concern' in sys.argv
 LGA_IX = None
 LGA = None
+OLD = 'old' in sys.argv
+
 
 if not (NONISOLATING or VAX or OTHERS or CONCERN) and sys.argv[1:]:
     if len(sys.argv) == 2:
         LGA_IX = int(sys.argv[1])
+    elif OLD and len(sys.argv) == 3:
+        OLD_END_IX = int(sys.argv[2])
     else:
         raise ValueError(sys.argv[1:])
+
+if OLD:
+    VAX = True
 
 # Data from covidlive by date announced to public
 def covidlive_data(start_date=np.datetime64('2021-06-10')):
@@ -309,23 +316,55 @@ def projected_vaccine_immune_population(t, historical_doses_per_100):
     VAX_ONSET_MU plus 3 * VAX_ONSET_SIGMA), and assuming a certain vaccine efficacy and
     rollout schedule"""
 
-    # We assume vaccine effectiveness after each dose ramps up the integral of a Gaussian
-    # with the following mean and stddev in days:
+    # We assume vaccine effectiveness after each dose ramps up the integral of a
+    # Gaussian with the following mean and stddev in days:
     VAX_ONSET_MU = 10.5 
     VAX_ONSET_SIGMA = 3.5
 
+    AUG = np.datetime64('2021-08-01').astype(int) - dates[-1].astype(int)
     SEP = np.datetime64('2021-09-01').astype(int) - dates[-1].astype(int)
     OCT = np.datetime64('2021-10-01').astype(int) - dates[-1].astype(int)
+    NOV = np.datetime64('2021-11-01').astype(int) - dates[-1].astype(int)
+
+    # History of previously projected rates, so I can remake old projections:
+    if dates[-1] >= np.datetime64('2021-08-28'):
+        JUL_RATE = None
+        AUG_RATE = 1.4
+        SEP_RATE = 1.6
+        OCT_RATE = 1.8
+        NOV_RATE = 1.8
+    elif dates[-1] >= np.datetime64('2021-08-16'):
+        JUL_RATE = None
+        AUG_RATE = 1.2
+        SEP_RATE = 1.4
+        OCT_RATE = 1.6
+        NOV_RATE = 1.6
+    elif dates[-1] >= np.datetime64('2021-08-08'):
+        JUL_RATE = None
+        AUG_RATE = 1.01
+        SEP_RATE = 0.92
+        OCT_RATE = 1.26
+        NOV_RATE = 1.26
+    else:
+        JUL_RATE = 0.63
+        AUG_RATE = 0.76
+        SEP_RATE = 0.85
+        OCT_RATE = 1.06
+        NOV_RATE = 1.29
 
     doses_per_100 = np.zeros_like(t)
     doses_per_100[0] = historical_doses_per_100[-1]
     for i in range(1, len(doses_per_100)):
+        if i < AUG:
+            doses_per_100[i] = doses_per_100[i - 1] + JUL_RATE
         if i < SEP:
-            doses_per_100[i] = doses_per_100[i - 1] + 1.4
+            doses_per_100[i] = doses_per_100[i - 1] + AUG_RATE
         elif i < OCT:
-            doses_per_100[i] = doses_per_100[i - 1] + 1.6
+            doses_per_100[i] = doses_per_100[i - 1] + SEP_RATE
+        elif i < NOV:
+            doses_per_100[i] = doses_per_100[i - 1] + OCT_RATE
         else:
-            doses_per_100[i] = doses_per_100[i - 1] + 1.8
+            doses_per_100[i] = doses_per_100[i - 1] + NOV_RATE
 
     doses_per_100 = np.clip(doses_per_100, 0, 85 * 2)
 
@@ -390,9 +429,19 @@ elif NONISOLATING:
 else:
     dates, new = covidlive_data()
 
+START_VAX_PROJECTIONS = 42  # July 22nd, when I started making vaccine projections
+all_dates = dates
+all_new = new
 
 # Current vaccination level:
 doses_per_100 = covidlive_doses_per_100(n=len(dates))
+
+if OLD:
+    dates = dates[:START_VAX_PROJECTIONS + OLD_END_IX]
+    new = new[:START_VAX_PROJECTIONS + OLD_END_IX]
+    doses_per_100 = doses_per_100[:START_VAX_PROJECTIONS + OLD_END_IX]
+
+
 
 # if not NONISOLATING:
 #     dates = np.append(dates, [dates[-1] + 1])
@@ -793,7 +842,8 @@ ax1.set_title('\n'.join(title_lines))
 
 ax1.yaxis.set_major_locator(mticker.MultipleLocator(0.25))
 ax2 = ax1.twinx()
-
+if OLD:
+    ax2.step(all_dates + 1, all_new + 0.02, color='purple', alpha=0.5)
 ax2.step(dates + 1, new + 0.02, color='purple', label='Daily cases')
 ax2.plot(
     dates.astype(int) + 0.5,
@@ -905,8 +955,11 @@ elif CONCERN:
 else:
     suffix = ''
 
-fig1.savefig(f'COVID_NSW{suffix}.svg')
-fig1.savefig(f'COVID_NSW{suffix}.png', dpi=133)
+if OLD:
+    fig1.savefig(f'nsw_animated/{OLD_END_IX:04d}.png', dpi=133)
+else:
+    fig1.savefig(f'COVID_NSW{suffix}.svg')
+    fig1.savefig(f'COVID_NSW{suffix}.png', dpi=133)
 if not (LGA or OTHERS or CONCERN):
     ax2.set_yscale('linear')
     if VAX:
@@ -916,8 +969,11 @@ if not (LGA or OTHERS or CONCERN):
     ax2.axis(ymin=0, ymax=ymax)
     ax2.yaxis.set_major_locator(mticker.MultipleLocator(ymax / 8))
     ax2.set_ylabel("Daily confirmed cases (linear scale)")
-    fig1.savefig(f'COVID_NSW{suffix}_linear.svg')
-    fig1.savefig(f'COVID_NSW{suffix}_linear.png', dpi=133)
+    if OLD:
+        fig1.savefig(f'nsw_animated_linear/{OLD_END_IX:04d}.png', dpi=133)
+    else:
+        fig1.savefig(f'COVID_NSW{suffix}_linear.svg')
+        fig1.savefig(f'COVID_NSW{suffix}_linear.png', dpi=133)
 
 # Save some deets to a file for the auto reddit posting to use:
 try:
@@ -955,14 +1011,16 @@ if VAX:
         if i < 8:
             print(f"{cases:.0f} {lower:.0f}—{upper:.0f}")
 
-Path("latest_nsw_stats.json").write_text(json.dumps(stats, indent=4))
+if not OLD:
+    # Only save data if this isn't a re-run on old data
+    Path("latest_nsw_stats.json").write_text(json.dumps(stats, indent=4))
 
-# Update the date in the HTML
-html_file = 'COVID_NSW.html'
-html_lines = Path(html_file).read_text().splitlines()
-now = datetime.now(timezone('Australia/Melbourne')).strftime('%Y-%m-%d %H:%M')
-for i, line in enumerate(html_lines):
-    if 'Last updated' in line:
-        html_lines[i] = f'    Last updated: {now} AEST'
-Path(html_file).write_text('\n'.join(html_lines) + '\n')
-plt.show()
+    # Update the date in the HTML
+    html_file = 'COVID_NSW.html'
+    html_lines = Path(html_file).read_text().splitlines()
+    now = datetime.now(timezone('Australia/Melbourne')).strftime('%Y-%m-%d %H:%M')
+    for i, line in enumerate(html_lines):
+        if 'Last updated' in line:
+            html_lines[i] = f'    Last updated: {now} AEST'
+    Path(html_file).write_text('\n'.join(html_lines) + '\n')
+    plt.show()
