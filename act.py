@@ -58,7 +58,7 @@ def covidlive_data(start_date=np.datetime64('2021-05-10')):
 
 
 def covidlive_doses_per_100(n):
-    """return VIC cumulative doses per 100 population for the last n days"""
+    """return ACT cumulative doses per 100 population for the last n days"""
 
     url = "https://covidlive.com.au/report/daily-vaccinations/act"
 
