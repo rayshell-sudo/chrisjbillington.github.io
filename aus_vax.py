@@ -128,6 +128,7 @@ dates, doses_by_state = get_data()
 
 PHASE_1B = np.datetime64('2021-03-22')
 PHASE_2A = np.datetime64('2021-05-03')
+PHASE_2B = np.datetime64('2021-08-30')
 
 # Data not yet on covidlive
 # doses_by_state['aus'][-1] = 3_100_137
@@ -878,7 +879,7 @@ for ax in [ax1, ax2, ax3, ax4, ax5, ax6, ax7]:
     ax.fill_betweenx(
         [0, ax.get_ylim()[1]],
         2 * [PHASE_2A.astype(int)],
-        2 * [max(dates[-1], PHASE_2A).astype(int) + 20],
+        2 * [PHASE_2B.astype(int)],
         color='yellow',
         alpha=0.35,
         linewidth=0,
@@ -886,13 +887,24 @@ for ax in [ax1, ax2, ax3, ax4, ax5, ax6, ax7]:
         zorder=-10,
     )
 
+    ax.fill_betweenx(
+        [0, ax.get_ylim()[1]],
+        2 * [PHASE_2B.astype(int)],
+        2 * [max(dates[-1], PHASE_2B).astype(int) + 20],
+        color='green',
+        alpha=0.25,
+        linewidth=0,
+        label='Phase 2b',
+        zorder=-10,
+    )
+
     for i in range(10):
         ax.fill_betweenx(
             [0, ax.get_ylim()[1]],
-            2 * [max(dates[-1], PHASE_2A).astype(int) + 20 + i],
-            2 * [max(dates[-1], PHASE_2A).astype(int) + 21 + i],
-            color='yellow',
-            alpha=0.3 * (10 - i) / 10,
+            2 * [max(dates[-1], PHASE_2B).astype(int) + 20 + i],
+            2 * [max(dates[-1], PHASE_2B).astype(int) + 21 + i],
+            color='green',
+            alpha=0.25 * (10 - i) / 10,
             linewidth=0,
             zorder=-10,
         )
@@ -900,9 +912,9 @@ for ax in [ax1, ax2, ax3, ax4, ax5, ax6, ax7]:
 
 handles, labels = ax1.get_legend_handles_labels()
 if PROJECT:
-    order = [8, 7, 6, 5, 4, 3, 2, 1, 0, 9, 10, 11, 12]
+    order = [8, 7, 6, 5, 4, 3, 2, 1, 0, 9, 10, 11, 12, 13]
 else:
-    order = [8, 7, 6, 5, 4, 3, 2, 1, 0, 9, 10, 11]
+    order = [8, 7, 6, 5, 4, 3, 2, 1, 0, 9, 10, 11, 12]
 ax1.legend(
     [handles[idx] for idx in order],
     [labels[idx] for idx in order],
@@ -915,9 +927,9 @@ ax1.yaxis.set_major_locator(ticker.MultipleLocator(5 if LONGPROJECT else 2))
 
 handles, labels = ax2.get_legend_handles_labels()
 if PROJECT:
-    order = [8, 7, 6, 5, 4, 3, 2, 1, 0, 9, 10, 11, 12]
+    order = [8, 7, 6, 5, 4, 3, 2, 1, 0, 9, 10, 11, 12, 13]
 else:
-    order = [8, 7, 6, 5, 4, 3, 2, 1, 0, 9, 10, 11]
+    order = [8, 7, 6, 5, 4, 3, 2, 1, 0, 9, 10, 11, 12]
 ax2.legend(
     [handles[idx] for idx in order],
     [labels[idx] for idx in order],
@@ -930,7 +942,7 @@ ax2.legend(
 for ax in [ax3, ax4, ax5]:
     ax.yaxis.set_major_locator(ticker.MultipleLocator(5 if LONGPROJECT else 2))
     handles, labels = ax.get_legend_handles_labels()
-    order = [3, 2, 1, 0, 4, 5, 6]
+    order = [3, 2, 1, 0, 4, 5, 6, 7]
     ax.legend(
         [handles[idx] for idx in order],
         [labels[idx] for idx in order],
@@ -940,7 +952,7 @@ for ax in [ax3, ax4, ax5]:
     )
 
 handles, labels = ax6.get_legend_handles_labels()
-order = [1, 2, 3, 4, 5, 6, 7, 0]
+order = [1, 2, 3, 4, 5, 6, 7, 8, 0]
 ax6.legend(
     [handles[idx] for idx in order],
     [labels[idx] for idx in order],
@@ -951,7 +963,7 @@ ax6.legend(
 
 
 handles, labels = ax7.get_legend_handles_labels()
-order = [0, 1, 5, 6, 7, 3, 4, 2]
+order = [0, 1, 5, 6, 7, 8, 3, 4, 2]
 ax7.legend(
     [handles[idx] for idx in order],
     [labels[idx] for idx in order],
