@@ -1,0 +1,6 @@
+[Unit]
+Description=Update NZ plots and post to reddit
+
+[Service]
+ExecStart=/home/bilbo/chrisbillington.net/chrisjbillington.github.io/timers/update-nz-and-post/update-nz-and-post.sh
+User=bilbo
