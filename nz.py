@@ -225,9 +225,9 @@ def projected_vaccine_immune_population(t, historical_doses_per_100):
         if i < SEP:
             doses_per_100[i] = doses_per_100[i - 1] + 1.0
         elif i < OCT:
-            doses_per_100[i] = doses_per_100[i - 1] + 1.2
+            doses_per_100[i] = doses_per_100[i - 1] + 1.6
         else:
-            doses_per_100[i] = doses_per_100[i - 1] + 1.4
+            doses_per_100[i] = doses_per_100[i - 1] + 1.8
 
     doses_per_100 = np.clip(doses_per_100, 0, 85 * 2)
 
@@ -277,7 +277,7 @@ tau = 5  # reproductive time of the virus in days
 # fit results prior to smoothing.
 
 FIT_PTS = min(20, len(dates[dates >= START_PLOT]))
-x0 = -7
+x0 = -10
 delta_x = 1
 fit_x = np.arange(-FIT_PTS, 0)
 fit_weights = 1 / (1 + np.exp(-(fit_x - x0) / delta_x))
@@ -697,9 +697,9 @@ fig1.savefig(f'COVID_NZ{suffix}.png', dpi=133)
 if True: # Just to keep the diff with nsw.py sensible here
     ax2.set_yscale('linear')
     if VAX:
-        ymax = 400
+        ymax = 160
     else:
-        ymax = 400
+        ymax = 160
     ax2.axis(ymin=0, ymax=ymax)
     ax2.yaxis.set_major_locator(mticker.MultipleLocator(ymax / 8))
     ax2.set_ylabel("Daily confirmed cases (linear scale)")
