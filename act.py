@@ -755,11 +755,11 @@ if VAX:
 Path("latest_act_stats.json").write_text(json.dumps(stats, indent=4))
 
 # Update the date in the HTML
-# html_file = 'COVID_VIC_2021.html'
-# html_lines = Path(html_file).read_text().splitlines()
-# now = datetime.now(timezone('Australia/Melbourne')).strftime('%Y-%m-%d %H:%M')
-# for i, line in enumerate(html_lines):
-#     if 'Last updated' in line:
-#         html_lines[i] = f'    Last updated: {now} AEST'
-# Path(html_file).write_text('\n'.join(html_lines) + '\n')
+html_file = 'COVID_ACT.html'
+html_lines = Path(html_file).read_text().splitlines()
+now = datetime.now(timezone('Australia/Melbourne')).strftime('%Y-%m-%d %H:%M')
+for i, line in enumerate(html_lines):
+    if 'Last updated' in line:
+        html_lines[i] = f'    Last updated: {now} AEST'
+Path(html_file).write_text('\n'.join(html_lines) + '\n')
 plt.show()
