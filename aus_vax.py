@@ -253,7 +253,7 @@ AZ_local_supply_data = """
 #"""
 
 PFIZER_PROJECTED_SHIPMENTS= """ # In thousands per week
-2021-09-12 1000 + 200  # Pfizer + Moderna
+2021-09-12 1000 + 200  + 4000 # Pfizer + Moderna + UK Pfizer doses
 2021-09-19 1000 + 200
 2021-09-26 1000 + 200
 2021-10-03 2000 + 200 
@@ -275,8 +275,8 @@ PFIZER_PROJECTED_SHIPMENTS= """ # In thousands per week
 PLOT_END_DATE = (
     np.datetime64('2022-01-31') if LONGPROJECT else dates[-1] + 50 #np.datetime64('2021-05-31')
 )
-CUMULATIVE_YMAX = 26  # million
-DAILY_YMAX = 360
+CUMULATIVE_YMAX = 35  # million
+DAILY_YMAX = 380
 
 PROJECT = True
 
