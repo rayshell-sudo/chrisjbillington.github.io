@@ -48,7 +48,7 @@ def get_data():
     
     if today not in [item['date'] for item in data]:
         # Get today's data and add it to the file
-        URL = f"https://www.health.govt.nz/system/files/documents/pages/covid_cases_{today}.csv"
+        URL = f"https://www.health.govt.nz/system/files/documents/pages/covid_cases_{today}_0.csv"
 
         # Pandas gets 403 forbidden on the URL directly - curl seems fine though.
         df = pd.read_csv(io.BytesIO(check_output(["curl", URL])))
