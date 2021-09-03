@@ -77,18 +77,6 @@ More info/methodology: https://chrisbillington.net/aus_vaccinations.html
 {extra}
 FAQ:
 
-Q. What's with the dip?
-
-A. The projected dip is the end of AZ first doses, and may or may not happen depending
-   on how many people still want AZ. If October Pfizer supply increases are brought
-   forward a month, that also would mean an overall dip won't happen.
-
-Q. What's with high dose numbers the other Sunday?
-
-A. Funky numbers the other Sunday were a data adjustment - feds are now using the the
-   Australian Immunisation Register instead of numbers reported to them directly from
-   states.
-
 Q. Why does the number go greater than 100% in the last plot?
 
 A. I'm plotting total 1st/2nd doses as a percentage of the population aged 16+, but am
