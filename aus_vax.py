@@ -9,6 +9,7 @@ import matplotlib.dates as mdates
 import matplotlib.ticker as ticker
 from pathlib import Path
 from pytz import timezone
+import pandas as pd
 
 converter = mdates.ConciseDateConverter()
 munits.registry[np.datetime64] = converter
@@ -1091,7 +1092,7 @@ for coverage, label in zip(first_dose_coverage_by_age, labels_by_age):
         first_dose_coverage_dates, coverage, label=f"{label} ({coverage[-1]:.1f} %)"
     )
 
-plt.legend(loc='upper left', prop={'size': 9})
+plt.legend(loc='upper right', prop={'size': 9})
 plt.grid(True, linestyle=':', color='k', alpha=0.5)
 locator = mdates.DayLocator([1, 15])
 formatter = mdates.ConciseDateFormatter(locator)
@@ -1099,7 +1100,7 @@ plt.gca().xaxis.set_major_locator(locator)
 plt.gca().xaxis.set_major_formatter(formatter)
 plt.gca().yaxis.set_major_locator(ticker.MultipleLocator(10))
 plt.axis(
-    xmin=np.datetime64('2021-05-09'), xmax=np.datetime64('2021-10-01'), ymin=0, ymax=100
+    xmin=np.datetime64('2021-05-09'), xmax=np.datetime64('2022-01-01'), ymin=0, ymax=100
 )
 plt.title("First dose coverage by age group")
 plt.ylabel("Vaccine coverage (%)")
@@ -1123,7 +1124,7 @@ for coverage, label in zip(first_dose_coverage_by_age, labels_by_age):
         smoothed_coverage,
         label=f"{label} ({smoothed_coverage[-1]:.1f} %/week)",
     )
-plt.legend(loc='upper center', prop={'size': 9})
+plt.legend(loc='upper right', prop={'size': 9})
 plt.grid(True, linestyle=':', color='k', alpha=0.5)
 locator = mdates.DayLocator([1, 15])
 formatter = mdates.ConciseDateFormatter(locator)
@@ -1131,7 +1132,7 @@ plt.gca().xaxis.set_major_locator(locator)
 plt.gca().xaxis.set_major_formatter(formatter)
 plt.gca().yaxis.set_major_locator(ticker.MultipleLocator(1.0))
 plt.axis(
-    xmin=np.datetime64('2021-05-09'), xmax=np.datetime64('2021-10-01'), ymin=0, ymax=10
+    xmin=np.datetime64('2021-05-09'), xmax=np.datetime64('2022-01-01'), ymin=0, ymax=10
 )
 plt.title("First dose weekly increase by age group")
 plt.ylabel("Vaccination rate (% of age group / week)")
@@ -1150,7 +1151,7 @@ plt.gca().xaxis.set_major_locator(locator)
 plt.gca().xaxis.set_major_formatter(formatter)
 plt.gca().yaxis.set_major_locator(ticker.MultipleLocator(10))
 plt.axis(
-    xmin=np.datetime64('2021-05-09'), xmax=np.datetime64('2021-10-01'), ymin=0, ymax=100
+    xmin=np.datetime64('2021-05-09'), xmax=np.datetime64('2022-01-01'), ymin=0, ymax=100
 )
 plt.title("Second dose coverage by age group")
 plt.ylabel("Vaccine coverage (%)")
@@ -1165,7 +1166,7 @@ for coverage, label in zip(second_dose_coverage_by_age, labels_by_age):
         smoothed_coverage,
         label=f"{label} ({smoothed_coverage[-1]:.1f} %/week)",
     )
-plt.legend(loc='upper left', prop={'size': 9})
+plt.legend(loc='upper right', prop={'size': 9})
 plt.grid(True, linestyle=':', color='k', alpha=0.5)
 locator = mdates.DayLocator([1, 15])
 formatter = mdates.ConciseDateFormatter(locator)
@@ -1173,10 +1174,117 @@ plt.gca().xaxis.set_major_locator(locator)
 plt.gca().xaxis.set_major_formatter(formatter)
 plt.gca().yaxis.set_major_locator(ticker.MultipleLocator(1.0))
 plt.axis(
-    xmin=np.datetime64('2021-05-09'), xmax=np.datetime64('2021-10-01'), ymin=0, ymax=10
+    xmin=np.datetime64('2021-05-09'), xmax=np.datetime64('2022-01-01'), ymin=0, ymax=10
 )
 plt.title("Second dose weekly increase by age group")
 plt.ylabel("Vaccination rate (% of age group / week)")
+
+
+
+POPS_16_PLUS = {
+    'AUS': 20616090,
+    'NSW': 6565651,
+    'VIC': 5407574,
+    'QLD': 4112707,
+    'WA': 2114978,
+    'SA': 1440400,
+    'TAS': 440172,
+    'ACT': 344037,
+    'NT': 190571,
+}
+
+
+def first_and_second_by_state(state):
+    df = pd.read_html(
+        f"https://covidlive.com.au/report/daily-vaccinations-people/{state.lower()}"
+    )[1]
+    first = np.array(df['FIRST'][::-1])
+    second = np.array(df['SECOND'][::-1])
+    dates = np.array(
+        [np.datetime64(datetime.strptime(d, '%d %b %y'), 'D') for d in df['DATE'][::-1]]
+    )
+
+    first[np.isnan(first)] = 0
+    second[np.isnan(second)] = 0
+
+    if state.lower() in ['nt', 'act']:
+        first[:164] += first[164] - first[163]
+        second[:164] += second[164] - second[163]
+    return dates, first, second
+
+
+fig13 = plt.figure(figsize=(8, 6))
+ax13 = plt.gca()
+
+fig14 = plt.figure(figsize=(8, 6))
+ax14 = plt.gca()
+
+fig15 = plt.figure(figsize=(8, 6))
+ax15 = plt.gca()
+
+fig16 = plt.figure(figsize=(8, 6))
+ax16 = plt.gca()
+for state, pop in POPS_16_PLUS.items():
+    dates, first, second = first_and_second_by_state(state)
+    percent_first = 100 * first / pop
+    percent_second = 100 * second / pop
+
+    smoothed_first_rate = 7 * n_day_average(np.diff(percent_first, prepend=0), 7)[7:]
+    smoothed_second_rate = 7 * n_day_average(np.diff(percent_second, prepend=0), 7)[7:]
+
+    smoothed_first_rate = gaussian_smoothing(smoothed_first_rate, 1)
+    smoothed_second_rate = gaussian_smoothing(smoothed_second_rate, 1)
+
+    label = 'National' if state == 'AUS' else state
+
+    ax13.plot(
+        dates,
+        gaussian_smoothing(percent_first, 0.666),
+        label=f"{label} ({percent_first[-1]:.1f} %)",
+    )
+    ax14.plot(
+        dates,
+        gaussian_smoothing(percent_second, 0.666),
+        label=f"{label} ({percent_second[-1]:.1f} %)",
+    )
+    ax15.plot(
+        dates[7:],
+        smoothed_first_rate,
+        label=f"{label} ({percent_second[-1]:.1f} %/week)",
+    )
+    ax16.plot(
+        dates[7:],
+        smoothed_second_rate,
+        label=f"{label} ({percent_second[-1]:.1f} %/week)",
+    )
+
+for ax in [ax13, ax14, ax15, ax16]:
+    rate_plot = ax in [ax15, ax16] 
+    ax.legend(loc='upper right' if rate_plot else 'upper left', prop={'size': 9})
+    ax.grid(True, linestyle=':', color='k', alpha=0.5)
+    locator = mdates.DayLocator([1, 15])
+    formatter = mdates.ConciseDateFormatter(locator)
+    ax.xaxis.set_major_locator(locator)
+    ax.xaxis.set_major_formatter(formatter)
+    ax.yaxis.set_major_locator(ticker.MultipleLocator(1 if rate_plot else 10))
+    ax.axis(
+        xmin=np.datetime64('2021-07-15'),
+        xmax=np.datetime64('2022-01-01'),
+        ymin=0,
+        ymax=10 if rate_plot else 100
+    )
+    if rate_plot:
+        ax.set_ylabel("Vaccination rate (% of 16+ population / week)")
+    else:
+        ax.set_ylabel("Vaccine coverage (% of 16+ population)")
+
+
+ax13.set_title("First dose coverage by state/territory")
+ax14.set_title("Second dose coverage by state/territory")
+ax15.set_title("First dose weekly increase by state/territory")
+ax16.set_title("Second dose weekly increase by state/territory")
+
+
 
 # Update the date in the HTML
 html_file = 'aus_vaccinations.html'
@@ -1217,5 +1325,9 @@ for extension in ['png', 'svg']:
         fig10.savefig(f'coverage_rate_by_agegroup.{extension}')
         fig11.savefig(f'coverage_2nd_by_agegroup.{extension}')
         fig12.savefig(f'coverage_2nd_rate_by_agegroup.{extension}')
+        fig13.savefig(f'coverage_by_state.{extension}')
+        fig14.savefig(f'coverage_rate_by_state.{extension}')
+        fig15.savefig(f'coverage_2nd_by_state.{extension}')
+        fig16.savefig(f'coverage_2nd_rate_by_state.{extension}')
 
 plt.show()
