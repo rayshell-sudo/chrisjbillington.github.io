@@ -39,7 +39,9 @@ def make_comment():
         "---------------------",
     ]
     for proj in stats['projection'][1:8]:
-        presser_date = datetime.fromisoformat(proj['date']) + timedelta(1)
+        # no +1 for the dates in NZ - the dates in our plots are date reported. I don't
+        # think there is a previous day reporting interval cutoff like in AUS states
+        presser_date = datetime.fromisoformat(proj['date'])# + timedelta(1)
         cases = proj['cases']
         lower = proj['lower']
         upper = proj['upper']
