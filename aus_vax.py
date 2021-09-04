@@ -1116,6 +1116,8 @@ plt.ylabel("Vaccine coverage (%)")
 fig10 = plt.figure(figsize=(8, 6))
 for coverage, label in zip(first_dose_coverage_by_age, labels_by_age):
     smoothed_coverage = 7 * n_day_average(np.diff(coverage), 7)[7:]
+    smoothed_coverage = gaussian_smoothing(smoothed_coverage, 1)
+
     plt.plot(
         first_dose_coverage_dates[8:],
         smoothed_coverage,
@@ -1157,6 +1159,7 @@ plt.ylabel("Vaccine coverage (%)")
 fig12 = plt.figure(figsize=(8, 6))
 for coverage, label in zip(second_dose_coverage_by_age, labels_by_age):
     smoothed_coverage = 7 * n_day_average(np.diff(coverage), 7)[7:]
+    smoothed_coverage = gaussian_smoothing(smoothed_coverage, 1)
     plt.plot(
         second_dose_coverage_dates[8:],
         smoothed_coverage,
