@@ -253,11 +253,11 @@ AZ_local_supply_data = """
 #"""
 
 PFIZER_PROJECTED_SHIPMENTS= """ # In thousands per week
-2021-09-12 1000 + 200 + 1000 # Pfizer + Moderna + UK Pfizer doses. 4M from the UK over 4 weeks
+2021-09-12 1000 + 200 + 300 # Pfizer + Moderna + UK Pfizer doses. 4M from the UK over 4 weeks
 2021-09-19 1000 + 200 + 1000
 2021-09-26 1000 + 200 + 1000
 2021-10-03 2000 + 200 + 1000
-2021-10-10 2000 + 750 
+2021-10-10 2000 + 750 + 700
 2021-10-17 2000 + 750 
 2021-10-24 2000 + 750 
 2021-10-31 2000 + 750 
