@@ -48,7 +48,7 @@ def get_data():
     
     if today not in [item['date'] for item in data]:
         # Get today's data and add it to the file
-        URL = f"https://www.health.govt.nz/system/files/documents/pages/covid_cases_{today}_0.csv"
+        URL = f"https://www.health.govt.nz/system/files/documents/pages/covid_cases_{today}.csv"
 
         # Pandas gets 403 forbidden on the URL directly - curl seems fine though.
         df = pd.read_csv(io.BytesIO(check_output(["curl", URL])))
@@ -79,7 +79,11 @@ def owid_doses_per_hundred(n):
     DATA_DIR = "public/data/vaccinations"
     df = pd.read_csv(f"{REPO_URL}/{DATA_DIR}/vaccinations.csv")
     df = df[df['location']=="New Zealand"]
-    doses_per_100 = df['total_vaccinations_per_hundred']
+    doses_per_100 = np.array(df['total_vaccinations_per_hundred'])
+    # Remove NaNs from the dataset, duplicate prev. day instead
+    for i, val in enumerate(doses_per_100):
+        if np.isnan(val):
+            doses_per_100[i] = doses_per_100[i-1]
     return np.array(doses_per_100)[-n:]
 
 
