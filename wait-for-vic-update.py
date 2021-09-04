@@ -12,7 +12,7 @@ def covidlive_updated_today():
     except Exception as e:
         print(str(e))
         return False
-    return df1['NET'][0] != '-'# and df2['TOTAL'][0] != '-'
+    return df1['NET2'][0] != '-'# and df2['TOTAL'][0] != '-'
 
 if __name__ == '__main__':
     # Hit covidlive once every 5 minutes checking if it's updated:

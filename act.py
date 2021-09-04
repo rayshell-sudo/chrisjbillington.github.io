@@ -41,7 +41,7 @@ def covidlive_data(start_date=np.datetime64('2021-05-10')):
 
     df = df[:200]
 
-    if df['NET'][0] == '-':
+    if df['NET2'][0] == '-':
         df = df[1:200]
 
     dates = np.array(
@@ -50,7 +50,7 @@ def covidlive_data(start_date=np.datetime64('2021-05-10')):
             for date in df['DATE']
         ]
     )
-    cases = np.array(df['NET'].astype(int))
+    cases = np.array(df['NET2'].astype(int))
     cases = cases[dates >= start_date][::-1]
     dates = dates[dates >= start_date][::-1]
 
