@@ -1326,8 +1326,8 @@ for extension in ['png', 'svg']:
         fig11.savefig(f'coverage_2nd_by_agegroup.{extension}')
         fig12.savefig(f'coverage_2nd_rate_by_agegroup.{extension}')
         fig13.savefig(f'coverage_by_state.{extension}')
-        fig14.savefig(f'coverage_rate_by_state.{extension}')
-        fig15.savefig(f'coverage_2nd_by_state.{extension}')
+        fig14.savefig(f'coverage_2nd_by_state.{extension}')
+        fig15.savefig(f'coverage_rate_by_state.{extension}')
         fig16.savefig(f'coverage_2nd_rate_by_state.{extension}')
 
 plt.show()
