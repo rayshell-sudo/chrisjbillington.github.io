@@ -589,7 +589,7 @@ if VAX:
             t_projection, doses_per_100
         ),
         n_days=days_projection + 1,
-        n_trials=10000,
+        n_trials=1000 if OLD else 10000, # just save some time if we're animating
         cov_caseload_R_eff=cov,
     )
 
