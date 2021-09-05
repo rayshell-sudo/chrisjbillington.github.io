@@ -785,9 +785,9 @@ fig1.savefig(f'COVID_VIC_2021{suffix}.png', dpi=133)
 if True: # Just to keep the diff with nsw.py sensible here
     ax2.set_yscale('linear')
     if VAX:
-        ymax = 20000
+        ymax = 50_000
     else:
-        ymax = 4000
+        ymax = 5_000
     ax2.axis(ymin=0, ymax=ymax)
     ax2.yaxis.set_major_locator(mticker.MultipleLocator(ymax / 8))
     ax2.set_ylabel("Daily confirmed cases (linear scale)")
