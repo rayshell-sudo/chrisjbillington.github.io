@@ -1,7 +1,8 @@
 #! /bin/bash
 set -euxo
 
-# Source our secrets, clone a temporary copy of the repo and cd to it:
+# Source our secrets, clone a temporary copy of the repo and cd to it. This also gets
+# the LOCKFILE variable for locking access to the main repo.
 source "$(dirname "$BASH_SOURCE")/../common.sh"
 
 # Wait for ACT data to become available:
@@ -18,6 +19,7 @@ python post-act-to-reddit.py \
 # Commit and push
 git commit --all -m "ACT update"
 
-# pull first to decrease the chances of a collision
-git pull --rebase --autostash
-git push
+# pull first to decrease the chances of a collision. Lockfile ensures this isn't racey
+# with respect to the other automation jobs running on this computer, but if we're
+# unluckly it could still collide with other pushes to remote.
+flock "${LOCKFILE}" -c  "git pull --rebase --autostash; git push"
