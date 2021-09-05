@@ -30,7 +30,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install numpy scipy matplotlib pandas requests
+          pip install numpy scipy matplotlib pandas lxml requests
 
       - name: Run
         run: |
