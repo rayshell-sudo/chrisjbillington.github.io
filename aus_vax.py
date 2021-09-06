@@ -1250,12 +1250,12 @@ for state, pop in POPS_16_PLUS.items():
     ax15.plot(
         dates[7:],
         smoothed_first_rate,
-        label=f"{label} ({percent_second[-1]:.1f} %/week)",
+        label=f"{label} ({smoothed_first_rate[-1]:.1f} %/week)",
     )
     ax16.plot(
         dates[7:],
         smoothed_second_rate,
-        label=f"{label} ({percent_second[-1]:.1f} %/week)",
+        label=f"{label} ({smoothed_second_rate[-1]:.1f} %/week)",
     )
 
 for ax in [ax13, ax14, ax15, ax16]:
