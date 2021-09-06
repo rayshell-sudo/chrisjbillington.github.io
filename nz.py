@@ -73,6 +73,34 @@ def get_data():
 
     return dates, new
 
+def midnight_to_midnight_data():
+
+    today = datetime.now().strftime('%Y-%m-%d')
+    URL = f"https://www.health.govt.nz/system/files/documents/pages/covid_cases_{today}.csv"
+
+    # Pandas gets 403 forbidden on the URL directly - curl seems fine though.
+    df = pd.read_csv(io.BytesIO(check_output(["curl", URL])))
+    
+    df = df[
+        (df["DHB"] != "Managed Isolation & Quarantine") & (df["Historical"] != "Yes")
+    ]
+    counts = df['Report Date'].value_counts()
+    dates = np.array([np.datetime64(d) for d in counts.index])
+    order = dates.argsort()
+    dates = dates[order]
+    counts = np.array(counts)[order]
+    counts = counts[dates > np.datetime64('2021-08-16')]
+    dates = dates[dates > np.datetime64('2021-08-16')]
+
+    # Ignore the data since midnight today, it is incomplete:
+    dates = dates[:-1]
+    counts = counts[:-1]
+
+    # Prepend some zeros to give the smoothing something to start from:
+    counts = np.concatenate([[0] * 5, counts])
+    dates = np.concatenate([[dates[0] - i for i in range(1, 6)][::-1], dates])
+
+    return dates, counts
 
 def owid_doses_per_hundred(n):
     REPO_URL = "https://raw.githubusercontent.com/owid/covid-19-data/master"
@@ -255,8 +283,9 @@ def projected_vaccine_immune_population(t, historical_doses_per_100):
     return immune
 
 
-dates, new = get_data()
+# dates, new = get_data()
 
+dates, new = midnight_to_midnight_data()
 
 # Current vaccination level:
 doses_per_100 = owid_doses_per_hundred(n=5*len(dates))
