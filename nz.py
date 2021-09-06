@@ -676,13 +676,13 @@ text = fig1.text(
 text.set_bbox(dict(facecolor='white', alpha=0.8, linewidth=0))
 
 if VAX:
-    total_cases_range = f"{total_cases_lower/1000:.0f}k—{total_cases_upper/1000:.0f}k"
+    total_cases_range = f"{total_cases_lower:.0f}—{total_cases_upper:.0f}"
     text = fig1.text(
         0.63,
         0.83,
         "\n".join(
             [
-                f"Projected total cases in outbreak:  {total_cases/1000:.0f}k",
+                f"Projected total cases in outbreak:  {total_cases:.0f}",
                 f"                                  68% range:  {total_cases_range}",
             ]
         ),
