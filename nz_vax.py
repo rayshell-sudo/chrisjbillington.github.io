@@ -26,6 +26,10 @@ def get_data():
     df = df[df['location']=="New Zealand"]
     dates = np.array([np.datetime64(d) for d in df['date']])
     daily_doses_per_100 = np.diff(df['total_vaccinations_per_hundred'], prepend=0)
+    # Remove NaNs from the dataset, duplicate prev. day instead
+    for i, val in enumerate(daily_doses_per_100):
+        if np.isnan(val):
+            daily_doses_per_100[i] = daily_doses_per_100[i-1]
     return dates, daily_doses_per_100
 
 nz_dates, nz_doses_per_100 = get_data()
