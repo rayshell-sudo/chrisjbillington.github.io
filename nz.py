@@ -76,7 +76,7 @@ def get_data():
 def midnight_to_midnight_data():
 
     today = datetime.now().strftime('%Y-%m-%d')
-    URL = f"https://www.health.govt.nz/system/files/documents/pages/covid_cases_{today}.csv"
+    URL = f"https://www.health.govt.nz/system/files/documents/pages/covid_cases_{today}_0.csv"
 
     # Pandas gets 403 forbidden on the URL directly - curl seems fine though.
     df = pd.read_csv(io.BytesIO(check_output(["curl", URL])))
@@ -84,22 +84,11 @@ def midnight_to_midnight_data():
     df = df[
         (df["DHB"] != "Managed Isolation & Quarantine") & (df["Historical"] != "Yes")
     ]
+
+    # Deliberately excluding today, as it is incomplete data
+    dates = np.arange(np.datetime64('2021-08-10'), np.datetime64(today))
     counts = df['Report Date'].value_counts()
-    dates = np.array([np.datetime64(d) for d in counts.index])
-    order = dates.argsort()
-    dates = dates[order]
-    counts = np.array(counts)[order]
-    counts = counts[dates > np.datetime64('2021-08-16')]
-    dates = dates[dates > np.datetime64('2021-08-16')]
-
-    # Ignore the data since midnight today, it is incomplete:
-    dates = dates[:-1]
-    counts = counts[:-1]
-
-    # Prepend some zeros to give the smoothing something to start from:
-    counts = np.concatenate([[0] * 5, counts])
-    dates = np.concatenate([[dates[0] - i for i in range(1, 6)][::-1], dates])
-
+    counts = np.array([counts[str(d)] if str(d) in counts.index else 0 for d in dates])
     return dates, counts
 
 def owid_doses_per_hundred(n):
