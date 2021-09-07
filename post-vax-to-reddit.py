@@ -30,9 +30,8 @@ def make_title():
     title = f"""
         AUS vaccination rollout as of {today}. {latest_daily_doses / 1000:.1f}k doses
         per day 7d average, {latest_cumulative_doses / 1e6:.2f}M total doses. With first
-        and second dose coverage by age group and 2021 projections based on expected
-        supply. Projected 80% 16+ coverage: {phase_C_date}. Plus new plots: 1st and 2nd
-        dose coverage by state/territory
+        and second dose coverage by age group and state/territory, and 2021 projections
+        based on expected supply. Projected 80% 16+ coverage: {phase_C_date}.
     """
     return " ".join(title.split())
 
