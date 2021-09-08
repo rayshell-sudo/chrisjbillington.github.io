@@ -647,7 +647,7 @@ else:
 
 
 ax1.axhline(1.0, color='k', linewidth=1)
-ax1.axis(xmin=START_PLOT, xmax=END_PLOT, ymin=0, ymax=4)
+ax1.axis(xmin=START_PLOT, xmax=END_PLOT, ymin=0, ymax=5)
 ax1.grid(True, linestyle=":", color='k', alpha=0.5)
 
 ax1.set_ylabel(R"$R_\mathrm{eff}$")
@@ -713,7 +713,7 @@ ax2.set_ylabel(
 )
 
 ax2.set_yscale('log')
-ax2.axis(ymin=1, ymax=10_000)
+ax2.axis(ymin=1, ymax=100_000)
 fig1.tight_layout(pad=1.8)
 
 handles, labels = ax1.get_legend_handles_labels()
@@ -785,9 +785,9 @@ fig1.savefig(f'COVID_VIC_2021{suffix}.png', dpi=133)
 if True: # Just to keep the diff with nsw.py sensible here
     ax2.set_yscale('linear')
     if VAX:
-        ymax = 8_000
+        ymax = 25_000
     else:
-        ymax = 4_000
+        ymax = 5_000
     ax2.axis(ymin=0, ymax=ymax)
     ax2.yaxis.set_major_locator(mticker.MultipleLocator(ymax / 8))
     ax2.set_ylabel("Daily confirmed cases (linear scale)")
