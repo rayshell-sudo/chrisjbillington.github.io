@@ -76,7 +76,7 @@ def get_data():
 def midnight_to_midnight_data():
 
     today = datetime.now().strftime('%Y-%m-%d')
-    URL = f"https://www.health.govt.nz/system/files/documents/pages/covid_cases_{today}_0.csv"
+    URL = f"https://www.health.govt.nz/system/files/documents/pages/covid_cases_{today}.csv"
 
     # Pandas gets 403 forbidden on the URL directly - curl seems fine though.
     df = pd.read_csv(io.BytesIO(check_output(["curl", URL])))
