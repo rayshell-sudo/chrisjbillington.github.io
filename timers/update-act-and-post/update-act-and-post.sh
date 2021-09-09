@@ -16,6 +16,13 @@ python post-act-to-reddit.py \
   "${REDDIT_CLIENT_SECRET}" \
   "${REDDIT_PASSWORD}"
 
+# Post to twitter:
+python post-act-to-twitter.py \
+  "${TWITTER_API_KEY}" \
+  "${TWITTER_API_SECRET_KEY}" \
+  "${TWITTER_ACCESS_TOKEN}" \
+  "${TWITTER_ACCESS_TOKEN_SECRET}"
+
 # Commit and push
 git commit --all -m "ACT update"
 
