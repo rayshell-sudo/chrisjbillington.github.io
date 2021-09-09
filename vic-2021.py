@@ -789,7 +789,7 @@ if True: # Just to keep the diff with nsw.py sensible here
     else:
         ymax = 5_000
     ax2.axis(ymin=0, ymax=ymax)
-    ax2.yaxis.set_major_locator(mticker.MultipleLocator(ymax / 8))
+    ax2.yaxis.set_major_locator(mticker.MultipleLocator(ymax / 10))
     ax2.set_ylabel("Daily confirmed cases (linear scale)")
     fig1.savefig(f'COVID_VIC_2021{suffix}_linear.svg')
     fig1.savefig(f'COVID_VIC_2021{suffix}_linear.png', dpi=133)
