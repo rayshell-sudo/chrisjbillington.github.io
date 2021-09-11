@@ -30,3 +30,10 @@ git commit --all -m "NSW update"
 # with respect to the other automation jobs running on this computer, but if we're
 # unluckly it could still collide with other pushes to remote.
 flock "${LOCKFILE}" -c  "git pull --rebase --autostash; git push"
+
+# Animation is slower, so we do it after updating everything else:
+python animate-nsw.py
+
+git commit --all -m "NSW animation"
+
+flock "${LOCKFILE}" -c  "git pull --rebase --autostash; git push"
