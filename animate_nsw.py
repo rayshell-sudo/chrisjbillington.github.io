@@ -15,15 +15,32 @@ for i in range(n_days + 1):
     print(i)
     check_call(['python', 'nsw.py', 'old', str(i)])
 
-DELAY = 3000
 for name in ['nsw_animated', 'nsw_animated_linear']:
     check_call(
-        ['convert', '-delay', '25']
-        + [f'{name}/{j:04d}.png' for j in range(n_days)]
-        + [
-            '-delay',
-            '500',
-            f'{name}/{n_days:04d}.png',
-            f'{name}.gif',
-        ],
+        [
+            'ffmpeg',
+            '-y',
+            '-r',
+            '4',
+            '-i',
+            f'{name}/%04d.png',
+            '-r',
+            '4',
+            '-vf',
+            'tpad=stop_mode=clone:stop_duration=2',
+            f'{name}.mp4',
+        ]
     )
+    
+# DELAY = 3000
+# for name in ['nsw_animated', 'nsw_animated_linear']:
+#     check_call(
+#         ['convert', '-delay', '25']
+#         + [f'{name}/{j:04d}.png' for j in range(n_days)]
+#         + [
+#             '-delay',
+#             '500',
+#             f'{name}/{n_days:04d}.png',
+#             f'{name}.gif',
+#         ],
+#     )
