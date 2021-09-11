@@ -3,7 +3,6 @@ from datetime import datetime
 from pytz import timezone
 from pathlib import Path
 import json
-import io
 
 from scipy.optimize import curve_fit
 from scipy.signal import convolve
