@@ -50,8 +50,7 @@ def get_data():
     if today not in [item['date'] for item in data]:
         # Get today's data and add it to the file
         URL = f"https://www.health.govt.nz/system/files/documents/pages/covid_cases_{today}.csv"
-
-        # Pandas gets 403 forbidden on the URL directly - curl seems fine though.
+        
         df = pd.read_csv(URL, storage_options=curl_headers)
         
         df = df[
@@ -79,7 +78,6 @@ def midnight_to_midnight_data():
     today = datetime.now().strftime('%Y-%m-%d')
     URL = f"https://www.health.govt.nz/system/files/documents/pages/covid_cases_{today}.csv"
 
-    # Pandas gets 403 forbidden on the URL directly - curl seems fine though.
     df = pd.read_csv(URL, storage_options=curl_headers)
     
     df = df[
