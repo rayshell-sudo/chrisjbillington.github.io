@@ -27,14 +27,22 @@ munits.registry[datetime] = converter
 POP_OF_VIC = 6.681e6
 
 
-NONISOLATING = "noniso" in sys.argv
 VAX = 'vax' in sys.argv
+LGA_IX = None
+LGA = None
+OLD = 'old' in sys.argv
 
-if not (NONISOLATING or VAX) and sys.argv[1:]:
+
+if not VAX and sys.argv[1:]:
     if len(sys.argv) == 2:
         LGA_IX = int(sys.argv[1])
+    elif OLD and len(sys.argv) == 3:
+        OLD_END_IX = int(sys.argv[2])
     else:
         raise ValueError(sys.argv[1:])
+
+if OLD:
+    VAX = True
 
 # Data from covidlive by date announced to public
 def covidlive_data(start_date=np.datetime64('2021-05-10')):
@@ -69,35 +77,48 @@ def covidlive_doses_per_100(n):
     dates = np.array(
         [np.datetime64(datetime.strptime(d, '%d %b %y'), 'D') for d in df['DATE'][::-1]]
     )
-    vic_dates = dates[:-1]
-    vic_daily_doses = daily_doses[:-1]
+    dates = dates[:-1]
+    daily_doses = daily_doses[:-1]
 
     # Smooth out the data correction made on Aug 16th:
     CORRECTION_DATE = np.datetime64('2021-08-16')
     CORRECTION_DOSES = -75000
-    vic_daily_doses[vic_dates == CORRECTION_DATE] -= CORRECTION_DOSES
-    sum_prior = vic_daily_doses[vic_dates < CORRECTION_DATE].sum()
+    daily_doses[dates == CORRECTION_DATE] -= CORRECTION_DOSES
+    sum_prior = daily_doses[dates < CORRECTION_DATE].sum()
     SCALE_FACTOR = 1 + CORRECTION_DOSES / sum_prior
-    vic_daily_doses[vic_dates < CORRECTION_DATE] *= SCALE_FACTOR
+    daily_doses[dates < CORRECTION_DATE] *= SCALE_FACTOR
 
-    return 100 * vic_daily_doses.cumsum()[-n:] / POP_OF_VIC
+    return 100 * daily_doses.cumsum()[-n:] / POP_OF_VIC
 
+# Data from DHHS by diagnosis date
+def lga_data():
+    url = "https://www.dhhs.vic.gov.au/ncov-covid-cases-by-lga-source-csv"
 
-def nonisolating_data():
-    df = pd.read_html('https://covidlive.com.au/report/daily-wild-cases/vic')[1]
-    df = df[:-5] # Data begins Jul 17th
-    if df['TOTAL'][0] == '-':
-        df = df[1:]
-    dates = np.array(
-        [
-            np.datetime64(datetime.strptime(date, "%d %b %y"), 'D') - 1
-            for date in df['DATE']
-        ]
-    )
-    cases = np.array(df['TOTAL'].astype(int))[::-1]
-    dates = dates[::-1]
-    assert dates[0] == np.datetime64('2021-07-16'), dates[0]
-    return dates, cases
+    df = pd.read_csv(url)
+
+    LGAs = set(df['Localgovernmentarea'])
+    cases_by_lga = {}
+    for lga in LGAs:
+        cases_by_date = {
+            d: 0
+            for d in np.arange(
+                np.datetime64(df['diagnosis_date'].min()),
+                np.datetime64(df['diagnosis_date'].max()) + 1,
+            )
+        }
+
+        for _, row in df[df['Localgovernmentarea'] == lga].iterrows():
+            cases_by_date[np.datetime64(row['diagnosis_date'])] += 1
+
+        dates = np.array(list(cases_by_date.keys()))
+        new = np.array(list(cases_by_date.values()))
+
+        cases_by_lga[lga.split(' (')[0]] = new
+
+    # Last day is incomplete data, ignore it:
+    # dates = dates[:-1]
+    # cases_by_lga = {lga: cases[:-1] for lga, cases in cases_by_lga.items()}
+    return dates, cases_by_lga 
 
 
 def gaussian_smoothing(data, pts):
@@ -228,8 +249,8 @@ def projected_vaccine_immune_population(t, historical_doses_per_100):
     VAX_ONSET_MU plus 3 * VAX_ONSET_SIGMA), and assuming a certain vaccine efficacy and
     rollout schedule"""
 
-    # We assume vaccine effectiveness after each dose ramps up the integral of a Gaussian
-    # with the following mean and stddev in days:
+    # We assume vaccine effectiveness after each dose ramps up the integral of a
+    # Gaussian with the following mean and stddev in days:
     VAX_ONSET_MU = 10.5 
     VAX_ONSET_SIGMA = 3.5
 
@@ -268,18 +289,36 @@ def projected_vaccine_immune_population(t, historical_doses_per_100):
     return immune
 
 
-if NONISOLATING:
-    dates, new = nonisolating_data()
+if LGA_IX is not None:
+    dates, cases_by_lga = lga_data()
+    # Sort LGAs in reverse order by last 14d cases
+    sorted_lgas = sorted(
+        cases_by_lga.keys(), key=lambda k: -cases_by_lga[k][-14:].sum()
+    )
+    # print(sorted_lgas)
+    # for lga in sorted_lgas:
+    #     print(lga, cases_by_lga[lga][-14:].sum())
+if LGA_IX is not None:
+    LGA = sorted_lgas[LGA_IX]
+    new = cases_by_lga[LGA]
 else:
     dates, new = covidlive_data()
 
+START_VAX_PROJECTIONS = 111  # August 29, when I started making vaccine projections
+all_dates = dates
+all_new = new
 
 # Current vaccination level:
 doses_per_100 = covidlive_doses_per_100(n=len(dates))
 
-# if not NONISOLATING:
-#     dates = np.append(dates, [dates[-1] + 1])
-#     new = np.append(new, [655])
+if OLD:
+    dates = dates[:START_VAX_PROJECTIONS + OLD_END_IX]
+    new = new[:START_VAX_PROJECTIONS + OLD_END_IX]
+    doses_per_100 = doses_per_100[:START_VAX_PROJECTIONS + OLD_END_IX]
+
+
+# dates = np.append(dates, [dates[-1] + 1])
+# new = np.append(new, [655])
 
 START_PLOT = np.datetime64('2021-05-20')
 END_PLOT = np.datetime64('2022-01-01') if VAX else dates[-1] + 28
@@ -416,7 +455,7 @@ if VAX:
             t_projection, doses_per_100
         ),
         n_days=days_projection + 1,
-        n_trials=10000,
+        n_trials=1000 if OLD else 10000, # just save some time if we're animating
         cov_caseload_R_eff=cov,
     )
 
@@ -614,6 +653,7 @@ for i in range(10):
         zorder=-10,
     )
 
+
 ax1.fill_between(
     dates[1:] + 1,
     R,
@@ -675,10 +715,12 @@ if VAX:
         f"Starting from currently estimated {R_eff_string}",
     ]
 else:
-    region = "Victoria"
+    if LGA:
+        region = LGA
+    else:
+        region = "Victoria"
     title_lines = [
-        f"$R_\\mathrm{{eff}}$ in {region}, with restriction levels and daily cases"
-        + (" (nonisolating cases only)" if NONISOLATING else ""),
+        f"$R_\\mathrm{{eff}}$ in {region}, with restriction levels and daily cases",
         f"Latest estimate: {R_eff_string}",
     ]
     
@@ -686,7 +728,8 @@ ax1.set_title('\n'.join(title_lines))
 
 ax1.yaxis.set_major_locator(mticker.MultipleLocator(0.25))
 ax2 = ax1.twinx()
-
+if OLD:
+    ax2.step(all_dates + 1, all_new + 0.02, color='purple', alpha=0.5)
 ax2.step(dates + 1, new + 0.02, color='purple', label='Daily cases')
 ax2.plot(
     dates.astype(int) + 0.5,
@@ -721,9 +764,7 @@ ax2.fill_between(
     linewidth=0,
 )
 
-ax2.set_ylabel(
-    f"Daily {'non-isolating' if NONISOLATING else 'confirmed'} cases (log scale)"
-)
+ax2.set_ylabel(f"Daily cases (log scale)")
 
 ax2.set_yscale('log')
 ax2.axis(ymin=1, ymax=100_000)
@@ -734,6 +775,7 @@ handles2, labels2 = ax2.get_legend_handles_labels()
 
 handles += handles2
 labels += labels2
+
 if VAX:
     order = [5, 7, 6, 8, 9, 10, 11, 2, 1, 0, 3, 4]
 else:
@@ -788,14 +830,17 @@ if VAX:
     text.set_bbox(dict(facecolor='white', alpha=0.8, linewidth=0))
 
     suffix = '_vax'
-elif NONISOLATING:
-    suffix = "_noniso"
+elif LGA:
+    suffix=f'_LGA_{LGA_IX}'
 else:
     suffix = ''
 
-fig1.savefig(f'COVID_VIC_2021{suffix}.svg')
-fig1.savefig(f'COVID_VIC_2021{suffix}.png', dpi=133)
-if True: # Just to keep the diff with nsw.py sensible here
+if OLD:
+    fig1.savefig(f'vic_animated/{OLD_END_IX:04d}.png', dpi=133)
+else:
+    fig1.savefig(f'COVID_VIC_2021{suffix}.svg')
+    fig1.savefig(f'COVID_VIC_2021{suffix}.png', dpi=133)
+if not LGA:
     ax2.set_yscale('linear')
     if VAX:
         if new_projection.max() < 4000:
@@ -815,8 +860,11 @@ if True: # Just to keep the diff with nsw.py sensible here
     ax2.axis(ymin=0, ymax=ymax)
     ax2.yaxis.set_major_locator(mticker.MultipleLocator(ymax / 10))
     ax2.set_ylabel("Daily confirmed cases (linear scale)")
-    fig1.savefig(f'COVID_VIC_2021{suffix}_linear.svg')
-    fig1.savefig(f'COVID_VIC_2021{suffix}_linear.png', dpi=133)
+    if OLD:
+        fig1.savefig(f'vic_animated_linear/{OLD_END_IX:04d}.png', dpi=133)
+    else:
+        fig1.savefig(f'COVID_VIC_2021{suffix}_linear.svg')
+        fig1.savefig(f'COVID_VIC_2021{suffix}_linear.png', dpi=133)
 
 # Save some deets to a file for the auto reddit posting to use:
 try:
@@ -825,10 +873,7 @@ try:
 except FileNotFoundError:
     stats = {}
 
-if NONISOLATING:
-    stats['R_eff_noniso'] = R[-1] 
-    stats['u_R_eff_noniso'] = u_R_latest
-else:
+if not LGA:
     stats['R_eff'] = R[-1] 
     stats['u_R_eff'] = u_R_latest
     stats['today'] = str(np.datetime64(datetime.now(), 'D'))
@@ -851,14 +896,16 @@ if VAX:
         if i < 8:
             print(f"{cases:.0f} {lower:.0f}—{upper:.0f}")
 
-Path("latest_vic_stats.json").write_text(json.dumps(stats, indent=4))
+if not OLD:
+    # Only save data if this isn't a re-run on old data
+    Path("latest_vic_stats.json").write_text(json.dumps(stats, indent=4))
 
-# Update the date in the HTML
-html_file = 'COVID_VIC_2021.html'
-html_lines = Path(html_file).read_text().splitlines()
-now = datetime.now(timezone('Australia/Melbourne')).strftime('%Y-%m-%d %H:%M')
-for i, line in enumerate(html_lines):
-    if 'Last updated' in line:
-        html_lines[i] = f'    Last updated: {now} AEST'
-Path(html_file).write_text('\n'.join(html_lines) + '\n')
-plt.show()
+    # Update the date in the HTML
+    html_file = 'COVID_VIC_2021.html'
+    html_lines = Path(html_file).read_text().splitlines()
+    now = datetime.now(timezone('Australia/Melbourne')).strftime('%Y-%m-%d %H:%M')
+    for i, line in enumerate(html_lines):
+        if 'Last updated' in line:
+            html_lines[i] = f'    Last updated: {now} AEST'
+    Path(html_file).write_text('\n'.join(html_lines) + '\n')
+    plt.show()

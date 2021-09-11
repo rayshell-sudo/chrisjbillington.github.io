@@ -28,7 +28,6 @@ POP_OF_SYD = 5_312_163
 POP_OF_NSW = 8.166e6
 
 
-NONISOLATING = 'noniso' in sys.argv
 VAX = 'vax' in sys.argv
 OTHERS = 'others' in sys.argv
 CONCERN = 'concern' in sys.argv
@@ -37,7 +36,7 @@ LGA = None
 OLD = 'old' in sys.argv
 
 
-if not (NONISOLATING or VAX or OTHERS or CONCERN) and sys.argv[1:]:
+if not (VAX or OTHERS or CONCERN) and sys.argv[1:]:
     if len(sys.argv) == 2:
         LGA_IX = int(sys.argv[1])
     elif OLD and len(sys.argv) == 3:
@@ -81,18 +80,18 @@ def covidlive_doses_per_100(n):
     dates = np.array(
         [np.datetime64(datetime.strptime(d, '%d %b %y'), 'D') for d in df['DATE'][::-1]]
     )
-    nsw_dates = dates[:-1]
-    nsw_daily_doses = daily_doses[:-1]
+    dates = dates[:-1]
+    daily_doses = daily_doses[:-1]
 
     # Smooth out the data correction made on Aug 16th:
     CORRECTION_DATE = np.datetime64('2021-08-16')
     CORRECTION_DOSES = 93000
-    nsw_daily_doses[nsw_dates == CORRECTION_DATE] -= CORRECTION_DOSES
-    sum_prior = nsw_daily_doses[nsw_dates < CORRECTION_DATE].sum()
+    daily_doses[dates == CORRECTION_DATE] -= CORRECTION_DOSES
+    sum_prior = daily_doses[dates < CORRECTION_DATE].sum()
     SCALE_FACTOR = 1 + CORRECTION_DOSES / sum_prior
-    nsw_daily_doses[nsw_dates < CORRECTION_DATE] *= SCALE_FACTOR
+    daily_doses[dates < CORRECTION_DATE] *= SCALE_FACTOR
 
-    return 100 * nsw_daily_doses.cumsum()[-n:] / POP_OF_NSW
+    return 100 * daily_doses.cumsum()[-n:] / POP_OF_NSW
 
 # Data from NSW Health by LGA and test notification date
 def lga_data(start_date=np.datetime64('2021-06-10')):
@@ -132,60 +131,6 @@ def lga_data(start_date=np.datetime64('2021-06-10')):
     dates = dates[:-1]
     cases_by_lga = {lga: cases[:-1] for lga, cases in cases_by_lga.items()}
     return dates, cases_by_lga 
-
-
-def nonisolating_data():
-    DATA = """
-        2021-06-10 0
-        2021-06-11 0
-        2021-06-12 0
-        2021-06-13 0
-        2021-06-14 0
-        2021-06-15 0
-        2021-06-16 0
-        2021-06-17 4
-        2021-06-18 1
-        2021-06-19 2
-        2021-06-20 1
-        2021-06-21 0
-        2021-06-22 2
-        2021-06-23 12
-        2021-06-24 3
-        2021-06-25 9
-        2021-06-26 12
-    """
-
-    def unpack_data(s):
-        dates = []
-        values = []
-        for line in s.splitlines():
-            if line.strip() and not line.strip().startswith('#'):
-                date, value = line.strip().split(maxsplit=1)
-                dates.append(np.datetime64(date) - 1)
-                values.append(eval(value))
-        return np.array(dates), np.array(values)
-
-    manual_dates, manual_cases = unpack_data(DATA)
-
-    df = pd.read_html('https://covidlive.com.au/report/daily-wild-cases/nsw')[1]
-
-    if df['TOTAL'][0] == '-':
-        df = df[1:]
-
-    cl_dates = np.array(
-        [
-            np.datetime64(datetime.strptime(date, "%d %b %y"), 'D') - 1
-            for date in df['DATE']
-        ]
-    )
-    cl_cases = np.array(df['TOTAL'].astype(int))[::-1]
-    cl_dates = cl_dates[::-1]
-
-    assert cl_dates[0] == np.datetime64('2021-06-26')
-
-    dates = np.concatenate([manual_dates, cl_dates])
-    cases = np.concatenate([manual_cases, cl_cases])
-    return dates, cases
 
 
 def gaussian_smoothing(data, pts):
@@ -424,8 +369,6 @@ elif OTHERS:
 elif CONCERN:
    # Sum over all LGAs of concern
     new = sum(cases_by_lga[lga] for lga in cases_by_lga if lga in LGAs_OF_CONCERN) 
-elif NONISOLATING:
-    dates, new = nonisolating_data()
 else:
     dates, new = covidlive_data()
 
@@ -442,10 +385,8 @@ if OLD:
     doses_per_100 = doses_per_100[:START_VAX_PROJECTIONS + OLD_END_IX]
 
 
-
-# if not NONISOLATING:
-#     dates = np.append(dates, [dates[-1] + 1])
-#     new = np.append(new, [655])
+# dates = np.append(dates, [dates[-1] + 1])
+# new = np.append(new, [655])
 
 START_PLOT = np.datetime64('2021-06-13')
 END_PLOT = np.datetime64('2022-01-01') if VAX else dates[-1] + 28
@@ -548,13 +489,6 @@ R_lower = R - u_R
 u_new_smoothed = np.sqrt(variance_new_smoothed)
 new_smoothed_upper = new_smoothed + u_new_smoothed
 new_smoothed_lower = new_smoothed - u_new_smoothed
-
-# for i in range(len(dates) - 1):
-#     # print(dates[i], new[i])
-#     total = sum(v[i + 1] for v in cases_by_lga.values())
-#     print(
-#         f"{dates[i+1]}    {str(new[i+1]).rjust(2)}    {R[i]:.2f}    {R_lower[i]:.2f}    {R_upper[i]:.2f}   {str(total).rjust(4)}"
-#     )
 
 R_upper = R_upper.clip(0, 10)
 R_lower = R_lower.clip(0, 10)
@@ -878,9 +812,7 @@ ax2.fill_between(
     linewidth=0,
 )
 
-ax2.set_ylabel(
-    f"Daily {'non-isolating' if NONISOLATING else 'confirmed'} cases (log scale)"
-)
+ax2.set_ylabel(f"Daily cases (log scale)")
 
 ax2.set_yscale('log')
 ax2.axis(ymin=1, ymax=10_000)
