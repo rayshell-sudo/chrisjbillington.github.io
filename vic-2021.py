@@ -503,6 +503,7 @@ EASING_1 = np.datetime64('2021-07-28')
 LOCKDOWN_AGAIN = np.datetime64('2021-08-06')
 CURFEW = np.datetime64('2021-08-16')
 STATEWIDE = np.datetime64('2021-08-20')
+END_STATEWIDE = np.datetime64('2021-09-10')
 EASING_AGAIN = np.datetime64('2021-09-24') # Predicted, who knows
 
 def whiten(color, f):
@@ -582,24 +583,36 @@ ax1.fill_betweenx(
 ax1.fill_betweenx(
     [-10, 10],
     [STATEWIDE, STATEWIDE],
-    [EASING_AGAIN, EASING_AGAIN],
+    [END_STATEWIDE, END_STATEWIDE],
     color="red",
     alpha=0.45,
     linewidth=0,
     label="Statewide lockdown",
 )
 
-for i in range(30):
+ax1.fill_betweenx(
+    [-10, 10],
+    [END_STATEWIDE, END_STATEWIDE],
+    [EASING_AGAIN, EASING_AGAIN],
+    color=whiten("red", 0.35),
+    edgecolor=whiten("red", 0.45),
+    hatch="//////",
+    linewidth=0,
+    # label="Curfew",
+)
+
+for i in range(10):
     ax1.fill_betweenx(
         [-10, 10],
-        [EASING_AGAIN.astype(int) + i / 3] * 2,
-        [EASING_AGAIN.astype(int) + (i + 1) / 3] * 2,
+        [EASING_AGAIN.astype(int) + i] * 2,
+        [EASING_AGAIN.astype(int) + (i + 1)] * 2,
         color="red",
-        alpha=0.45 * (30 - i) / 30,
+        alpha=0.35 * (10 - i) / 10,
+        edgecolor=whiten("red", 0.45 * (10 - i) / 10),
+        hatch="//////",
         linewidth=0,
         zorder=-10,
     )
-
 
 ax1.fill_between(
     dates[1:] + 1,
