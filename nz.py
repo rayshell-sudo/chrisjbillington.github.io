@@ -3,7 +3,6 @@ from datetime import datetime
 from pytz import timezone
 from pathlib import Path
 import json
-from subprocess import check_output
 import io
 
 from scipy.optimize import curve_fit
@@ -19,12 +18,14 @@ import pandas as pd
 # Our uncertainty calculations are stochastic. Make them reproducible, at least:
 np.random.seed(0)
 
+# HTTP headers to emulate curl
+curl_headers = {'user-agent': 'curl/7.64.1'}
+
 converter = mdates.ConciseDateConverter()
 
 munits.registry[np.datetime64] = converter
 munits.registry[datetime.date] = converter
 munits.registry[datetime] = converter
-
 
 POP_OF_NZ = 4.917e6
 POP_OF_AUCKLAND = 1.657e6
@@ -51,7 +52,7 @@ def get_data():
         URL = f"https://www.health.govt.nz/system/files/documents/pages/covid_cases_{today}.csv"
 
         # Pandas gets 403 forbidden on the URL directly - curl seems fine though.
-        df = pd.read_csv(io.BytesIO(check_output(["curl", URL])))
+        df = pd.read_csv(URL, storage_options=curl_headers)
         
         df = df[
             (df["DHB"] != "Managed Isolation & Quarantine")
@@ -79,7 +80,7 @@ def midnight_to_midnight_data():
     URL = f"https://www.health.govt.nz/system/files/documents/pages/covid_cases_{today}.csv"
 
     # Pandas gets 403 forbidden on the URL directly - curl seems fine though.
-    df = pd.read_csv(io.BytesIO(check_output(["curl", URL])))
+    df = pd.read_csv(URL, storage_options=curl_headers)
     
     df = df[
         (df["DHB"] != "Managed Isolation & Quarantine") & (df["Historical"] != "Yes")
