@@ -30,15 +30,23 @@ POP_OF_NZ = 4.917e6
 POP_OF_AUCKLAND = 1.657e6
 
 
-NONISOLATING = "noniso" in sys.argv
-VAX = 'vax' in sys.argv
 
-if not (NONISOLATING or VAX) and sys.argv[1:]:
+VAX = 'vax' in sys.argv
+OLD = 'old' in sys.argv
+
+
+if not VAX and sys.argv[1:]:
     if len(sys.argv) == 2:
         LGA_IX = int(sys.argv[1])
+    elif OLD and len(sys.argv) == 3:
+        OLD_END_IX = int(sys.argv[2])
     else:
         raise ValueError(sys.argv[1:])
 
+if OLD:
+    VAX = True
+
+# Data from MoH
 def get_data():
 
     today = datetime.now().strftime('%Y-%m-%d')
@@ -274,8 +282,17 @@ def projected_vaccine_immune_population(t, historical_doses_per_100):
 
 dates, new = midnight_to_midnight_data()
 
+START_VAX_PROJECTIONS = 23  # Sep 2nd
+all_dates = dates
+all_new = new
+
 # Current vaccination level:
 doses_per_100 = owid_doses_per_hundred(n=5*len(dates))
+
+if OLD:
+    dates = dates[:START_VAX_PROJECTIONS + OLD_END_IX]
+    new = new[:START_VAX_PROJECTIONS + OLD_END_IX]
+    doses_per_100 = doses_per_100[:START_VAX_PROJECTIONS + OLD_END_IX]
 
 START_PLOT = np.datetime64('2021-08-16')
 END_PLOT = np.datetime64('2022-01-01') if VAX else dates[-1] + 28
@@ -412,7 +429,7 @@ if VAX:
             t_projection, doses_per_100
         ),
         n_days=days_projection + 1,
-        n_trials=10000,
+        n_trials=1000 if OLD else 10000, # just save some time if we're animating
         cov_caseload_R_eff=cov,
     )
 
@@ -596,8 +613,7 @@ if VAX:
 else:
     region = "New Zealand"
     title_lines = [
-        f"$R_\\mathrm{{eff}}$ in {region}, with Auckland alert level and daily cases"
-        + (" (nonisolating cases only)" if NONISOLATING else ""),
+        f"$R_\\mathrm{{eff}}$ in {region}, with Auckland alert level and daily cases",
         f"Latest estimate: {R_eff_string}",
     ]
     
@@ -605,7 +621,8 @@ ax1.set_title('\n'.join(title_lines))
 
 ax1.yaxis.set_major_locator(mticker.MultipleLocator(0.25))
 ax2 = ax1.twinx()
-
+if OLD:
+    ax2.step(all_dates + 1, all_new + 0.02, color='purple', alpha=0.5)
 ax2.step(dates + 1, new + 0.02, color='purple', label='Daily cases')
 ax2.plot(
     dates.astype(int) + 0.5,
@@ -640,9 +657,7 @@ ax2.fill_between(
     linewidth=0,
 )
 
-ax2.set_ylabel(
-    f"Daily {'non-isolating' if NONISOLATING else 'confirmed'} cases (log scale)"
-)
+ax2.set_ylabel(f"Daily cases (log scale)")
 
 ax2.set_yscale('log')
 ax2.axis(ymin=1, ymax=10_000)
@@ -653,6 +668,7 @@ handles2, labels2 = ax2.get_legend_handles_labels()
 
 handles += handles2
 labels += labels2
+
 if VAX:
     order = [2, 3, 4, 5, 6, 7, 8, 0, 1]
 else:
@@ -707,13 +723,14 @@ if VAX:
     text.set_bbox(dict(facecolor='white', alpha=0.8, linewidth=0))
 
     suffix = '_vax'
-elif NONISOLATING:
-    suffix = "_noniso"
 else:
     suffix = ''
 
-fig1.savefig(f'COVID_NZ{suffix}.svg')
-fig1.savefig(f'COVID_NZ{suffix}.png', dpi=133)
+if OLD:
+    fig1.savefig(f'nz_animated/{OLD_END_IX:04d}.png', dpi=133)
+else:
+    fig1.savefig(f'COVID_NZ{suffix}.svg')
+    fig1.savefig(f'COVID_NZ{suffix}.png', dpi=133)
 if True: # Just to keep the diff with nsw.py sensible here
     ax2.set_yscale('linear')
     if VAX:
@@ -723,8 +740,11 @@ if True: # Just to keep the diff with nsw.py sensible here
     ax2.axis(ymin=0, ymax=ymax)
     ax2.yaxis.set_major_locator(mticker.MultipleLocator(ymax / 8))
     ax2.set_ylabel("Daily confirmed cases (linear scale)")
-    fig1.savefig(f'COVID_NZ{suffix}_linear.svg')
-    fig1.savefig(f'COVID_NZ{suffix}_linear.png', dpi=133)
+    if OLD:
+        fig1.savefig(f'nz_animated_linear/{OLD_END_IX:04d}.png', dpi=133)
+    else:
+        fig1.savefig(f'COVID_NZ{suffix}_linear.svg')
+        fig1.savefig(f'COVID_NZ{suffix}_linear.png', dpi=133)
 
 # Save some deets to a file for the auto reddit posting to use:
 try:
@@ -733,10 +753,7 @@ try:
 except FileNotFoundError:
     stats = {}
 
-if NONISOLATING:
-    stats['R_eff_noniso'] = R[-1] 
-    stats['u_R_eff_noniso'] = u_R_latest
-else:
+if True: # keep the diff simple
     stats['R_eff'] = R[-1] 
     stats['u_R_eff'] = u_R_latest
     stats['today'] = str(np.datetime64(datetime.now(), 'D'))
@@ -759,15 +776,16 @@ if VAX:
         if i < 8:
             print(f"{cases:.0f} {lower:.0f}—{upper:.0f}")
 
-Path("latest_nz_stats.json").write_text(json.dumps(stats, indent=4))
+if not OLD:
+    # Only save data if this isn't a re-run on old data
+    Path("latest_nz_stats.json").write_text(json.dumps(stats, indent=4))
 
-# Update the date in the HTML
-html_file = 'COVID_NZ.html'
-html_lines = Path(html_file).read_text().splitlines()
-now = datetime.now(timezone('NZ')).strftime('%Y-%m-%d %H:%M')
-for i, line in enumerate(html_lines):
-    if 'Last updated' in line:
-        html_lines[i] = f'    Last updated: {now} NZST'
-Path(html_file).write_text('\n'.join(html_lines) + '\n')
-plt.show()
-
+    # Update the date in the HTML
+    html_file = 'COVID_NZ.html'
+    html_lines = Path(html_file).read_text().splitlines()
+    now = datetime.now(timezone('NZ')).strftime('%Y-%m-%d %H:%M')
+    for i, line in enumerate(html_lines):
+        if 'Last updated' in line:
+            html_lines[i] = f'    Last updated: {now} NZST'
+    Path(html_file).write_text('\n'.join(html_lines) + '\n')
+    plt.show()

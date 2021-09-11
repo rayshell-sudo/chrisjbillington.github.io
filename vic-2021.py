@@ -787,7 +787,7 @@ ax2.legend(
     [labels[idx] for idx in order],
     loc='upper left',
     ncol=1 if VAX else 2,
-    prop={'size': 8}
+    prop={'size': 8},
 )
 
 
@@ -842,7 +842,9 @@ else:
     fig1.savefig(f'COVID_VIC_2021{suffix}.png', dpi=133)
 if not LGA:
     ax2.set_yscale('linear')
-    if VAX:
+    if OLD:
+        ymax = 50_000
+    elif VAX:
         if new_projection.max() < 4000:
             ymax = 5000
         elif new_projection.max() < 8000:
