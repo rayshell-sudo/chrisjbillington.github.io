@@ -798,7 +798,18 @@ fig1.savefig(f'COVID_VIC_2021{suffix}.png', dpi=133)
 if True: # Just to keep the diff with nsw.py sensible here
     ax2.set_yscale('linear')
     if VAX:
-        ymax = 50_000
+        if new_projection.max() < 4000:
+            ymax = 5000
+        elif new_projection.max() < 8000:
+            ymax = 10000
+        elif new_projection.max() < 20000:
+            ymax = 25000
+        elif new_projection.max() < 60000:
+            ymax = 50_000
+        elif new_projection.max() < 100000:
+            ymax = 100_000
+        else:
+            ymax = 200_000
     else:
         ymax = 5_000
     ax2.axis(ymin=0, ymax=ymax)
