@@ -27,7 +27,7 @@ for name in ['nz_animated', 'nz_animated_linear']:
             '4',
             '-vf',
             'tpad=stop_mode=clone:stop_duration=2',
-            f'{name}.mp4',
+            f'{name}.webm',
         ]
     )
 
