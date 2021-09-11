@@ -93,6 +93,16 @@ def tweet_3_text():
 
     return dedent(COMMENT_TEXT)
 
+def tweet_4_text():
+    COMMENT_TEXT = """\
+    Vaccination is the only way out of this lockdown. Happy with AZ? Get it anywhere.
+    Want Pfizer? See where appointments are available near you here:
+    https://vaccine.wfltaylor.com. Then book in with the official VIC booking system
+    here: http://portal.cvms.vic.gov.au
+
+    #Covid19Vic
+    """
+    return dedent(COMMENT_TEXT)
 
 if __name__ == '__main__':
     api_key = sys.argv[1]
@@ -128,3 +138,10 @@ if __name__ == '__main__':
         in_reply_to_status_id=tweet_2.id,
         auto_populate_reply_metadata=True,
     )
+
+    tweet_4 = api.update_status(
+        status=tweet_4_text(),
+        in_reply_to_status_id=tweet_3.id,
+        auto_populate_reply_metadata=True,
+    )
+
