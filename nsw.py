@@ -31,12 +31,13 @@ POP_OF_NSW = 8.166e6
 VAX = 'vax' in sys.argv
 OTHERS = 'others' in sys.argv
 CONCERN = 'concern' in sys.argv
+BIPARTITE = 'bipartite' in sys.argv
 LGA_IX = None
 LGA = None
 OLD = 'old' in sys.argv
 
 
-if not (VAX or OTHERS or CONCERN) and sys.argv[1:]:
+if not (VAX or OTHERS or CONCERN or BIPARTITE) and sys.argv[1:]:
     if len(sys.argv) == 2:
         LGA_IX = int(sys.argv[1])
     elif OLD and len(sys.argv) == 3:
@@ -44,7 +45,7 @@ if not (VAX or OTHERS or CONCERN) and sys.argv[1:]:
     else:
         raise ValueError(sys.argv[1:])
 
-if OLD:
+if OLD or BIPARTITE:
     VAX = True
 
 # Data from covidlive by date announced to public
@@ -511,7 +512,7 @@ cov = np.array(
     ]
 )
 
-if VAX:
+if VAX and not BIPARTITE:
     # Fancy stochastic SIR model
     trials_infected_today, trials_cumulative, trials_R_eff = stochastic_sir(
         initial_caseload=new_smoothed[-1],
@@ -545,6 +546,89 @@ if VAX:
     total_cases_lower = cumulative_lower[-1]
     total_cases_upper = cumulative_upper[-1]
 
+elif BIPARTITE:
+
+    # Sum of two models - one for LGAs of concern, and one for the rest of NSW
+    stats = json.loads(Path("latest_nsw_stats.json").read_text())
+    R_concern = stats['R_eff_concern']
+    new_concern = stats['new_concern']
+    cov_concern = np.array(stats['cov_concern'])
+    initial_cumulative_concern = stats['initial_cumulative_concern']
+    R_others = stats['R_eff_others']
+    new_others = stats['new_others']
+    cov_others = np.array(stats['cov_others'])
+    initial_cumulative_others = stats['initial_cumulative_others']
+
+    # LGA data is a tad out of date. Scale new and cumulative cases proportionally to
+    # match total new and cumulative caseloads.
+    caseload_factor = new_smoothed[-1] / (new_concern + new_others)
+    cumulative_factor = new.sum() / (initial_cumulative_concern + initial_cumulative_others)
+
+    new_concern = caseload_factor * new_concern
+    new_others = caseload_factor * new_others
+    initial_cumulative_concern = cumulative_factor * initial_cumulative_concern
+    initial_cumulative_others = cumulative_factor * initial_cumulative_others
+
+    # Scale both R values to match what we would expect from the latest statewide R
+    # value:
+    R_composite = (new_concern * R_concern + new_others * R_others) / (new_concern + new_others)
+    R_factor = R[-1] / (R_composite)
+    R_concern *= R_factor
+    R_others *= R_factor
+
+    # Fancy stochastic SIR model
+    concern_infected_today, concern_cumulative, concern_R_eff  = stochastic_sir(
+        initial_caseload=new_concern,
+        initial_cumulative_cases=initial_cumulative_concern,
+        initial_R_eff=R_concern,
+        tau=tau,
+        population_size=POP_OF_SYD,
+        vaccine_immunity=projected_vaccine_immune_population(
+            t_projection, doses_per_100
+        ),
+        n_days=days_projection + 1,
+        n_trials=10000,
+        cov_caseload_R_eff=cov_concern,
+    )
+
+    others_infected_today, others_cumulative, others_R_eff  = stochastic_sir(
+        initial_caseload=new_others,
+        initial_cumulative_cases=initial_cumulative_others,
+        initial_R_eff=R_others,
+        tau=tau,
+        population_size=POP_OF_SYD,
+        vaccine_immunity=projected_vaccine_immune_population(
+            t_projection, doses_per_100
+        ),
+        n_days=days_projection + 1,
+        n_trials=10000,
+        cov_caseload_R_eff=cov_others,
+    )
+
+    trials_infected_today = concern_infected_today + others_infected_today
+    trials_cumulative = concern_cumulative + others_cumulative
+
+    trials_R_eff = (
+        concern_infected_today * concern_R_eff + others_infected_today * others_R_eff
+    ) / (concern_infected_today + others_infected_today)
+
+    new_projection, (
+        new_projection_lower,
+        new_projection_upper,
+    ) = get_confidence_interval(trials_infected_today)
+
+    cumulative_median, (cumulative_lower, cumulative_upper) = get_confidence_interval(
+        trials_cumulative,
+    )
+
+    R_eff_projection, (
+        R_eff_projection_lower,
+        R_eff_projection_upper,
+    ) = get_confidence_interval(trials_R_eff)
+
+    total_cases = cumulative_median[-1]
+    total_cases_lower = cumulative_lower[-1]
+    total_cases_upper = cumulative_upper[-1]
 else:
     # Simple model, no vaccines or community immunity
     def log_projection_model(t, A, R):
@@ -753,10 +837,20 @@ u_R_latest = (R_upper[-1] - R_lower[-1]) / 2
 
 R_eff_string = fR"$R_\mathrm{{eff}}={R[-1]:.02f} \pm {u_R_latest:.02f}$"
 
-if VAX:
+if VAX and not BIPARTITE:
     title_lines = [
         "Projected effect of New South Wales vaccination rollout",
         f"Starting from currently estimated {R_eff_string}",
+    ]
+elif BIPARTITE:
+    u_R_concern = np.sqrt(cov_concern[1, 1])
+    u_R_others = np.sqrt(cov_others[1, 1])
+    R_eff_str_concern = fR"$R_\mathrm{{eff,concern}}={R_concern:.02f} \pm {u_R_concern:.02f}$"
+    R_eff_str_others = fR"$R_\mathrm{{eff,others}}={R_others:.02f} \pm {u_R_others:.02f}$"
+    title_lines = [
+        "Projected effect of New South Wales vaccination rollout"
+        " with LGAs of concern and others treated separately",
+        f"Starting from current estimates: {R_eff_str_concern} and {R_eff_str_others}",
     ]
 else:
     if LGA:
@@ -877,7 +971,7 @@ if VAX:
     )
     text.set_bbox(dict(facecolor='white', alpha=0.8, linewidth=0))
 
-    suffix = '_vax'
+    suffix = '_bipartite' if BIPARTITE else '_vax'
 elif LGA:
     suffix=f'_LGA_{LGA_IX}'
 elif OTHERS:
@@ -917,9 +1011,15 @@ except FileNotFoundError:
 if CONCERN:
     stats['R_eff_concern'] = R[-1] 
     stats['u_R_eff_concern'] = u_R_latest
+    stats['new_concern'] = new_smoothed[-1]
+    stats['cov_concern'] = cov.tolist()
+    stats['initial_cumulative_concern'] = int(new.sum())
 elif OTHERS:
     stats['R_eff_others'] = R[-1] 
     stats['u_R_eff_others'] = u_R_latest
+    stats['new_others'] = new_smoothed[-1]
+    stats['cov_others'] = cov.tolist()
+    stats['initial_cumulative_others'] = int(new.sum())
 elif not LGA:
     stats['R_eff'] = R[-1] 
     stats['u_R_eff'] = u_R_latest
