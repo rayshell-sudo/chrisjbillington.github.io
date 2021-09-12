@@ -892,6 +892,7 @@ if VAX:
         upper = new_projection_upper[i]
         lower = SHOT_NOISE_FACTOR * (lower - cases) + cases
         upper = SHOT_NOISE_FACTOR * (upper - cases) + cases
+        lower = max(lower, 0)
         stats['projection'].append(
             {'date': str(date), 'cases': cases, 'upper': upper, 'lower': lower}
         )
