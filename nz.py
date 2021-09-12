@@ -13,6 +13,7 @@ import matplotlib.dates as mdates
 import matplotlib.ticker as mticker
 import matplotlib.colors as mcolors
 import pandas as pd
+import urllib
 
 # Our uncertainty calculations are stochastic. Make them reproducible, at least:
 np.random.seed(0)
@@ -85,8 +86,18 @@ def midnight_to_midnight_data():
     today = datetime.now().strftime('%Y-%m-%d')
     URL = f"https://www.health.govt.nz/system/files/documents/pages/covid_cases_{today}.csv"
 
-    df = pd.read_csv(URL, storage_options=curl_headers)
-    
+    df = None
+    for suffix in ['', '_0', '_1', '_2', '_3']:
+        try:
+            df = pd.read_csv(
+                URL.replace('.csv', f'{suffix}.csv'), storage_options=curl_headers
+            )
+            break
+        except urllib.error.HTTPError:
+            # Try again with _<n> appended to the filename
+            continue
+    assert df is not None, "No csv from MoH found"
+
     df = df[
         (df["DHB"] != "Managed Isolation & Quarantine") & (df["Historical"] != "Yes")
     ]
