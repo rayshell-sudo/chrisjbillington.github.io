@@ -95,10 +95,10 @@ def tweet_3_text():
 
 def tweet_4_text():
     COMMENT_TEXT = """\
-    Vaccination is the only way out of this lockdown. Happy with AZ? Get it anywhere.
-    Want Pfizer? See where appointments are available near you here:
-    https://vaccine.wfltaylor.com. Then book in with the official VIC booking system
-    here: http://portal.cvms.vic.gov.au
+
+    Vaccination is the only way out of this lockdown. See where vaccines are available
+    near you: https://covid19nearme.com.au/state/vic/vaccination. If you're already
+    booked in, keep an eye out as more supply might mean you can move it up.
 
     #Covid19Vic
     """
