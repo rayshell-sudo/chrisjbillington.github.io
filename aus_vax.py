@@ -255,7 +255,7 @@ AZ_local_supply_data = """
 
 PFIZER_PROJECTED_SHIPMENTS= """ # In thousands per week
 2021-09-12 1000 + 200 + 300 # Pfizer + Moderna + UK Pfizer doses. 4M from the UK over 4 weeks
-2021-09-19 1000 + 200 + 1000
+2021-09-19 1000 + 200 + 1000 + 1000 # 1M extra Moderna sourced from the EU
 2021-09-26 1000 + 200 + 1000
 2021-10-03 2000 + 200 + 1000
 2021-10-10 2000 + 750 + 700
@@ -304,9 +304,8 @@ PFIZER_WASTAGE = 0.05
 # Number of AZ first doses
 
 # 90% of ~5M over sixties, 40% of ~3M people in their fifties, 50% of 1M NSW residents
-# in their forties, 50% of ~2M NSW residents 18-39, 25% of ~2M VIC residents 20-39 plus
-# 350k from early in the rollout
-MAX_AZ_ADMINISTERED = .9 * 5e6 + .4 * 3e6 + .5 * 1e6 + 0.5 * 2e6 + 0.25 * 2e6 + 350e3
+# in their forties, 50% of ~2M NSW residents 18-39, 350k from early in the rollout
+MAX_AZ_ADMINISTERED = .9 * 5e6 + .4 * 3e6 + .5 * 1e6 + 0.5 * 2e6 + 350e3
 
 # Number of people 12 years old and older, from ABS ERP June 2020
 MAX_ELIGIBLE = 21_852_349
