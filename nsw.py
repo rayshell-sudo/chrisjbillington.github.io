@@ -36,6 +36,8 @@ LGA_IX = None
 LGA = None
 OLD = 'old' in sys.argv
 
+# VAX = True
+# OTHERS = True
 
 if not (VAX or OTHERS or CONCERN or BIPARTITE) and sys.argv[1:]:
     if len(sys.argv) == 2:
@@ -837,9 +839,14 @@ u_R_latest = (R_upper[-1] - R_lower[-1]) / 2
 
 R_eff_string = fR"$R_\mathrm{{eff}}={R[-1]:.02f} \pm {u_R_latest:.02f}$"
 
-if VAX and not BIPARTITE:
+if VAX and not BIPARTITE and not OTHERS:
     title_lines = [
         "Projected effect of New South Wales vaccination rollout",
+        f"Starting from currently estimated {R_eff_string}",
+    ]
+elif VAX and OTHERS:
+    title_lines = [
+        "Projected effect of vaccination rollout in NSW excluding LGAs of concern",
         f"Starting from currently estimated {R_eff_string}",
     ]
 elif BIPARTITE:
@@ -970,8 +977,12 @@ if VAX:
         fontsize='small',
     )
     text.set_bbox(dict(facecolor='white', alpha=0.8, linewidth=0))
-
-    suffix = '_bipartite' if BIPARTITE else '_vax'
+    if BIPARTITE:
+        suffix = '_bipartite' 
+    elif OTHERS:
+        suffix = "_others_vax"
+    else:
+        suffix = '_vax'
 elif LGA:
     suffix=f'_LGA_{LGA_IX}'
 elif OTHERS:
@@ -986,9 +997,11 @@ if OLD:
 else:
     fig1.savefig(f'COVID_NSW{suffix}.svg')
     fig1.savefig(f'COVID_NSW{suffix}.png', dpi=133)
-if not (LGA or OTHERS or CONCERN):
+if VAX or not (LGA or OTHERS or CONCERN):
     ax2.set_yscale('linear')
-    if VAX:
+    if OTHERS:
+        ymax = 1600
+    elif VAX:
         ymax = 4000
     else:
         ymax = 4000
@@ -1014,7 +1027,7 @@ if CONCERN:
     stats['new_concern'] = new_smoothed[-1]
     stats['cov_concern'] = cov.tolist()
     stats['initial_cumulative_concern'] = int(new.sum())
-elif OTHERS:
+elif OTHERS and not VAX:
     stats['R_eff_others'] = R[-1] 
     stats['u_R_eff_others'] = u_R_latest
     stats['new_others'] = new_smoothed[-1]
@@ -1025,7 +1038,7 @@ elif not LGA:
     stats['u_R_eff'] = u_R_latest
     stats['today'] = str(np.datetime64(datetime.now(), 'D'))
 
-if VAX:
+if VAX and not OTHERS:
     # Case number predictions
     stats['projection'] = []
     # in case I ever want to get the orig projection range not expanded - like to
