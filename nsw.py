@@ -370,8 +370,13 @@ elif OTHERS:
     # Sum over all LGAs *not* of concern
     new = sum(cases_by_lga[lga] for lga in cases_by_lga if lga not in LGAs_OF_CONCERN)
 elif CONCERN:
-   # Sum over all LGAs of concern
+    # Sum over all LGAs of concern
     new = sum(cases_by_lga[lga] for lga in cases_by_lga if lga in LGAs_OF_CONCERN) 
+elif BIPARTITE:
+    # Sum of LGA data - solely so that we're only using data up until it was last
+    # updated, otherwise is inconsistent with statewide numbers:
+    dates, cases_by_lga = lga_data()
+    new = sum(cases_by_lga.values())
 else:
     dates, new = covidlive_data()
 
@@ -561,22 +566,22 @@ elif BIPARTITE:
     cov_others = np.array(stats['cov_others'])
     initial_cumulative_others = stats['initial_cumulative_others']
 
-    # LGA data is a tad out of date. Scale new and cumulative cases proportionally to
-    # match total new and cumulative caseloads.
-    caseload_factor = new_smoothed[-1] / (new_concern + new_others)
-    cumulative_factor = new.sum() / (initial_cumulative_concern + initial_cumulative_others)
+    # # LGA data is a tad out of date. Scale new and cumulative cases proportionally to
+    # # match total new and cumulative caseloads.
+    # caseload_factor = new_smoothed[-1] / (new_concern + new_others)
+    # cumulative_factor = new.sum() / (initial_cumulative_concern + initial_cumulative_others)
 
-    new_concern = caseload_factor * new_concern
-    new_others = caseload_factor * new_others
-    initial_cumulative_concern = cumulative_factor * initial_cumulative_concern
-    initial_cumulative_others = cumulative_factor * initial_cumulative_others
+    # new_concern = caseload_factor * new_concern
+    # new_others = caseload_factor * new_others
+    # initial_cumulative_concern = cumulative_factor * initial_cumulative_concern
+    # initial_cumulative_others = cumulative_factor * initial_cumulative_others
 
-    # Scale both R values to match what we would expect from the latest statewide R
-    # value:
-    R_composite = (new_concern * R_concern + new_others * R_others) / (new_concern + new_others)
-    R_factor = R[-1] / (R_composite)
-    R_concern *= R_factor
-    R_others *= R_factor
+    # # Scale both R values to match what we would expect from the latest statewide R
+    # # value:
+    # R_composite = (new_concern * R_concern + new_others * R_others) / (new_concern + new_others)
+    # R_factor = R[-1] / (R_composite)
+    # R_concern *= R_factor
+    # R_others *= R_factor
 
     # Fancy stochastic SIR model
     concern_infected_today, concern_cumulative, concern_R_eff  = stochastic_sir(
