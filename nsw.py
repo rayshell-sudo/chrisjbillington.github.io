@@ -36,10 +36,9 @@ LGA_IX = None
 LGA = None
 OLD = 'old' in sys.argv
 
-# VAX = True
-# OTHERS = True
-
 if not (VAX or OTHERS or CONCERN or BIPARTITE) and sys.argv[1:]:
+    if (VAX and OTHERS) or (VAX and CONCERN):
+        pass # That's fine and allowed
     if len(sys.argv) == 2:
         LGA_IX = int(sys.argv[1])
     elif OLD and len(sys.argv) == 3:
@@ -844,9 +843,15 @@ u_R_latest = (R_upper[-1] - R_lower[-1]) / 2
 
 R_eff_string = fR"$R_\mathrm{{eff}}={R[-1]:.02f} \pm {u_R_latest:.02f}$"
 
-if VAX and not BIPARTITE and not OTHERS:
+if VAX and not BIPARTITE:
+    if OTHERS:
+        region = "New South Wales (excluding LGAs of concern)"
+    elif CONCERN:
+        region = "New South Wales LGAs of concern"
+    else:
+        region = "New South Wales"
     title_lines = [
-        "Projected effect of New South Wales vaccination rollout",
+        f"Projected effect of vaccination rollout in {region}",
         f"Starting from currently estimated {R_eff_string}",
     ]
 elif VAX and OTHERS:
@@ -986,6 +991,8 @@ if VAX:
         suffix = '_bipartite' 
     elif OTHERS:
         suffix = "_others_vax"
+    elif CONCERN:
+        suffix = "_concern_vax"
     else:
         suffix = '_vax'
 elif LGA:
@@ -1004,10 +1011,10 @@ else:
     fig1.savefig(f'COVID_NSW{suffix}.png', dpi=133)
 if VAX or not (LGA or OTHERS or CONCERN):
     ax2.set_yscale('linear')
-    if OTHERS:
-        ymax = 1600
+    if OLD:
+        ymax=4000
     elif VAX:
-        ymax = 4000
+        ymax = 2000
     else:
         ymax = 4000
     ax2.axis(ymin=0, ymax=ymax)

@@ -9,4 +9,7 @@ do
 done
 python nsw.py others
 python nsw.py concern
+python nsw.py others vax
+python nsw.py concern vax
+python nsw.py bipartite
 python nsw_vax.py

@@ -49,7 +49,7 @@
 </head>
 <body>
   <div class="content">
-    Last updated: 2021-09-13 11:08 AEST
+    Last updated: 2021-09-13 16:01 AEST
     <br>
     <small>
       Updates daily at 11AM Sydney time
@@ -195,6 +195,40 @@
     </p>
     <img src="COVID_NSW_LGA_concern.svg">
     <img src="COVID_NSW_LGA_others.svg">
+
+    <h3 id="bipartite">Projected effect of vaccines with LGAs of concern treated separately</h3>
+
+    <p>
+    The above projection of the effect of the vaccine rollout in New South Wales is very
+    simplistic. Because it treats the entire state as a single outbreak with a single
+    <i>R</i><sub>eff</sub>, it can't accurately describe the substantially different
+    rate of spread within the LGAs of concern, compared to the rest of New South Wales.
+    In reality, the outbreaks in these two different settings have different
+    <i>R</i><sub>eff</sub> and may peak at different times. Below is a projection that
+    treats the two outbreaks separately, projecting each forward based in its current
+    <i>R</i><sub>eff</sub> and the same vaccination model, and then adds the result
+    together. The result should be more realistic than treating the entire state as a
+    single outbreak. This projection does, however, still use statewide vaccination
+    numbers, and would be improved if that were further broken down by LGA (It's on my
+    todo list!).
+    </p>
+    <p>
+      Note that this projection lags the statewide numbers by up to several days due to
+      the delay in New South Wales Health publishing LGA breakdowns.
+    </p>
+    <p>
+      The same plot is shown twice, first with cases on a linear scale, then with cases
+      on a log scale. Below that, the two individual projections for the outbreak within
+      the LGAs of concern, and in the rest of NSW are shown, also on a linear and log
+      scale each.
+    </p>
+
+    <img src="COVID_NSW_bipartite_linear.svg">
+    <img src="COVID_NSW_bipartite.svg">
+    <img src="COVID_NSW_concern_vax_linear.svg">
+    <img src="COVID_NSW_concern_vax.svg">
+    <img src="COVID_NSW_others_vax_linear.svg">
+    <img src="COVID_NSW_others_vax.svg">
 
     <h3 id="lga"><i>R</i><sub>eff</sub> in individual LGAs of concern</h3>
     <p>
