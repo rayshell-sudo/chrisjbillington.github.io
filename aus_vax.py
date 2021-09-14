@@ -1308,8 +1308,8 @@ for state, pop in POPS_16_PLUS.items():
     )
 
 for ax in [ax13, ax14, ax15, ax16]:
-    rate_plot = ax in [ax15, ax16] 
-    ax.legend(loc='upper right' if rate_plot else 'upper left', prop={'size': 9})
+    rate_plot = ax in [ax15, ax16]
+    ax.legend(loc='upper right', prop={'size': 9})
     ax.grid(True, linestyle=':', color='k', alpha=0.5)
     locator = mdates.DayLocator([1, 15])
     formatter = mdates.ConciseDateFormatter(locator)
@@ -1320,7 +1320,7 @@ for ax in [ax13, ax14, ax15, ax16]:
         xmin=np.datetime64('2021-07-15'),
         xmax=np.datetime64('2022-01-01'),
         ymin=0,
-        ymax=10 if rate_plot else 100
+        ymax=10 if rate_plot else 100,
     )
     if rate_plot:
         ax.set_ylabel("Vaccination rate (% of 16+ population / week)")
