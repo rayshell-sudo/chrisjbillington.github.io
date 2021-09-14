@@ -1008,6 +1008,7 @@ plt.title('National daily doses by weekday')
 # ABS Estimated Resident Population, June 2020
 # https://www.abs.gov.au/statistics/people/population/national-state-and-territory-population/jun-2020
 POP_DATA = {
+    '12_15': {'MALE': 620_701, 'FEMALE': 586_161},
     '16_19': {'MALE': 614_430, 'FEMALE': 581_206},
     '20_24': {'MALE': 880_327, 'FEMALE': 832_409},
     '25_29': {'MALE': 960_798, 'FEMALE': 945_753},
@@ -1052,12 +1053,23 @@ second_dose_coverage_dates = first_dose_coverage_dates[
     first_dose_coverage_dates >= AIR_START_DATE
 ]
 
+# First date when data for ages 12-15 became available:
+AGES_12_15_FROM = np.datetime64('2021-09-13')
+
+ages_12_15_dates = first_dose_coverage_dates[first_dose_coverage_dates>=AGES_12_15_FROM]
+
 labels_by_age = []
 first_dose_coverage_by_age = []
 second_dose_coverage_by_age = []
 
-for group_start in [16, 20, 30, 40, 50, 60, 70, 80, 90][::-1]:
-    if group_start == 16:
+
+first_dose_dates_by_age = []
+second_dose_dates_by_age = []
+
+for group_start in [12, 16, 20, 30, 40, 50, 60, 70, 80, 90][::-1]:
+    if group_start == 12:
+        ranges = ['12_15']
+    elif group_start == 16:
         ranges = ['16_19']
     elif group_start == 90:
         ranges = ['90_94', '95_PLUS']
@@ -1066,6 +1078,8 @@ for group_start in [16, 20, 30, 40, 50, 60, 70, 80, 90][::-1]:
     first_dose_coverage = []
     second_dose_coverage = []
     for row in doses_by_age:
+        if group_start == 12 and row['DATE_AS_AT'] < AGES_12_15_FROM:
+            continue
         first_doses = 0
         second_doses = 0
         pop = 0
@@ -1079,16 +1093,41 @@ for group_start in [16, 20, 30, 40, 50, 60, 70, 80, 90][::-1]:
             second_dose_coverage.append(100 * second_doses / pop)
     first_dose_coverage_by_age.append(np.array(first_dose_coverage))
     second_dose_coverage_by_age.append(np.array(second_dose_coverage))
+    if group_start == 12:
+        first_dose_dates_by_age.append(ages_12_15_dates)
+        second_dose_dates_by_age.append(ages_12_15_dates)
+    else:
+        first_dose_dates_by_age.append(first_dose_coverage_dates)
+        second_dose_dates_by_age.append(second_dose_coverage_dates)
     if group_start == 90:
         label = 'Ages 90+'
     else:
         label = f'Ages {ranges[0].split("_")[0]}–{ranges[-1].split("_")[-1]}'
     labels_by_age.append(label)
 
+if first_dose_dates_by_age[-1] == np.datetime64('2021-09-13'):
+    # Just for now, duplicate the 12-15 data for a day so that it shows up on a line
+    # plot. Remove this code sometime after today!
+    first_dose_dates_by_age[-1] = np.concatenate(
+        [[AGES_12_15_FROM - 1], first_dose_dates_by_age[-1]]
+    )
+    second_dose_dates_by_age[-1] = np.concatenate(
+        [[AGES_12_15_FROM - 1], second_dose_dates_by_age[-1]]
+    )
+    first_dose_coverage_by_age[-1] = np.append(
+        first_dose_coverage_by_age[-1], [first_dose_coverage_by_age[-1][-1]]
+    )
+    second_dose_coverage_by_age[-1] = np.append(
+        second_dose_coverage_by_age[-1], [second_dose_coverage_by_age[-1][-1]]
+    )
+
+
 fig9 = plt.figure(figsize=(8, 6))
-for coverage, label in zip(first_dose_coverage_by_age, labels_by_age):
+for dates, coverage, label in zip(
+    first_dose_dates_by_age, first_dose_coverage_by_age, labels_by_age
+):
     plt.plot(
-        first_dose_coverage_dates, coverage, label=f"{label} ({coverage[-1]:.1f} %)"
+        dates, coverage, label=f"{label} ({coverage[-1]:.1f} %)"
     )
 
 plt.legend(loc='upper right', prop={'size': 9})
@@ -1114,12 +1153,16 @@ plt.ylabel("Vaccine coverage (%)")
 
 
 fig10 = plt.figure(figsize=(8, 6))
-for coverage, label in zip(first_dose_coverage_by_age, labels_by_age):
+for dates, coverage, label in zip(
+    first_dose_dates_by_age, first_dose_coverage_by_age, labels_by_age
+):
     smoothed_coverage = 7 * n_day_average(np.diff(coverage), 7)[7:]
     smoothed_coverage = gaussian_smoothing(smoothed_coverage, 1)
-
+    if len(smoothed_coverage) == 0:
+        # Not enough data in age 12-15 yet to plot smoothed curve
+        continue
     plt.plot(
-        first_dose_coverage_dates[8:],
+        dates[8:],
         smoothed_coverage,
         label=f"{label} ({smoothed_coverage[-1]:.1f} %/week)",
     )
@@ -1137,9 +1180,11 @@ plt.title("First dose weekly increase by age group")
 plt.ylabel("Vaccination rate (% of age group / week)")
 
 fig11 = plt.figure(figsize=(8, 6))
-for coverage, label in zip(second_dose_coverage_by_age, labels_by_age):
+for dates, coverage, label in zip(
+    second_dose_dates_by_age, second_dose_coverage_by_age, labels_by_age
+):
     plt.plot(
-        second_dose_coverage_dates, coverage, label=f"{label} ({coverage[-1]:.1f} %)"
+        dates, coverage, label=f"{label} ({coverage[-1]:.1f} %)"
     )
 
 plt.legend(loc='upper left', prop={'size': 9})
@@ -1157,11 +1202,16 @@ plt.ylabel("Vaccine coverage (%)")
 
 
 fig12 = plt.figure(figsize=(8, 6))
-for coverage, label in zip(second_dose_coverage_by_age, labels_by_age):
+for dates, coverage, label in zip(
+    second_dose_dates_by_age, second_dose_coverage_by_age, labels_by_age
+):
     smoothed_coverage = 7 * n_day_average(np.diff(coverage), 7)[7:]
     smoothed_coverage = gaussian_smoothing(smoothed_coverage, 1)
+    if len(smoothed_coverage) == 0:
+        # Not enough data in age 12-15 yet to plot smoothed curve
+        continue
     plt.plot(
-        second_dose_coverage_dates[8:],
+        dates[8:],
         smoothed_coverage,
         label=f"{label} ({smoothed_coverage[-1]:.1f} %/week)",
     )
