@@ -1069,7 +1069,7 @@ if VAX and not OTHERS:
         if i < 8:
             print(f"{cases:.0f} {lower:.0f}—{upper:.0f}")
 
-if not OLD:
+if not (OLD or BIPARTITE):
     # Only save data if this isn't a re-run on old data
     Path("latest_nsw_stats.json").write_text(json.dumps(stats, indent=4))
 
