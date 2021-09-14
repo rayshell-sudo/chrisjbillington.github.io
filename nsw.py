@@ -1050,7 +1050,7 @@ elif not LGA:
     stats['u_R_eff'] = u_R_latest
     stats['today'] = str(np.datetime64(datetime.now(), 'D'))
 
-if VAX and not OTHERS:
+if VAX and not (OTHERS or CONCERN or BIPARTITE):
     # Case number predictions
     stats['projection'] = []
     # in case I ever want to get the orig projection range not expanded - like to
