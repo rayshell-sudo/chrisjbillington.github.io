@@ -1013,10 +1013,8 @@ if VAX or not (LGA or OTHERS or CONCERN):
     ax2.set_yscale('linear')
     if OLD:
         ymax=4000
-    elif VAX:
-        ymax = 2000
     else:
-        ymax = 4000
+        ymax=2000
     ax2.axis(ymin=0, ymax=ymax)
     ax2.yaxis.set_major_locator(mticker.MultipleLocator(ymax / 8))
     ax2.set_ylabel("Daily confirmed cases (linear scale)")
@@ -1033,7 +1031,7 @@ try:
 except FileNotFoundError:
     stats = {}
 
-if CONCERN:
+if CONCERN and not VAX:
     stats['R_eff_concern'] = R[-1] 
     stats['u_R_eff_concern'] = u_R_latest
     stats['new_concern'] = new_smoothed[-1]
@@ -1045,12 +1043,12 @@ elif OTHERS and not VAX:
     stats['new_others'] = new_smoothed[-1]
     stats['cov_others'] = cov.tolist()
     stats['initial_cumulative_others'] = int(new.sum())
-elif not LGA:
+elif not (LGA or CONCERN or OTHERS or BIPARTITE):
     stats['R_eff'] = R[-1] 
     stats['u_R_eff'] = u_R_latest
     stats['today'] = str(np.datetime64(datetime.now(), 'D'))
 
-if VAX and not (OTHERS or CONCERN or BIPARTITE):
+if VAX and not (LGA or OTHERS or CONCERN or BIPARTITE):
     # Case number predictions
     stats['projection'] = []
     # in case I ever want to get the orig projection range not expanded - like to
