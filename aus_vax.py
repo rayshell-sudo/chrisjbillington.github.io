@@ -1105,22 +1105,6 @@ for group_start in [12, 16, 20, 30, 40, 50, 60, 70, 80, 90][::-1]:
         label = f'Ages {ranges[0].split("_")[0]}–{ranges[-1].split("_")[-1]}'
     labels_by_age.append(label)
 
-if first_dose_dates_by_age[-1] == np.datetime64('2021-09-13'):
-    # Just for now, duplicate the 12-15 data for a day so that it shows up on a line
-    # plot. Remove this code sometime after today!
-    first_dose_dates_by_age[-1] = np.concatenate(
-        [[AGES_12_15_FROM - 1], first_dose_dates_by_age[-1]]
-    )
-    second_dose_dates_by_age[-1] = np.concatenate(
-        [[AGES_12_15_FROM - 1], second_dose_dates_by_age[-1]]
-    )
-    first_dose_coverage_by_age[-1] = np.append(
-        first_dose_coverage_by_age[-1], [first_dose_coverage_by_age[-1][-1]]
-    )
-    second_dose_coverage_by_age[-1] = np.append(
-        second_dose_coverage_by_age[-1], [second_dose_coverage_by_age[-1][-1]]
-    )
-
 
 fig9 = plt.figure(figsize=(8, 6))
 for dates, coverage, label in zip(
