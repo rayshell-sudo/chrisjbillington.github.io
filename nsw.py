@@ -695,7 +695,8 @@ TIGHTER_LOCKDOWN = np.datetime64('2021-07-10')
 NONCRITICAL_RETAIL_CLOSED = np.datetime64('2021-07-18')
 STATEWIDE = np.datetime64('2021-08-15')
 CURFEW = np.datetime64('2021-08-23')
-END_LOCKDOWN = np.datetime64('2021-10-01')
+END_CURFEW = np.datetime64('2021-09-16')
+END_LOCKDOWN = np.datetime64('2021-10-04') # projected 70% 16+ second doses date
 
 def whiten(color, f):
     """Mix a color with white where f is how much of the original colour to keep"""
@@ -763,17 +764,27 @@ ax1.fill_betweenx(
     edgecolor=whiten("red", 0.45),
     hatch="//////",
     linewidth=0,
-    label="Statewide lockdown\nOperation Stay at Home",
+    label="Regional lockdowns",
 )
 
 ax1.fill_betweenx(
     [-10, 10],
     [CURFEW, CURFEW],
-    [END_LOCKDOWN, END_LOCKDOWN],
+    [END_CURFEW, END_CURFEW],
     color="red",
     alpha=0.45,
     linewidth=0,
     label="LGA curfew",
+)
+
+ax1.fill_betweenx(
+    [-10, 10],
+    [END_CURFEW, END_CURFEW],
+    [END_LOCKDOWN, END_LOCKDOWN],
+    color=whiten("red", 0.35),
+    edgecolor=whiten("red", 0.45),
+    hatch="//////",
+    linewidth=0,
 )
 
 for i in range(30):
@@ -782,7 +793,7 @@ for i in range(30):
         [END_LOCKDOWN.astype(int) + i / 3] * 2,
         [END_LOCKDOWN.astype(int) + (i + 1) / 3] * 2,
         color="red",
-        alpha=0.45 * (30 - i) / 30,
+        alpha=0.35 * (30 - i) / 30,
         linewidth=0,
         zorder=-10,
     )
