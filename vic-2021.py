@@ -712,7 +712,7 @@ else:
 
 
 ax1.axhline(1.0, color='k', linewidth=1)
-ax1.axis(xmin=START_PLOT, xmax=END_PLOT, ymin=0, ymax=5)
+ax1.axis(xmin=START_PLOT, xmax=END_PLOT, ymin=0, ymax=4)
 ax1.grid(True, linestyle=":", color='k', alpha=0.5)
 
 ax1.set_ylabel(R"$R_\mathrm{eff}$")
@@ -779,7 +779,7 @@ ax2.fill_between(
 ax2.set_ylabel(f"Daily cases (log scale)")
 
 ax2.set_yscale('log')
-ax2.axis(ymin=1, ymax=100_000)
+ax2.axis(ymin=1, ymax=10_000)
 fig1.tight_layout(pad=1.8)
 
 handles, labels = ax1.get_legend_handles_labels()
@@ -855,24 +855,25 @@ else:
 if not LGA:
     ax2.set_yscale('linear')
     if OLD:
-        ymax = 50_000
+        ymax = 20_000
     elif VAX:
-        if new_projection.max() < 4000:
-            ymax = 5000
-        elif new_projection.max() < 8000:
-            ymax = 10000
-        elif new_projection.max() < 20000:
-            ymax = 25000
-        elif new_projection.max() < 60000:
-            ymax = 50_000
-        elif new_projection.max() < 100000:
-            ymax = 100_000
-        else:
-            ymax = 200_000
+        ymax = 4_000
+        # if new_projection.max() < 4000:
+        #     ymax = 5000
+        # elif new_projection.max() < 8000:
+        #     ymax = 10000
+        # elif new_projection.max() < 20000:
+        #     ymax = 25000
+        # elif new_projection.max() < 60000:
+        #     ymax = 50_000
+        # elif new_projection.max() < 100000:
+        #     ymax = 100_000
+        # else:
+        #     ymax = 200_000
     else:
-        ymax = 5_000
+        ymax = 4_000
     ax2.axis(ymin=0, ymax=ymax)
-    ax2.yaxis.set_major_locator(mticker.MultipleLocator(ymax / 10))
+    ax2.yaxis.set_major_locator(mticker.MultipleLocator(ymax / 8))
     ax2.set_ylabel("Daily confirmed cases (linear scale)")
     if OLD:
         fig1.savefig(f'vic_animated_linear/{OLD_END_IX:04d}.png', dpi=133)
