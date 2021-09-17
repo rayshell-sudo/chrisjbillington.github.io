@@ -1243,7 +1243,7 @@ def first_and_second_by_state(state):
     if state.lower() in ['nt', 'act']:
         first[:164] += first[164] - first[163]
         second[:164] += second[164] - second[163]
-    return dates, first, second
+    return dates - 1, first, second
 
 
 fig13 = plt.figure(figsize=(8, 6))
