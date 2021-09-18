@@ -857,7 +857,10 @@ if not LGA:
     if OLD:
         ymax = 20_000
     elif VAX:
-        ymax = 4_000
+        if new_projection.max() < 1500:
+            ymax = 2_000
+        else:
+            ymax = 4_000
         # if new_projection.max() < 4000:
         #     ymax = 5000
         # elif new_projection.max() < 8000:
