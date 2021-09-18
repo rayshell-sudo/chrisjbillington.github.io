@@ -325,7 +325,7 @@ tau = 5  # reproductive time of the virus in days
 # fit results prior to smoothing.
 
 FIT_PTS = min(20, len(dates[dates >= START_PLOT]))
-x0 = -10
+x0 = -14
 delta_x = 1
 fit_x = np.arange(-FIT_PTS, 0)
 fit_weights = 1 / (1 + np.exp(-(fit_x - x0) / delta_x))
