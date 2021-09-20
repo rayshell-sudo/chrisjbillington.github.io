@@ -518,6 +518,7 @@ else:
 
 ALERT_LEVEL_1 = np.datetime64('2021-06-29')
 ALERT_LEVEL_4 = np.datetime64('2021-08-17')
+ALERT_LEVEL_3 = np.datetime64('2021-09-22')
 END_LOCKDOWN = dates[-1] + 14 # Who knows?
 
 def whiten(color, f):
@@ -525,28 +526,36 @@ def whiten(color, f):
     white = np.array(mcolors.to_rgb("white"))
     return (1 - f) * white + f * np.array(mcolors.to_rgb(color))
 
-ORANGERED = (np.array(mcolors.to_rgb("orange")) + np.array(mcolors.to_rgb("red"))) / 2
-
 fig1 = plt.figure(figsize=(10, 6))
 ax1 = plt.axes()
 
+# ax1.fill_betweenx(
+#     [-10, 10],
+#     [ALERT_LEVEL_1, ALERT_LEVEL_1],
+#     [ALERT_LEVEL_4, ALERT_LEVEL_4],
+#     color=whiten("#FCEEA0", 0.5),
+#     linewidth=0,
+#     label="Alert Level 1",
+# )
+
 ax1.fill_betweenx(
     [-10, 10],
-    [ALERT_LEVEL_1, ALERT_LEVEL_1],
     [ALERT_LEVEL_4, ALERT_LEVEL_4],
-    color=whiten("yellow", 0.35),
+    [ALERT_LEVEL_3, ALERT_LEVEL_3],
+    color=whiten("#F27824", 0.5),
+    # alpha=0.45,
     linewidth=0,
-    label="Alert Level 1",
+    label="Alert Level 4",
 )
 
 ax1.fill_betweenx(
     [-10, 10],
-    [ALERT_LEVEL_4, ALERT_LEVEL_4],
+    [ALERT_LEVEL_3, ALERT_LEVEL_3],
     [END_LOCKDOWN, END_LOCKDOWN],
-    color=ORANGERED,
-    alpha=0.45,
+    color=whiten("#F6AE2F", 0.5),
+    # alpha=0.45,
     linewidth=0,
-    label="Alert Level 4",
+    label="Alert Level 3",
 )
 
 for i in range(30):
@@ -554,7 +563,7 @@ for i in range(30):
         [-10, 10],
         [END_LOCKDOWN.astype(int) + i / 3] * 2,
         [END_LOCKDOWN.astype(int) + (i + 1) / 3] * 2,
-        color=ORANGERED,
+        color="#F6AE2F",
         alpha=0.45 * (30 - i) / 30,
         linewidth=0,
         zorder=-10,
