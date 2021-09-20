@@ -1229,20 +1229,44 @@ POPS_16_PLUS = {
 
 def first_and_second_by_state(state):
     df = pd.read_html(
-        f"https://covidlive.com.au/report/daily-vaccinations-people/{state.lower()}"
+        f"https://covidlive.com.au/report/daily-vaccinations-first-doses/{state.lower()}"
     )[1]
     first = np.array(df['FIRST'][::-1])
+    first_dates = np.array(
+        [np.datetime64(datetime.strptime(d, '%d %b %y'), 'D') for d in df['DATE'][::-1]]
+    )
+
+    df = pd.read_html(
+        f"https://covidlive.com.au/report/daily-vaccinations-people/{state.lower()}"
+    )[1]
     second = np.array(df['SECOND'][::-1])
-    dates = np.array(
+    second_dates = np.array(
         [np.datetime64(datetime.strptime(d, '%d %b %y'), 'D') for d in df['DATE'][::-1]]
     )
 
     first[np.isnan(first)] = 0
     second[np.isnan(second)] = 0
+    maxlen = max(len(first), len(second))
+    if len(first) < len(second):
+        first = np.concatenate([np.zeros(maxlen - len(first)), first])
+        dates = second_dates
+    elif len(second) < len(first):
+        second = np.concatenate([np.zeros(maxlen - len(second)), second])
+        dates = second_dates
+    else:
+        dates = first_dates
+
+    IX_CORRECTION = np.where(dates==np.datetime64('2021-07-29'))[0][0]
 
     if state.lower() in ['nt', 'act']:
-        first[:164] += first[164] - first[163]
-        second[:164] += second[164] - second[163]
+        first[:IX_CORRECTION] += first[IX_CORRECTION] - first[IX_CORRECTION - 1]
+        second[:IX_CORRECTION] += second[IX_CORRECTION] - second[IX_CORRECTION - 1]
+
+    if first[-1] == first[-2]:
+        first = first[:-1]
+        dates = dates[:-1]
+        second = second[:-1]
+
     return dates - 1, first, second
 
 
