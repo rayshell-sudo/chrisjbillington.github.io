@@ -855,26 +855,9 @@ else:
 if not LGA:
     ax2.set_yscale('linear')
     if OLD:
-        ymax = 20_000
-    elif VAX:
-        if new_projection.max() < 1500:
-            ymax = 2_000
-        else:
-            ymax = 4_000
-        # if new_projection.max() < 4000:
-        #     ymax = 5000
-        # elif new_projection.max() < 8000:
-        #     ymax = 10000
-        # elif new_projection.max() < 20000:
-        #     ymax = 25000
-        # elif new_projection.max() < 60000:
-        #     ymax = 50_000
-        # elif new_projection.max() < 100000:
-        #     ymax = 100_000
-        # else:
-        #     ymax = 200_000
+        ymax = 10_000
     else:
-        ymax = 4_000
+        ymax = 2_000
     ax2.axis(ymin=0, ymax=ymax)
     ax2.yaxis.set_major_locator(mticker.MultipleLocator(ymax / 8))
     ax2.set_ylabel("Daily confirmed cases (linear scale)")
