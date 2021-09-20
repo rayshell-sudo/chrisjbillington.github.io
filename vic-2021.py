@@ -553,9 +553,9 @@ EASING_1 = np.datetime64('2021-07-28')
 
 LOCKDOWN_AGAIN = np.datetime64('2021-08-06')
 CURFEW = np.datetime64('2021-08-16')
-STATEWIDE = np.datetime64('2021-08-20')
-END_STATEWIDE = np.datetime64('2021-09-10')
-EASING_AGAIN = np.datetime64('2021-09-24') # Predicted, who knows
+CONSTRUCTION_SHUTDOWN = np.datetime64('2021-09-21')
+END_CONSTRUCTION_SHUTDOWN = CONSTRUCTION_SHUTDOWN + 14
+EASING_AGAIN = np.datetime64('2021-10-26') # Indicative 70% second doses
 
 def whiten(color, f):
     """Mix a color with white where f is how much of the original colour to keep"""
@@ -623,7 +623,7 @@ ax1.fill_betweenx(
 ax1.fill_betweenx(
     [-10, 10],
     [CURFEW, CURFEW],
-    [STATEWIDE, STATEWIDE],
+    [CONSTRUCTION_SHUTDOWN, CONSTRUCTION_SHUTDOWN],
     color=whiten("red", 0.35),
     edgecolor=whiten("red", 0.45),
     hatch="//////",
@@ -633,17 +633,17 @@ ax1.fill_betweenx(
 
 ax1.fill_betweenx(
     [-10, 10],
-    [STATEWIDE, STATEWIDE],
-    [END_STATEWIDE, END_STATEWIDE],
+    [CONSTRUCTION_SHUTDOWN, CONSTRUCTION_SHUTDOWN],
+    [END_CONSTRUCTION_SHUTDOWN, END_CONSTRUCTION_SHUTDOWN],
     color="red",
     alpha=0.45,
     linewidth=0,
-    label="Statewide lockdown",
+    label="Construction shutdown",
 )
 
 ax1.fill_betweenx(
     [-10, 10],
-    [END_STATEWIDE, END_STATEWIDE],
+    [END_CONSTRUCTION_SHUTDOWN, END_CONSTRUCTION_SHUTDOWN],
     [EASING_AGAIN, EASING_AGAIN],
     color=whiten("red", 0.35),
     edgecolor=whiten("red", 0.45),
@@ -732,7 +732,7 @@ else:
     else:
         region = "Victoria"
     title_lines = [
-        f"$R_\\mathrm{{eff}}$ in {region}, with restriction levels and daily cases",
+        f"$R_\\mathrm{{eff}}$ in {region}, with Melbourne restriction levels and daily cases",
         f"Latest estimate: {R_eff_string}",
     ]
     
