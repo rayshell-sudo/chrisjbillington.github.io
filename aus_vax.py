@@ -1140,13 +1140,16 @@ fig10 = plt.figure(figsize=(8, 6))
 for dates, coverage, label in zip(
     first_dose_dates_by_age, first_dose_coverage_by_age, labels_by_age
 ):
-    smoothed_coverage = 7 * n_day_average(np.diff(coverage), 7)[7:]
+    smoothed_coverage = 7 * n_day_average(np.diff(coverage), 7)[6:]
     smoothed_coverage = gaussian_smoothing(smoothed_coverage, 1)
-    if len(smoothed_coverage) == 0:
-        # Not enough data in age 12-15 yet to plot smoothed curve
-        continue
+
+    # Ensure single datapoint of 12—15 data shows up, can remove in a day:
+    if len(smoothed_coverage) == 1:
+        dates = np.append(dates, [dates[-1] - 1])
+        smoothed_coverage = np.append(smoothed_coverage, [smoothed_coverage[-1]])
+
     plt.plot(
-        dates[8:],
+        dates[7:],
         smoothed_coverage,
         label=f"{label} ({smoothed_coverage[-1]:.1f} %/week)",
     )
@@ -1158,7 +1161,7 @@ plt.gca().xaxis.set_major_locator(locator)
 plt.gca().xaxis.set_major_formatter(formatter)
 plt.gca().yaxis.set_major_locator(ticker.MultipleLocator(1.0))
 plt.axis(
-    xmin=np.datetime64('2021-05-09'), xmax=np.datetime64('2022-01-01'), ymin=0, ymax=10
+    xmin=np.datetime64('2021-05-09'), xmax=np.datetime64('2022-01-01'), ymin=0, ymax=13
 )
 plt.title("First dose weekly increase by age group")
 plt.ylabel("Vaccination rate (% of age group / week)")
@@ -1189,13 +1192,16 @@ fig12 = plt.figure(figsize=(8, 6))
 for dates, coverage, label in zip(
     second_dose_dates_by_age, second_dose_coverage_by_age, labels_by_age
 ):
-    smoothed_coverage = 7 * n_day_average(np.diff(coverage), 7)[7:]
+    smoothed_coverage = 7 * n_day_average(np.diff(coverage), 7)[6:]
     smoothed_coverage = gaussian_smoothing(smoothed_coverage, 1)
-    if len(smoothed_coverage) == 0:
-        # Not enough data in age 12-15 yet to plot smoothed curve
-        continue
+
+    # Ensure single datapoint of 12—15 data shows up, can remove in a day:
+    if len(smoothed_coverage) == 1:
+        dates = np.append(dates, [dates[-1] - 1])
+        smoothed_coverage = np.append(smoothed_coverage, [smoothed_coverage[-1]])
+
     plt.plot(
-        dates[8:],
+        dates[7:],
         smoothed_coverage,
         label=f"{label} ({smoothed_coverage[-1]:.1f} %/week)",
     )
@@ -1207,7 +1213,7 @@ plt.gca().xaxis.set_major_locator(locator)
 plt.gca().xaxis.set_major_formatter(formatter)
 plt.gca().yaxis.set_major_locator(ticker.MultipleLocator(1.0))
 plt.axis(
-    xmin=np.datetime64('2021-05-09'), xmax=np.datetime64('2022-01-01'), ymin=0, ymax=10
+    xmin=np.datetime64('2021-05-09'), xmax=np.datetime64('2022-01-01'), ymin=0, ymax=13
 )
 plt.title("Second dose weekly increase by age group")
 plt.ylabel("Vaccination rate (% of age group / week)")
