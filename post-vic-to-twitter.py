@@ -95,6 +95,13 @@ def tweet_3_text():
 
 def tweet_4_text():
     COMMENT_TEXT = """\
+    Note that these projections do not take into account upcoming easing of
+    restrictions. If the trend changes as a result of easing, the projections will also
+    change once this is reflected in case numbers, but not in advance."""
+    return dedent(COMMENT_TEXT)
+
+def tweet_5_text():
+    COMMENT_TEXT = """\
 
     Vaccination is the only way out of this lockdown. See where vaccines are available
     near you: https://covid19nearme.com.au/state/vic/vaccination. If you're already
@@ -119,6 +126,7 @@ if __name__ == '__main__':
     vax_linear = api.media_upload("COVID_VIC_2021_vax_linear.png")
     log = api.media_upload("COVID_VIC_2021.png")
     vax_log = api.media_upload("COVID_VIC_2021_vax.png")
+    disclaimer = api.media_upload("disclaimer.png")
  
     # Post tweets with images
     tweet_1 = api.update_status(
@@ -142,6 +150,13 @@ if __name__ == '__main__':
     tweet_4 = api.update_status(
         status=tweet_4_text(),
         in_reply_to_status_id=tweet_3.id,
+        auto_populate_reply_metadata=True,
+        media_ids=[disclaimer.media_id],
+    )
+
+    tweet_5 = api.update_status(
+        status=tweet_5_text(),
+        in_reply_to_status_id=tweet_4.id,
         auto_populate_reply_metadata=True,
     )
 
