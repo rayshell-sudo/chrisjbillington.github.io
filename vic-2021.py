@@ -555,7 +555,8 @@ LOCKDOWN_AGAIN = np.datetime64('2021-08-06')
 CURFEW = np.datetime64('2021-08-16')
 CONSTRUCTION_SHUTDOWN = np.datetime64('2021-09-21')
 END_CONSTRUCTION_SHUTDOWN = CONSTRUCTION_SHUTDOWN + 14
-EASING_AGAIN = np.datetime64('2021-10-26') # Indicative 70% second doses
+PHASE_B = np.datetime64('2021-10-26') # indicative as per roadmap
+PHASE_C = np.datetime64('2021-11-05') # indicative as per roadmap
 
 def whiten(color, f):
     """Mix a color with white where f is how much of the original colour to keep"""
@@ -581,7 +582,7 @@ ax1.fill_betweenx(
     [PREV_EASING_2, PREV_EASING_2],
     color=whiten("orange", 0.5),
     linewidth=0,
-    label="Eased stay-at-home orders",
+    label="Eased stay-at-home orders/Phase B",
 )
 
 ax1.fill_betweenx(
@@ -590,7 +591,7 @@ ax1.fill_betweenx(
     [LOCKDOWN, LOCKDOWN],
     color=whiten("yellow", 0.5),
     linewidth=0,
-    label="Eased gathering/mask requirements",
+    label="Eased gathering restrictions/Phase C",
 )
 
 ax1.fill_betweenx(
@@ -644,7 +645,7 @@ ax1.fill_betweenx(
 ax1.fill_betweenx(
     [-10, 10],
     [END_CONSTRUCTION_SHUTDOWN, END_CONSTRUCTION_SHUTDOWN],
-    [EASING_AGAIN, EASING_AGAIN],
+    [PHASE_B, PHASE_B],
     color=whiten("red", 0.35),
     edgecolor=whiten("red", 0.45),
     hatch="//////",
@@ -652,15 +653,29 @@ ax1.fill_betweenx(
     # label="Curfew",
 )
 
+ax1.fill_betweenx(
+    [-10, 10],
+    [PHASE_B, PHASE_B],
+    [PHASE_C, PHASE_C],
+    color=whiten("orange", 0.5),
+    linewidth=0,
+)
+
+ax1.fill_betweenx(
+    [-10, 10],
+    [PHASE_C, PHASE_C],
+    [PHASE_C.astype(int) + 30, PHASE_C.astype(int) + 30],
+    color=whiten("yellow", 0.5),
+    linewidth=0,
+)
+
 for i in range(10):
     ax1.fill_betweenx(
         [-10, 10],
-        [EASING_AGAIN.astype(int) + i] * 2,
-        [EASING_AGAIN.astype(int) + (i + 1)] * 2,
-        color="red",
-        alpha=0.35 * (10 - i) / 10,
-        edgecolor=whiten("red", 0.45 * (10 - i) / 10),
-        hatch="//////",
+        [PHASE_C.astype(int) + 30 + i] * 2,
+        [PHASE_C.astype(int) + 30 + (i + 1)] * 2,
+        color="yellow",
+        alpha=0.4 * (10 - i) / 10,
         linewidth=0,
         zorder=-10,
     )
@@ -857,7 +872,7 @@ if not LGA:
     if OLD:
         ymax = 10_000
     else:
-        ymax = 2_000
+        ymax = 1_600
     ax2.axis(ymin=0, ymax=ymax)
     ax2.yaxis.set_major_locator(mticker.MultipleLocator(ymax / 8))
     ax2.set_ylabel("Daily confirmed cases (linear scale)")
