@@ -557,6 +557,7 @@ CONSTRUCTION_SHUTDOWN = np.datetime64('2021-09-21')
 END_CONSTRUCTION_SHUTDOWN = CONSTRUCTION_SHUTDOWN + 14
 PHASE_B = np.datetime64('2021-10-26') # indicative as per roadmap
 PHASE_C = np.datetime64('2021-11-05') # indicative as per roadmap
+PHASE_D = np.datetime64('2021-11-19') # indicative as per roadmap
 
 def whiten(color, f):
     """Mix a color with white where f is how much of the original colour to keep"""
@@ -664,21 +665,30 @@ ax1.fill_betweenx(
 ax1.fill_betweenx(
     [-10, 10],
     [PHASE_C, PHASE_C],
-    [PHASE_C.astype(int) + 30, PHASE_C.astype(int) + 30],
+    [PHASE_D, PHASE_D],
     color=whiten("yellow", 0.5),
     linewidth=0,
 )
 
-for i in range(10):
-    ax1.fill_betweenx(
-        [-10, 10],
-        [PHASE_C.astype(int) + 30 + i] * 2,
-        [PHASE_C.astype(int) + 30 + (i + 1)] * 2,
-        color="yellow",
-        alpha=0.4 * (10 - i) / 10,
-        linewidth=0,
-        zorder=-10,
-    )
+ax1.fill_betweenx(
+    [-10, 10],
+    [PHASE_D, PHASE_D],
+    [END_PLOT, END_PLOT],
+    color=whiten("green", 0.5),
+    linewidth=0,
+    label="Phase D",
+)
+
+# for i in range(10):
+#     ax1.fill_betweenx(
+#         [-10, 10],
+#         [PHASE_C.astype(int) + 30 + i] * 2,
+#         [PHASE_C.astype(int) + 30 + (i + 1)] * 2,
+#         color="yellow",
+#         alpha=0.4 * (10 - i) / 10,
+#         linewidth=0,
+#         zorder=-10,
+#     )
 
 
 ax1.fill_between(
@@ -804,9 +814,9 @@ handles += handles2
 labels += labels2
 
 if VAX:
-    order = [5, 7, 6, 8, 9, 10, 11, 2, 1, 0, 3, 4]
+    order = [7, 6, 8, 9, 10, 11, 12, 5, 2, 1, 0, 3, 4]
 else:
-    order = [5, 6, 7, 8, 9, 10, 2, 1, 0, 3, 4]
+    order = [6, 7, 8, 9, 10, 11, 5, 2, 1, 0, 3, 4]
 ax2.legend(
     # handles,
     # labels,
