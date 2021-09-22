@@ -116,7 +116,7 @@ def tweet_5_text():
     Note that these projections do not take into account upcoming easing of
     restrictions. If the trend changes as a result of easing, the projections will also
     change once this is reflected in case numbers, but not in advance."""
-    return dedent(COMMENT_TEXT)
+    return fmt(COMMENT_TEXT)
 
 if __name__ == '__main__':
     api_key = sys.argv[1]
