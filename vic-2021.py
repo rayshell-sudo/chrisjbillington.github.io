@@ -814,7 +814,7 @@ handles += handles2
 labels += labels2
 
 if VAX:
-    order = [7, 6, 8, 9, 10, 11, 12, 5, 2, 1, 0, 3, 4]
+    order = [6, 8, 7, 9, 10, 11, 12, 5, 2, 1, 0, 3, 4]
 else:
     order = [6, 7, 8, 9, 10, 11, 5, 2, 1, 0, 3, 4]
 ax2.legend(
