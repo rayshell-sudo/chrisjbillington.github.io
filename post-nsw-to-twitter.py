@@ -16,8 +16,8 @@ def th(n):
 
 
 def fmt(a):
-    """Dedent and remove single newline characters"""
-    return '\n\n'.join(line.replace('\n', '') for line in dedent(a).split('\n\n'))
+    """Dedent and replace single newline characters with a space"""
+    return '\n\n'.join(line.replace('\n', ' ') for line in dedent(a).split('\n\n'))
 
 
 def stats():
@@ -33,7 +33,7 @@ def stats():
 def tweet_1_text():
     today, R_eff, u_R_eff = stats()
     COMMENT_TEXT = f"""\
-    NSW R_eff as of {today} with daily cases and restrictions. Latest estimate: 
+    NSW R_eff as of {today} with daily cases and restrictions. Latest estimate:
     R_eff = {R_eff:.2f} ± {u_R_eff:.2f}
 
     Plus projected effect of vaccination rollout.
@@ -48,7 +48,7 @@ def tweet_1_text():
 def tweet_2_text():
     today, R_eff, u_R_eff = stats()
     COMMENT_TEXT = f"""\
-    NSW R_eff as of {today} with daily cases and restrictions. Latest estimate: 
+    NSW R_eff as of {today} with daily cases and restrictions. Latest estimate:
     R_eff = {R_eff:.2f} ± {u_R_eff:.2f}
 
     Plus projected effect of vaccination rollout.
