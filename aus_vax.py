@@ -1161,7 +1161,7 @@ plt.gca().xaxis.set_major_locator(locator)
 plt.gca().xaxis.set_major_formatter(formatter)
 plt.gca().yaxis.set_major_locator(ticker.MultipleLocator(1.0))
 plt.axis(
-    xmin=np.datetime64('2021-05-09'), xmax=np.datetime64('2022-01-01'), ymin=0, ymax=14
+    xmin=np.datetime64('2021-05-09'), xmax=np.datetime64('2022-01-01'), ymin=0, ymax=15
 )
 plt.title("First dose weekly increase by age group")
 plt.ylabel("Vaccination rate (% of age group / week)")
@@ -1213,7 +1213,7 @@ plt.gca().xaxis.set_major_locator(locator)
 plt.gca().xaxis.set_major_formatter(formatter)
 plt.gca().yaxis.set_major_locator(ticker.MultipleLocator(1.0))
 plt.axis(
-    xmin=np.datetime64('2021-05-09'), xmax=np.datetime64('2022-01-01'), ymin=0, ymax=14
+    xmin=np.datetime64('2021-05-09'), xmax=np.datetime64('2022-01-01'), ymin=0, ymax=15
 )
 plt.title("Second dose weekly increase by age group")
 plt.ylabel("Vaccination rate (% of age group / week)")
