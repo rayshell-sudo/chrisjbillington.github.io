@@ -1220,16 +1220,16 @@ plt.ylabel("Vaccination rate (% of age group / week)")
 
 
 
-POPS_16_PLUS = {
-    'AUS': 20616090,
-    'NSW': 6565651,
-    'VIC': 5407574,
-    'QLD': 4112707,
-    'WA': 2114978,
-    'SA': 1440400,
-    'TAS': 440172,
-    'ACT': 344037,
-    'NT': 190571,
+POPS_12_PLUS = {
+    'AUS': 21859854,
+    'NSW': 6955981,
+    'VIC': 5716185,
+    'QLD': 4382853,
+    'WA': 2247847,
+    'SA': 1523147,
+    'TAS': 466480,
+    'ACT': 363730,
+    'NT': 203631,
 }
 
 
@@ -1287,7 +1287,7 @@ ax15 = plt.gca()
 
 fig16 = plt.figure(figsize=(8, 6))
 ax16 = plt.gca()
-for state, pop in POPS_16_PLUS.items():
+for state, pop in POPS_12_PLUS.items():
     dates, first, second = first_and_second_by_state(state)
     percent_first = 100 * first / pop
     percent_second = 100 * second / pop
@@ -1337,9 +1337,9 @@ for ax in [ax13, ax14, ax15, ax16]:
         ymax=10 if rate_plot else 100,
     )
     if rate_plot:
-        ax.set_ylabel("Vaccination rate (% of 16+ population / week)")
+        ax.set_ylabel("Vaccination rate (% of 12+ population / week)")
     else:
-        ax.set_ylabel("Vaccine coverage (% of 16+ population)")
+        ax.set_ylabel("Vaccine coverage (% of 12+ population)")
 
 
 ax13.set_title("First dose coverage by state/territory")
