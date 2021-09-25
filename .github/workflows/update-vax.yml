@@ -37,6 +37,7 @@ jobs:
           if python check-vax-outdated.py | grep "outdated!"; then
             python aus_vax.py
             python aus_vax.py project
+            python vax-by-state.py
           fi
 
       - name: Git pull
