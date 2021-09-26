@@ -27,7 +27,7 @@ def make_title():
 
 
 IMAGES = [
-    "AUS_coverage_by_age.png"
+    "AUS_coverage_by_age.png",
     "NSW_coverage_by_age.png",
     "VIC_coverage_by_age.png",
     "QLD_coverage_by_age.png",
