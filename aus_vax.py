@@ -831,26 +831,26 @@ plt.axvline(today, linestyle=":", color='k', label=f"Today ({today})")
 plt.gca().yaxis.set_major_locator(ticker.MultipleLocator(2.0))
 ax7 = plt.gca()
 
-PHASE_B_DATE = all_dates[proj_second_doses.searchsorted(0.7 * POP_16_PLUS)] + 1
-PHASE_C_DATE = all_dates[proj_second_doses.searchsorted(0.8 * POP_16_PLUS)] + 1
+PHASE_B_DATE = all_dates[proj_second_doses.searchsorted(0.7 * MAX_ELIGIBLE)] + 1
+PHASE_C_DATE = all_dates[proj_second_doses.searchsorted(0.8 * MAX_ELIGIBLE)] + 1
 
 plt.axhline(
-    0.7 * POP_16_PLUS / 1e6,
+    0.7 * MAX_ELIGIBLE / 1e6,
     linestyle="--",
     color='C4',
     label=f"Phase B 70% target ({PHASE_B_DATE})",
 )
 plt.axhline(
-    0.8 * POP_16_PLUS / 1e6,
+    0.8 * MAX_ELIGIBLE / 1e6,
     linestyle="--",
     color='C2',
     label=f"Phase C 80% target ({PHASE_C_DATE})",
 )
 
 twinax = plt.twinx()
-twinax.axis(ymin=0, ymax=100 * MAX_ELIGIBLE / POP_16_PLUS)
+twinax.axis(ymin=0, ymax=100)
 twinax.yaxis.set_major_locator(ticker.MultipleLocator(10.0))
-plt.ylabel("Percentage of population aged 16+")
+plt.ylabel("Percentage of eligible (12+) population")
 
 
 for ax in [ax1, ax2, ax3, ax4, ax5, ax6, ax7]:

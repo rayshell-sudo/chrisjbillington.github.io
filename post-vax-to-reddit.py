@@ -79,12 +79,25 @@ More info/methodology: https://chrisbillington.net/aus_vaccinations.html
 {extra}
 FAQ:
 
-Q. Why does the number go greater than 100% in the last plot?
+Q. Why did the projection for the phase C target date move back a few days?
 
-A. I'm plotting total 1st/2nd doses as a percentage of the population aged 16+, but am
-   assuming ages 12-15 will get vaccinated too later in the year. Of course, some
-   hesitancy may be a factor at those very high uptake levels, but that's why it goes
-   higher than 100%.
+A. I used to assume all supply would go to ages 16+ first. Now that we have to share
+   with those pesky 12–15 year-olds (and now that I've updated my code to acknowledge
+   this) there's less supply for the rest of us and it'll take a tad longer for us to
+   reach any given threshold.
+
+Q. How come in the "Projected cumulative 1st and 2nd doses" plot, the axis on the right
+   is total eligible (12+) population, but the lines for the 70% and 80% thresholds are
+   labelled "Phase B" and "Phase C", when these phases in the national plan refer to the
+   16+ population?
+
+A. This projection was originally made to project total doses based on available supply,
+   and doesn't have any way of predicting which age group doses will go to first when
+   they're all eligible. So I have simply marked the thresholds for the total eligible
+   population. This will correspond well to the thresholds for the 16+ population only
+   if ages 12–15 have similar coverage at those points in time to the rest of the
+   population (uptake is very fast in the 12–15s right now, so maybe this isn't so
+   unreasonable).
 
 Q. What about hesitancy?
 
