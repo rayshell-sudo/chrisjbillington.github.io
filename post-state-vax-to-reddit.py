@@ -50,18 +50,22 @@ stats = '\n'.join(
 )
 
 
-COMMENT_TEXT = f"""\
+COMMENT_1_TEXT = f"""\
 Also in webpage form: https://chrisbillington.net/aus_vaccinations.html#state-age
 
-Big block of stats and projected targets, based on the current first-dose 7d average
-rates and current average dosing intervals. These are also on the webpage in a more
-readable form.
+Below is a big block of stats and projected targets, based on the current first-dose 7d
+average rates and current average dosing intervals. These are also on the webpage in a
+more readable form.
 
-{stats}
+(split over two comments due to reddit comment length limit)
 
 This post was made by a [bot]({this_script_url}) 🤖. Please let me know if something
-looks broken."""
+looks broken.
 
+{stats.split('    SA')[0]}
+"""
+
+COMMENT_2_TEXT = '    SA' +  stats.split('    SA')[1]
 
 def get_flair_id(subreddit):
     for flair in subreddit.flair.link_templates:
@@ -92,4 +96,6 @@ if __name__ == '__main__':
         images=[{"image_path": p} for p in IMAGES],
         flair_id=get_flair_id(subreddit),
     )
-    submission.reply(COMMENT_TEXT)
+
+    comment = submission.reply(COMMENT_1_TEXT)
+    comment.reply(COMMENT_2_TEXT)
