@@ -277,21 +277,23 @@ for state in STATES:
         rate = (first[-1] - first[-8]) / 7
 
         second_coverage = second[-1]
-        # second_rate = (second[-1] - second[-8]) / 7
+        second_rate = (second[-1] - second[-8]) / 7
 
-        levels = [70, 80, 90]
+        levels = [60, 70, 80, 90]
 
         html_lines = []
         print(f"  Ages {agegroup}:")
         print(f"    {coverage:.1f}% first-dose coverage 💉")
         print(f"    {second_coverage:.1f}% second-dose coverage 💉💉")
         print(f"    {rate:.2f}%/day first-dose rate")
+        print(f"    {second_rate:.2f}%/day second-dose rate")
         print(f"    {interval:.0f} days average dosing interval")
 
         html_lines.append(f"<b>Ages {agegroup}</b>")
         html_lines.append(f"  {coverage:.1f}% first-dose coverage 💉")
         html_lines.append(f"  {second_coverage:.1f}% second-dose coverage 💉💉")
         html_lines.append(f"  {rate:.2f}%/day first-dose rate")
+        html_lines.append(f"  {second_rate:.2f}%/day second-dose rate")
         html_lines.append(f"  {interval:.0f} days average dosing interval")
 
         today = np.datetime64(datetime.now().strftime('%Y-%m-%d'))
