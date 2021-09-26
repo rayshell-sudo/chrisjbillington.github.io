@@ -32,6 +32,39 @@ def datefmt(d):
 url = "https://vaccinedata.covid19nearme.com.au/data/air_residence.json"
 
 data = json.loads(requests.get(url).content)
+
+# Add new rows to the dataset representing national totals
+for (date, age_lower, age_upper) in set(
+    (row['DATE_AS_AT'], row['AGE_LOWER'], row['AGE_UPPER']) for row in data
+):
+    new_row = {
+        'STATE': 'AUS',
+        'DATE_AS_AT': date,
+        'AGE_LOWER': age_lower,
+        'AGE_UPPER': age_upper,
+    }
+    if age_upper == 999 and age_lower != 95:
+        keys = [
+            'AIR_RESIDENCE_FIRST_DOSE_COUNT',
+            'AIR_RESIDENCE_SECOND_DOSE_COUNT',
+            'ABS_ERP_JUN_2020_POP',
+        ]
+    else:
+        keys = [
+            'AIR_RESIDENCE_FIRST_DOSE_APPROX_COUNT',
+            'AIR_RESIDENCE_SECOND_DOSE_APPROX_COUNT',
+            'ABS_ERP_JUN_2020_POP',
+        ]
+    for key in keys:
+        new_row[key] = sum(
+            row[key]
+            for row in data
+            if (row['DATE_AS_AT'], row['AGE_LOWER'], row['AGE_UPPER'])
+            == (date, age_lower, age_upper)
+        )
+    data.append(new_row)
+
+
 # Convert dates to np.datetime64 and sort:
 for row in data:
     row['DATE_AS_AT'] = np.datetime64(row['DATE_AS_AT'])
@@ -43,8 +76,7 @@ AGES_12_15_FROM = np.datetime64('2021-09-13')
 dates = np.array(sorted(set([row['DATE_AS_AT'] for row in data])))
 dates_12_15 = dates[dates >= AGES_12_15_FROM]
 
-
-STATES = ['NSW', 'VIC', 'QLD', 'WA', 'SA', 'TAS', 'ACT', 'NT']
+STATES = ['AUS', 'NSW', 'VIC', 'QLD', 'WA', 'SA', 'TAS', 'ACT', 'NT']
 
 html_table_content = {}
 
