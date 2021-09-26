@@ -15,6 +15,11 @@ munits.registry[np.datetime64] = converter
 munits.registry[datetime.date] = converter
 munits.registry[datetime] = converter
 
+import sys
+
+SKIP_FIGS =  'skip_figs' in sys.argv
+if not SKIP_FIGS and sys.argv[1:]:
+    raise ValueError(sys.argv[1:])
 
 def datefmt(d):
     """Format a np.datetime64 as e.g."August 5th" """
@@ -173,7 +178,8 @@ for state in STATES:
     plt.tight_layout()
 
     for extension in ['png', 'svg']:
-        plt.savefig(f'{state}_coverage_by_age.{extension}')
+        if not SKIP_FIGS:
+            plt.savefig(f'{state}_coverage_by_age.{extension}')
 
     print(f"{state}")
     for agegroup in ['16+', '12+']:
@@ -249,7 +255,6 @@ for state in STATES:
             html_lines.append(f"    {level}%: {datestr}")
 
         html_table_content[state][agegroup] = '\n'.join(html_lines)
-
 
 # Update html:
 html = Path('aus_vaccinations.html').read_text(encoding='utf8')

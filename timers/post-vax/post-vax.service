@@ -1,0 +1,6 @@
+[Unit]
+Description=Update ACT plots and post to reddit
+
+[Service]
+ExecStart=/home/bilbo/chrisbillington.net/chrisjbillington.github.io/timers/post-vax/post-vax.sh
+User=bilbo

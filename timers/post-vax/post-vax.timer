@@ -1,0 +1,8 @@
+[Unit]
+Description=Timer for post-vax.service
+
+[Timer]
+OnCalendar=*-*-* 07:15:00
+
+[Install]
+WantedBy=timers.target
