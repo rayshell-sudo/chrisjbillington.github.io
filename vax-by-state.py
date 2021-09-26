@@ -279,7 +279,7 @@ for state in STATES:
         second_coverage = second[-1]
         # second_rate = (second[-1] - second[-8]) / 7
 
-        levels = [60, 70, 80, 90]
+        levels = [70, 80, 90]
 
         html_lines = []
         print(f"  Ages {agegroup}:")
