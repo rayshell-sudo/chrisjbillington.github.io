@@ -21,6 +21,31 @@ SKIP_FIGS =  'skip_figs' in sys.argv
 if not SKIP_FIGS and sys.argv[1:]:
     raise ValueError(sys.argv[1:])
 
+
+# ABS Estimated Resident Population, June 2020
+# https://www.abs.gov.au/statistics/people/population/national-state-and-territory-population/jun-2020
+POP_DATA = {
+    '12_15': 1206862,
+    '16_19': 1195636,
+    '20_24': 1712736,
+    '25_29': 1906551,
+    '30_34': 1924355,
+    '35_39': 1835579,
+    '40_44': 1620761,
+    '45_49': 1676720,
+    '50_54': 1564167,
+    '55_59': 1552740,
+    '60_64': 1432211,
+    '65_69': 1254318,
+    '70_74': 1102983,
+    '75_79': 772923,
+    '80_84': 528108,
+    '85_89': 316098,
+    '90_94': 158412,
+    '95_PLUS': 52906,
+}
+
+
 def datefmt(d):
     """Format a np.datetime64 as e.g."August 5th" """
     d = d.astype(datetime)
@@ -28,46 +53,65 @@ def datefmt(d):
     th = "th" if 4 <= n % 100 <= 20 else {1: "st", 2: "nd", 3: "rd"}.get(n % 10, "th")
     return f'{d.strftime("%B").rjust(8)} {str(n).rjust(2)}{th}'
 
+def add_national_data(data):
+    """Convert national data to same format as the per-state data and add to the
+    dataset"""
+    AIR_JSON = "https://vaccinedata.covid19nearme.com.au/data/air.json"
+    AIR_data = json.loads(requests.get(AIR_JSON).content)
+    start_date = min(row['DATE_AS_AT'] for row in data)
+    age_12_15_start_date = min(
+        row['DATE_AS_AT'] for row in AIR_data if 'AIR_12_15_FIRST_DOSE_COUNT' in row
+    )
+    pop_16_plus = sum(POP_DATA.values()) - POP_DATA['12_15']
+    for row in AIR_data:
+        if row['DATE_AS_AT'] < start_date:
+            continue
+
+        first_doses_16_plus = 0
+        second_doses_16_plus = 0
+        for agegroup in POP_DATA:
+            if agegroup == '12_15' and row['DATE_AS_AT'] < age_12_15_start_date:
+                continue
+            age_lower, age_upper = agegroup.split('_')
+            age_lower = int(age_lower)
+            age_upper = 999 if age_upper == 'PLUS' else int(age_upper)
+            first_doses = row[f'AIR_{agegroup}_FIRST_DOSE_COUNT']
+            second_doses = row[f'AIR_{agegroup}_SECOND_DOSE_COUNT']
+            if agegroup != '12_15':
+                first_doses_16_plus += first_doses
+                second_doses_16_plus += second_doses
+            new_row = {
+                'STATE': 'AUS',
+                'DATE_AS_AT': row['DATE_AS_AT'],
+                'AGE_LOWER': age_lower,
+                'AGE_UPPER': age_upper,
+                'ABS_ERP_JUN_2020_POP': POP_DATA[agegroup],
+                'AIR_RESIDENCE_FIRST_DOSE_APPROX_COUNT': first_doses,
+                'AIR_RESIDENCE_SECOND_DOSE_APPROX_COUNT': second_doses,
+            }
+            data.append(new_row)
+
+        new_row = {
+                'STATE': 'AUS',
+                'DATE_AS_AT': row['DATE_AS_AT'],
+                'AGE_LOWER': 16,
+                'AGE_UPPER': 999,
+                'ABS_ERP_JUN_2020_POP': pop_16_plus,
+                'AIR_RESIDENCE_FIRST_DOSE_COUNT': first_doses_16_plus,
+                'AIR_RESIDENCE_SECOND_DOSE_COUNT': second_doses_16_plus,
+            }
+        data.append(new_row)
+
 
 url = "https://vaccinedata.covid19nearme.com.au/data/air_residence.json"
-
 data = json.loads(requests.get(url).content)
 
-# Add new rows to the dataset representing national totals
-for (date, age_lower, age_upper) in set(
-    (row['DATE_AS_AT'], row['AGE_LOWER'], row['AGE_UPPER']) for row in data
-):
-    new_row = {
-        'STATE': 'AUS',
-        'DATE_AS_AT': date,
-        'AGE_LOWER': age_lower,
-        'AGE_UPPER': age_upper,
-    }
-    if age_upper == 999 and age_lower != 95:
-        keys = [
-            'AIR_RESIDENCE_FIRST_DOSE_COUNT',
-            'AIR_RESIDENCE_SECOND_DOSE_COUNT',
-            'ABS_ERP_JUN_2020_POP',
-        ]
-    else:
-        keys = [
-            'AIR_RESIDENCE_FIRST_DOSE_APPROX_COUNT',
-            'AIR_RESIDENCE_SECOND_DOSE_APPROX_COUNT',
-            'ABS_ERP_JUN_2020_POP',
-        ]
-    for key in keys:
-        new_row[key] = sum(
-            row[key]
-            for row in data
-            if (row['DATE_AS_AT'], row['AGE_LOWER'], row['AGE_UPPER'])
-            == (date, age_lower, age_upper)
-        )
-    data.append(new_row)
+add_national_data(data)
 
-
-# Convert dates to np.datetime64 and sort:
+# Convert dates to np.datetime64
 for row in data:
     row['DATE_AS_AT'] = np.datetime64(row['DATE_AS_AT'])
+
 data.sort(key=lambda row: row['DATE_AS_AT'])
 
 # First date when data for ages 12-15 became available:
