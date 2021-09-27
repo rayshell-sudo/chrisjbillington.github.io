@@ -319,7 +319,7 @@ for state in STATES:
         for level in levels:
             if second_coverage > level:
                 date = d[second > level][0]
-                t = (d[-1] - date).astype(int)
+                t = (today - date).astype(int)
                 datestr = f"✅  {datefmt(date)} ({t} days ago)"
             elif coverage > level:
                 date = d[first > level][0] + int(round(interval))
