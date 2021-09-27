@@ -697,6 +697,8 @@ STATEWIDE = np.datetime64('2021-08-15')
 CURFEW = np.datetime64('2021-08-23')
 END_CURFEW = np.datetime64('2021-09-16')
 END_LOCKDOWN = np.datetime64('2021-10-11') # Mon after projected 70% 16+ second doses
+EASING_80 = np.datetime64('2021-10-25') # Mon after projected 80% 16+ second doses
+
 
 def whiten(color, f):
     """Mix a color with white where f is how much of the original colour to keep"""
@@ -713,7 +715,7 @@ ax1.fill_betweenx(
     [LGA_LOCKDOWN, LGA_LOCKDOWN],
     color=whiten("yellow", 0.5),
     linewidth=0,
-    label="Some restrictions",
+    label="Initial restrictions/70% easing",
 )
 
 ax1.fill_betweenx(
@@ -790,21 +792,30 @@ ax1.fill_betweenx(
 ax1.fill_betweenx(
     [-10, 10],
     [END_LOCKDOWN, END_LOCKDOWN],
-    [END_LOCKDOWN.astype(int) + 30, END_LOCKDOWN.astype(int) + 30],
+    [EASING_80, EASING_80],
     color=whiten("yellow", 0.5),
     linewidth=0,
 )
 
-for i in range(30):
-    ax1.fill_betweenx(
-        [-10, 10],
-        [END_LOCKDOWN.astype(int) + 30 + i / 3] * 2,
-        [END_LOCKDOWN.astype(int) + 30 + (i + 1) / 3] * 2,
-        color="yellow",
-        alpha=0.4 * (30 - i) / 30,
-        linewidth=0,
-        zorder=-10,
-    )
+ax1.fill_betweenx(
+    [-10, 10],
+    [EASING_80, EASING_80],
+    [END_PLOT, END_PLOT],
+    color=whiten("green", 0.5),
+    linewidth=0,
+    label="80% easing",
+)
+
+# for i in range(30):
+#     ax1.fill_betweenx(
+#         [-10, 10],
+#         [END_LOCKDOWN.astype(int) + 30 + i / 3] * 2,
+#         [END_LOCKDOWN.astype(int) + 30 + (i + 1) / 3] * 2,
+#         color="yellow",
+#         alpha=0.4 * (30 - i) / 30,
+#         linewidth=0,
+#         zorder=-10,
+#     )
 
 
 ax1.fill_between(
@@ -955,9 +966,9 @@ handles += handles2
 labels += labels2
 
 if VAX:
-    order = [7, 9, 8, 10, 11, 12, 13, 0, 1, 2, 3, 4, 5, 6]
+    order = [8, 10, 9, 11, 12, 13, 14, 7, 0, 1, 2, 3, 4, 5, 6]
 else:
-    order = [7, 8, 9, 10, 11, 12, 0, 1, 2, 3, 4, 5, 6]
+    order = [8, 9, 10, 11, 12, 13, 7, 0, 1, 2, 3, 4, 5, 6]
 ax2.legend(
     # handles,
     # labels,
