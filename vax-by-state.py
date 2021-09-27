@@ -176,10 +176,17 @@ for state in STATES:
             ]
 
             pop += rows[0]['ABS_ERP_JUN_2020_POP']
-            # Now one row for each date
-            for i, row in enumerate(rows):
+
+            # Now one row for each date. We do this backwards and then reverse the
+            # arrays afterwards, since the 12–15 age group only has data for more recent
+            # dates, and we need them to line up when calculating the numbers for all
+            # the 12+ population
+            for i, row in enumerate(rows[::-1]):
                 first_doses[i] += row[FIRST_KEY]
                 second_doses[i] += row[SECOND_KEY]
+
+        first_doses = first_doses[::-1]
+        second_doses = second_doses[::-1]
 
         first_dose_coverage_by_age.append(100 * first_doses / pop)
         second_dose_coverage_by_age.append(100 * second_doses / pop)
