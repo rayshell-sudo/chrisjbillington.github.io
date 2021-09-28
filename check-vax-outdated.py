@@ -25,18 +25,25 @@ def latest_covidlive_date():
 
     return min(maxdates)
 
+def latest_AIR_date():
+    AIR_JSON = "https://vaccinedata.covid19nearme.com.au/data/air.json"
+    AIR_data = json.loads(requests.get(AIR_JSON).content)
+    return np.datetime64(max(row["DATE_AS_AT"] for row in AIR_data)) + 1
 
-def latest_html_update():
-    """Return the Last updated date in aus_vaccinations.html as a np.datetime64"""
-    html_file = 'aus_vaccinations.html'
-    PREFIX = 'Last updated:' 
-    for line in Path(html_file).read_text().splitlines():
-        if PREFIX in line:
-            return np.datetime64(line.replace(PREFIX, '').strip().split()[0])
-    raise RuntimeError(f"update date not found in {html_file}")
+
+def latest_air_residence_date():
+    url = "https://vaccinedata.covid19nearme.com.au/data/air_residence.json"
+    data = json.loads(requests.get(url).content)
+    return np.datetime64(max(row["DATE_AS_AT"] for row in data)) + 1
+
+def latest_site_update():
+    """Return the date in latest-vax-stats.json as a np.datetime64"""
+    return np.datetime64(json.loads(Path('latest_vax_stats.json').read_text())['today'])
 
 if __name__ == '__main__':
-    if latest_covidlive_date() > latest_html_update():
+    # Only out of date once all data sources we use are updated:
+    updates = [latest_covidlive_date(), latest_AIR_date(), latest_air_residence_date()]
+    if min(updates) > latest_site_update():
         print("outdated!")
     else:
         print("up to date!")
