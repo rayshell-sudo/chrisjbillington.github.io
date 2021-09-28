@@ -315,6 +315,10 @@ if LGA_IX is not None:
     new = cases_by_lga[LGA]
 else:
     dates, new = covidlive_data()
+    # Corrections made on Sep 28th:
+    new[dates == np.datetime64('2021-09-25')] += 9
+    new[dates == np.datetime64('2021-09-26')] += 140
+    new[dates == np.datetime64('2021-09-27')] -= 149
 
 START_VAX_PROJECTIONS = 111  # August 29, when I started making vaccine projections
 all_dates = dates
