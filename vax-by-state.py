@@ -314,7 +314,7 @@ for state in STATES:
                 datestr = f"✅  {datefmt(date)} ({t} days ago)"
             else:
                 t = (level - coverage) / rate
-                date = d[-1] + int(round(t))
+                date = d[-1] + int(np.ceil(t))
                 t_from_today = (date - today).astype(int)
                 datestr = f"{datefmt(date)} ({t_from_today:.0f} days)"
             print(f"      {level}%: {datestr}")
@@ -329,12 +329,12 @@ for state in STATES:
                 t = (today - date).astype(int)
                 datestr = f"✅  {datefmt(date)} ({t} days ago)"
             elif coverage > level:
-                date = d[first > level][0] + int(round(interval))
+                date = d[first > level][0] + int(np.ceil(interval))
                 t_from_today = (date - today).astype(int)
                 datestr = f"{datefmt(date)} ({t_from_today:.0f} days)"
             else:
                 t = (level - coverage) / rate + interval
-                date = d[-1] + int(round(t))
+                date = d[-1] + int(np.ceil(t))
                 datestr = f"{datefmt(date)} ({t:.0f} days)"
             print(f"      {level}%: {datestr}")
             html_lines.append(f"    {level}%: {datestr}")
