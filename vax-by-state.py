@@ -21,6 +21,19 @@ SKIP_FIGS =  'skip_figs' in sys.argv
 if not SKIP_FIGS and sys.argv[1:]:
     raise ValueError(sys.argv[1:])
 
+# ABS Estimated Resident Population, June 2020.
+# Note AUS doesn't equal sum of states/territories
+TOTAL_POPS = {
+    'NSW': 8_164_128,
+    'VIC': 6_694_884,
+    'QLD': 5_174_437,
+    'WA': 2_661_936,
+    'SA': 1_769_319,
+    'TAS': 540_569,
+    'ACT': 431_114,
+    'NT': 245_980,
+    'AUS': 25_687_041
+}
 
 # ABS Estimated Resident Population, June 2020
 # https://www.abs.gov.au/statistics/people/population/national-state-and-territory-population/jun-2020
@@ -121,6 +134,7 @@ dates = np.array(sorted(set([row['DATE_AS_AT'] for row in data])))
 dates_12_15 = dates[dates >= AGES_12_15_FROM]
 
 STATES = ['AUS', 'NSW', 'VIC', 'QLD', 'WA', 'SA', 'TAS', 'ACT', 'NT']
+AGE_GROUPS = ['0+', '12+', '16+', 12, 16, 20, 30, 40, 50, 60, 70, 80, 90][::-1]
 
 html_table_content = {}
 
@@ -133,8 +147,8 @@ for state in STATES:
     second_dose_coverage_by_age = []
     dates_by_age = []
 
-    for group_start in ['12+', '16+', 12, 16, 20, 30, 40, 50, 60, 70, 80, 90][::-1]:
-        if group_start == '12+':
+    for group_start in AGE_GROUPS:
+        if group_start in ['0+', '12+']:
             ranges = [(12, 15), (16, 999)]
         elif group_start == '16+':
             ranges = [(16, 999)]
@@ -188,6 +202,9 @@ for state in STATES:
         first_doses = first_doses[::-1]
         second_doses = second_doses[::-1]
 
+        if group_start == '0+':
+            pop = TOTAL_POPS[state]
+
         first_dose_coverage_by_age.append(100 * first_doses / pop)
         second_dose_coverage_by_age.append(100 * second_doses / pop)
 
@@ -195,6 +212,8 @@ for state in STATES:
             label = 'Ages 16+'
         elif group_start == '12+':
             label = 'Ages 12+'
+        elif group_start == '0+':
+            label = 'All ages'
         elif group_start == 90:
             label = 'Ages 90+'
         else:
@@ -207,8 +226,10 @@ for state in STATES:
         dates_by_age, first_dose_coverage_by_age, labels_by_age
     ):
         if label == 'Ages 16+':
-            args = ['k--']
+            args = ['k-']
         elif label == 'Ages 12+':
+            args = ['k--']
+        elif label == 'All ages':
             args = ['k:']
         else:
             args = []
@@ -235,8 +256,10 @@ for state in STATES:
         dates_by_age, second_dose_coverage_by_age, labels_by_age
     ):
         if label == 'Ages 16+':
-            args = ['k--']
+            args = ['k-']
         elif label == 'Ages 12+':
+            args = ['k--']
+        elif label == 'All ages':
             args = ['k:']
         else:
             args = []
@@ -266,16 +289,10 @@ for state in STATES:
 
     print(f"{state}")
     for agegroup in ['16+', '12+']:
-        if agegroup == '12+':
-            first = first_dose_coverage_by_age[-1]
-            second = second_dose_coverage_by_age[-1]
-            d = dates_by_age[-1]
-        elif agegroup == '16+':
-            first = first_dose_coverage_by_age[-2]
-            second = second_dose_coverage_by_age[-2]
-            d = dates_by_age[-2]
-        else:
-            raise ValueError(agegroup)
+        agegroup_ix = AGE_GROUPS.index(agegroup)
+        first = first_dose_coverage_by_age[agegroup_ix]
+        second = second_dose_coverage_by_age[agegroup_ix]
+        d = dates_by_age[agegroup_ix]
 
         # Get the dosing interval and project targets:
 
