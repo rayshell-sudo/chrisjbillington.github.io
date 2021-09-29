@@ -233,7 +233,8 @@ for state in STATES:
             args = ['k:']
         else:
             args = []
-        plt.plot(d, coverage, *args, label=f"{label} ({coverage[-1]:.1f} %)")
+        coverage_string = f"{coverage[-1]:.1f}" if coverage[-1] < 94.9 else ">95"
+        plt.plot(d, coverage, *args, label=f"{label} ({coverage_string} %)")
 
     plt.legend(loc='upper right', prop={'size': 9})
     plt.grid(True, linestyle=':', color='k', alpha=0.5)
@@ -263,7 +264,8 @@ for state in STATES:
             args = ['k:']
         else:
             args = []
-        plt.plot(d, coverage, *args, label=f"{label} ({coverage[-1]:.1f} %)")
+        coverage_string = f"{coverage[-1]:.1f}" if coverage[-1] < 94.9 else "> 95"
+        plt.plot(d, coverage, *args, label=f"{label} ({coverage_string} %)")
 
     plt.legend(loc='upper right', prop={'size': 9})
     plt.grid(True, linestyle=':', color='k', alpha=0.5)
