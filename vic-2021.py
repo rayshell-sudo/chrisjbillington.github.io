@@ -883,10 +883,11 @@ else:
     fig1.savefig(f'COVID_VIC_2021{suffix}.png', dpi=133)
 if not LGA:
     ax2.set_yscale('linear')
-    if OLD:
-        ymax = 10_000
-    else:
-        ymax = 2_400
+    ymax = 8000
+    # if OLD:
+    #     ymax = 10_000
+    # else:
+    #     ymax = 8000
     ax2.axis(ymin=0, ymax=ymax)
     ax2.yaxis.set_major_locator(mticker.MultipleLocator(ymax / 8))
     ax2.set_ylabel("Daily confirmed cases (linear scale)")
