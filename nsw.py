@@ -31,12 +31,13 @@ POP_OF_NSW = 8.166e6
 VAX = 'vax' in sys.argv
 OTHERS = 'others' in sys.argv
 CONCERN = 'concern' in sys.argv
+HUNTER = 'hunter' in sys.argv
 BIPARTITE = 'bipartite' in sys.argv
 LGA_IX = None
 LGA = None
 OLD = 'old' in sys.argv
 
-if not (VAX or OTHERS or CONCERN or BIPARTITE) and sys.argv[1:]:
+if not (VAX or OTHERS or CONCERN or HUNTER or BIPARTITE) and sys.argv[1:]:
     if (VAX and OTHERS) or (VAX and CONCERN):
         pass # That's fine and allowed
     if len(sys.argv) == 2:
@@ -353,7 +354,21 @@ LGAs_OF_CONCERN = [
     # "Lake Macquarie",
 ]
 
-if LGA_IX is not None or OTHERS or CONCERN:
+HUNTER_LGAS = [
+    "Cessnock",
+    "Lake Macquarie",
+    "Dungog",
+    "Maitland",
+    "Mid-Coast",
+    "Muswellbrook",
+    "Newcastle",
+    "Port Stephens",
+    "Singleton",
+    "Upper Hunter Shire"
+]
+
+
+if LGA_IX is not None or OTHERS or CONCERN or HUNTER:
     dates, cases_by_lga = lga_data()
     # Sort LGAs in reverse order by last 14d cases
     sorted_lgas_of_concern = sorted(
@@ -371,6 +386,8 @@ elif OTHERS:
 elif CONCERN:
     # Sum over all LGAs of concern
     new = sum(cases_by_lga[lga] for lga in cases_by_lga if lga in LGAs_OF_CONCERN) 
+elif HUNTER:
+    new = sum(cases_by_lga[lga] for lga in cases_by_lga if lga in HUNTER_LGAS) 
 elif BIPARTITE:
     # Sum of LGA data - solely so that we're only using data up until it was last
     # updated, otherwise is inconsistent with statewide numbers:
@@ -878,6 +895,8 @@ if VAX and not BIPARTITE:
         region = "New South Wales (excluding LGAs of concern)"
     elif CONCERN:
         region = "New South Wales LGAs of concern"
+    elif HUNTER:
+        region = "the Hunter region"
     else:
         region = "New South Wales"
     title_lines = [
@@ -906,6 +925,8 @@ else:
         region = "New South Wales (excluding LGAs of concern)"
     elif CONCERN:
         region = "New South Wales LGAs of concern"
+    elif HUNTER:
+        region = "the Hunter region"
     else:
         region = "New South Wales"
     title_lines = [
@@ -1023,6 +1044,8 @@ if VAX:
         suffix = "_others_vax"
     elif CONCERN:
         suffix = "_concern_vax"
+    elif HUNTER:
+        suffix = "_hunter_vax"
     else:
         suffix = '_vax'
 elif LGA:
@@ -1031,6 +1054,8 @@ elif OTHERS:
     suffix='_LGA_others'
 elif CONCERN:
     suffix = '_LGA_concern'
+elif HUNTER:
+    suffix = '_hunter'
 else:
     suffix = ''
 
@@ -1039,10 +1064,12 @@ if OLD:
 else:
     fig1.savefig(f'COVID_NSW{suffix}.svg')
     fig1.savefig(f'COVID_NSW{suffix}.png', dpi=133)
-if VAX or not (LGA or OTHERS or CONCERN):
+if VAX or not (LGA or OTHERS or CONCERN or HUNTER):
     ax2.set_yscale('linear')
     if OLD:
         ymax=4000
+    elif HUNTER:
+        ymax=400
     else:
         ymax=2000
     ax2.axis(ymin=0, ymax=ymax)
@@ -1073,12 +1100,18 @@ elif OTHERS and not VAX:
     stats['new_others'] = new_smoothed[-1]
     stats['cov_others'] = cov.tolist()
     stats['initial_cumulative_others'] = int(new.sum())
-elif not (LGA or CONCERN or OTHERS or BIPARTITE):
+elif HUNTER and not VAX:
+    stats['R_eff_hunter'] = R[-1] 
+    stats['u_R_eff_hunter'] = u_R_latest
+    stats['new_hunter'] = new_smoothed[-1]
+    stats['cov_hunter'] = cov.tolist()
+    stats['initial_cumulative_hunter'] = int(new.sum())
+elif not (LGA or CONCERN or HUNTER or OTHERS or BIPARTITE):
     stats['R_eff'] = R[-1] 
     stats['u_R_eff'] = u_R_latest
     stats['today'] = str(np.datetime64(datetime.now(), 'D'))
 
-if VAX and not (LGA or OTHERS or CONCERN or BIPARTITE):
+if VAX and not (LGA or OTHERS or CONCERN or HUNTER or BIPARTITE):
     # Case number predictions
     stats['projection'] = []
     # in case I ever want to get the orig projection range not expanded - like to
