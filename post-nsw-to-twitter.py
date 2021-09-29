@@ -82,6 +82,21 @@ def tweet_3_text():
 
 def tweet_4_text():
     stats = json.loads(Path("latest_nsw_stats.json").read_text())
+    R_eff_hunter = stats['R_eff_hunter']
+    u_R_eff_hunter = stats['u_R_eff_hunter']
+
+    COMMENT_TEXT = f"""\
+    The Hunter Region: R_eff = {R_eff_hunter:.02f} ± {u_R_eff_hunter:.02f}
+
+    (Cases shown on a log scale)
+
+    (note LGA data is several days old, does not include today's cases)
+
+    #covid19nsw #covidsydney"""
+    return dedent(COMMENT_TEXT)
+
+def tweet_5_text():
+    stats = json.loads(Path("latest_nsw_stats.json").read_text())
 
     proj_lines = [
         "day  cases  68% range",
@@ -111,7 +126,7 @@ def tweet_4_text():
 
     return dedent(COMMENT_TEXT)
 
-def tweet_5_text():
+def tweet_6_text():
     COMMENT_TEXT = """\
     Note that these projections do not take into account upcoming easing of
     restrictions. If the trend changes as a result of easing, the projections will also
@@ -135,6 +150,7 @@ if __name__ == '__main__':
     vax_log = api.media_upload("COVID_NSW_vax.png")
     concern = api.media_upload("COVID_NSW_LGA_concern.png")
     others = api.media_upload("COVID_NSW_LGA_others.png")
+    hunter = api.media_upload("COVID_NSW_hunter.png")
     disclaimer = api.media_upload("disclaimer.png")
  
     # Post tweets with images
@@ -159,6 +175,7 @@ if __name__ == '__main__':
 
     tweet_4 = api.update_status(
         status=tweet_4_text(),
+        media_ids=[hunter.media_id],
         in_reply_to_status_id=tweet_3.id,
         auto_populate_reply_metadata=True,
     )
@@ -166,6 +183,12 @@ if __name__ == '__main__':
     tweet_5 = api.update_status(
         status=tweet_5_text(),
         in_reply_to_status_id=tweet_4.id,
+        auto_populate_reply_metadata=True,
+    )
+
+    tweet_6 = api.update_status(
+        status=tweet_6_text(),
+        in_reply_to_status_id=tweet_5.id,
         auto_populate_reply_metadata=True,
         media_ids=[disclaimer.media_id],
     )

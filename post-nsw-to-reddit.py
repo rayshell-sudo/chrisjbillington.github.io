@@ -37,6 +37,8 @@ def make_comment():
     u_R_eff_concern = stats['u_R_eff_concern']
     R_eff_others = stats['R_eff_others']
     u_R_eff_others = stats['u_R_eff_others']
+    R_eff_hunter = stats['R_eff_hunter']
+    u_R_eff_hunter = stats['u_R_eff_hunter']
 
     proj_lines = [
         "day  cases  68% range",
@@ -73,10 +75,15 @@ def make_comment():
     [LGAs of concern](https://chrisbillington.net/COVID_NSW_LGA_concern.png): R_eff =
     {R_eff_concern:.02f} ± {u_R_eff_concern:.02f}
 
-    [Rest of NSW](https://chrisbillington.net/COVID_NSW_LGA_others.png): R_eff =
+    [NSW excluding LGAs of
+    concern](https://chrisbillington.net/COVID_NSW_LGA_others.png): R_eff =
     {R_eff_others:.02f} ± {u_R_eff_others:.02f}
 
-    Note: LGA data is several days out of date compared to total numbers.
+    [Hunter region](https://chrisbillington.net/COVID_hunter.png): R_eff =
+    {R_eff_hunter:.02f} ± {u_R_eff_hunter:.02f}
+
+    Note: LGA/region-specific data is several days out of date compared to total
+    numbers.
 
     Expected case numbers if the current  trend continues:
 
