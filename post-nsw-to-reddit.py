@@ -79,7 +79,7 @@ def make_comment():
     concern](https://chrisbillington.net/COVID_NSW_LGA_others.png): R_eff =
     {R_eff_others:.02f} ± {u_R_eff_others:.02f}
 
-    [Hunter region](https://chrisbillington.net/COVID_hunter.png): R_eff =
+    [Hunter region](https://chrisbillington.net/COVID_NSW_hunter.png): R_eff =
     {R_eff_hunter:.02f} ± {u_R_eff_hunter:.02f}
 
     Note: LGA/region-specific data is several days out of date compared to total
