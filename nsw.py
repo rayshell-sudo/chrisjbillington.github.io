@@ -32,14 +32,19 @@ VAX = 'vax' in sys.argv
 OTHERS = 'others' in sys.argv
 CONCERN = 'concern' in sys.argv
 HUNTER = 'hunter' in sys.argv
+ILLAWARRA = 'illawarra' in sys.argv
+WESTERN_NSW = 'wnsw' in sys.argv
 BIPARTITE = 'bipartite' in sys.argv
 LGA_IX = None
 LGA = None
 OLD = 'old' in sys.argv
 
-if not (VAX or OTHERS or CONCERN or HUNTER or BIPARTITE) and sys.argv[1:]:
+if (
+    not (VAX or OTHERS or CONCERN or HUNTER or ILLAWARRA or WESTERN_NSW or BIPARTITE)
+    and sys.argv[1:]
+):
     if (VAX and OTHERS) or (VAX and CONCERN):
-        pass # That's fine and allowed
+        pass  # That's fine and allowed
     if len(sys.argv) == 2:
         LGA_IX = int(sys.argv[1])
     elif OLD and len(sys.argv) == 3:
@@ -367,8 +372,43 @@ HUNTER_LGAS = [
     "Upper Hunter Shire"
 ]
 
+ILLAWARRA_LGAS = ["Wollongong", "Shoalhaven", "Shellharbour", "Kiama", "Wingecarribee"]
 
-if LGA_IX is not None or OTHERS or CONCERN or HUNTER:
+WESTERN_NSW_LGAS = [
+    # Central West
+    "Bathurst Regional",
+    "Blayney",
+    "Cabonne",
+    "Cowra",
+    "Forbes",
+    # "Lachlan",
+    "Lithgow",
+    "Mid-Western Regional",
+    "Oberon",
+    "Orange",
+    "Parkes",
+    "Weddin",
+    # North Western
+    "Bogan",
+    "Bourke",
+    "Brewarrina",
+    # "Cobar",
+    "Coonamble",
+    "Dubbo Regional",
+    "Gilgandra",
+    "Narromine",
+    "Walgett",
+    "Warren",
+    "Warrumbungle Shire",
+    # Far West
+    "Broken Hill",
+    "Central Darling",
+    # "Unincorporated Far West",
+]
+
+dates, cases_by_lga = lga_data()
+
+if LGA_IX is not None or OTHERS or CONCERN or HUNTER or ILLAWARRA or WESTERN_NSW:
     dates, cases_by_lga = lga_data()
     # Sort LGAs in reverse order by last 14d cases
     sorted_lgas_of_concern = sorted(
@@ -377,6 +417,15 @@ if LGA_IX is not None or OTHERS or CONCERN or HUNTER:
     # print(sorted_lgas_of_concern)
     # for lga in sorted_lgas:
     #     print(lga, cases_by_lga[lga][-14:].sum())
+
+    # Quick-and-dirty check - these LGAs are exluded from the Western NSW list above to
+    # ensure we don't crash because they haven't had any COVID cases - but once they do
+    # have cases we want to include them. But I can't be sure in advance how they will
+    # be named in the dataset - e.g. two may or may not have "Shire" in the name.
+    for lga in cases_by_lga:
+        if lga.startswith('Lachlan') or lga.startswith('Cobar') or "Far West" in lga:
+            WESTERN_NSW_LGAS.append(lga)
+            print(f"There are cases in {lga} now, add it to the list!")
 if LGA_IX is not None:
     LGA = sorted_lgas_of_concern[LGA_IX]
     new = cases_by_lga[LGA]
@@ -388,6 +437,10 @@ elif CONCERN:
     new = sum(cases_by_lga[lga] for lga in cases_by_lga if lga in LGAs_OF_CONCERN) 
 elif HUNTER:
     new = sum(cases_by_lga[lga] for lga in cases_by_lga if lga in HUNTER_LGAS) 
+elif ILLAWARRA:
+    new = sum(cases_by_lga[lga] for lga in cases_by_lga if lga in ILLAWARRA_LGAS) 
+elif WESTERN_NSW:
+    new = sum(cases_by_lga[lga] for lga in cases_by_lga if lga in WESTERN_NSW_LGAS) 
 elif BIPARTITE:
     # Sum of LGA data - solely so that we're only using data up until it was last
     # updated, otherwise is inconsistent with statewide numbers:
@@ -897,6 +950,10 @@ if VAX and not BIPARTITE:
         region = "New South Wales LGAs of concern"
     elif HUNTER:
         region = "the Hunter region"
+    elif ILLAWARRA:
+        region = "the Illawarra region"
+    elif WESTERN_NSW:
+        region = "Western New South Wales"
     else:
         region = "New South Wales"
     title_lines = [
@@ -927,6 +984,10 @@ else:
         region = "New South Wales LGAs of concern"
     elif HUNTER:
         region = "the Hunter region"
+    elif ILLAWARRA:
+        region = "the Illawarra region"
+    elif WESTERN_NSW:
+        region = "Western New South Wales"
     else:
         region = "New South Wales"
     title_lines = [
@@ -1046,6 +1107,10 @@ if VAX:
         suffix = "_concern_vax"
     elif HUNTER:
         suffix = "_hunter_vax"
+    elif ILLAWARRA:
+        suffix = "_illawarra_vax"
+    elif WESTERN_NSW:
+        suffix = "_wnsw_vax"
     else:
         suffix = '_vax'
 elif LGA:
@@ -1056,6 +1121,10 @@ elif CONCERN:
     suffix = '_LGA_concern'
 elif HUNTER:
     suffix = '_hunter'
+elif ILLAWARRA:
+    suffix = "_illawarra"
+elif WESTERN_NSW:
+    suffix = '_wnsw'
 else:
     suffix = ''
 
@@ -1064,14 +1133,18 @@ if OLD:
 else:
     fig1.savefig(f'COVID_NSW{suffix}.svg')
     fig1.savefig(f'COVID_NSW{suffix}.png', dpi=133)
-if VAX or not (LGA or OTHERS or CONCERN or HUNTER):
+if VAX or not (LGA or OTHERS or CONCERN or HUNTER or ILLAWARRA or WESTERN_NSW):
     ax2.set_yscale('linear')
     if OLD:
-        ymax=4000
+        ymax = 4000
     elif HUNTER:
-        ymax=400
+        ymax = 400
+    elif ILLAWARRA:
+        ymax = 400
+    elif WESTERN_NSW:
+        ymax = 400
     else:
-        ymax=2000
+        ymax = 2000
     ax2.axis(ymin=0, ymax=ymax)
     ax2.yaxis.set_major_locator(mticker.MultipleLocator(ymax / 8))
     ax2.set_ylabel("Daily confirmed cases (linear scale)")
@@ -1106,17 +1179,31 @@ elif HUNTER and not VAX:
     stats['new_hunter'] = new_smoothed[-1]
     stats['cov_hunter'] = cov.tolist()
     stats['initial_cumulative_hunter'] = int(new.sum())
-elif not (LGA or CONCERN or HUNTER or OTHERS or BIPARTITE):
+elif ILLAWARRA and not VAX:
+    stats['R_eff_illawarra'] = R[-1] 
+    stats['u_R_eff_illawarra'] = u_R_latest
+    stats['new_illawarra'] = new_smoothed[-1]
+    stats['cov_illawarra'] = cov.tolist()
+    stats['initial_cumulative_illawarra'] = int(new.sum())
+elif WESTERN_NSW and not VAX:
+    stats['R_eff_wnsw'] = R[-1] 
+    stats['u_R_eff_wnsw'] = u_R_latest
+    stats['new_wnsw'] = new_smoothed[-1]
+    stats['cov_wnsw'] = cov.tolist()
+    stats['initial_cumulative_wnsw'] = int(new.sum())
+elif not (LGA or CONCERN or HUNTER or ILLAWARRA or OTHERS or BIPARTITE):
     stats['R_eff'] = R[-1] 
     stats['u_R_eff'] = u_R_latest
     stats['today'] = str(np.datetime64(datetime.now(), 'D'))
 
-if VAX and not (LGA or OTHERS or CONCERN or HUNTER or BIPARTITE):
+if VAX and not (
+    LGA or OTHERS or CONCERN or HUNTER or ILLAWARRA or WESTERN_NSW or BIPARTITE
+):
     # Case number predictions
     stats['projection'] = []
     # in case I ever want to get the orig projection range not expanded - like to
     # compare past projections:
-    stats['SHOT_NOISE_FACTOR'] = SHOT_NOISE_FACTOR 
+    stats['SHOT_NOISE_FACTOR'] = SHOT_NOISE_FACTOR
     for i, cases in enumerate(new_projection):
         date = dates[-1] + i
         lower = new_projection_lower[i]
