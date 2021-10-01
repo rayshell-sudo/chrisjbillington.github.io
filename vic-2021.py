@@ -883,17 +883,22 @@ else:
     fig1.savefig(f'COVID_VIC_2021{suffix}.png', dpi=133)
 if not LGA:
     ax2.set_yscale('linear')
+    maxproj = new_projection[t_projection < (END_PLOT - dates[-1]).astype(int)].max()
     if OLD:
         ymax = 10_000
-    elif new_projection.max() < 3000:
+    elif maxproj < 1800:
+        ymax = 2400
+    elif maxproj < 2400:
+        ymax = 3200
+    elif maxproj < 3000:
         ymax = 4000
-    elif new_projection.max() < 6000:
+    elif maxproj < 6000:
         ymax = 8000
-    elif new_projection.max() < 12000:
+    elif maxproj < 12000:
         ymax = 16000
-    elif new_projection.max() < 18000:
+    elif maxproj < 18000:
         ymax = 24000
-    elif new_projection.max() < 24000:
+    elif maxproj < 24000:
         ymax = 32000
     else:
         ymax = 80000
