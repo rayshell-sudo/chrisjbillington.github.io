@@ -354,7 +354,8 @@ for state in STATES:
             else:
                 t = (level - coverage) / rate + interval
                 date = d[-1] + int(np.ceil(t))
-                datestr = f"{datefmt(date)} ({t:.0f} days)"
+                t_from_today = (date - today).astype(int)
+                datestr = f"{datefmt(date)} ({t_from_today:.0f} days)"
             print(f"      {level}%: {datestr}")
             html_lines.append(f"    {level}%: {datestr}")
 
