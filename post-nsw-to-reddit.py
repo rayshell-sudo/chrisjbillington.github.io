@@ -39,6 +39,10 @@ def make_comment():
     u_R_eff_others = stats['u_R_eff_others']
     R_eff_hunter = stats['R_eff_hunter']
     u_R_eff_hunter = stats['u_R_eff_hunter']
+    R_eff_illawarra = stats['R_eff_illawarra']
+    u_R_eff_illawarra = stats['u_R_eff_illawarra']
+    R_eff_wnsw = stats['R_eff_wnsw']
+    u_R_eff_wnsw = stats['u_R_eff_wnsw']
 
     proj_lines = [
         "day  cases  68% range",
@@ -81,6 +85,12 @@ def make_comment():
 
     [Hunter region](https://chrisbillington.net/COVID_NSW_hunter.png): R_eff =
     {R_eff_hunter:.02f} ± {u_R_eff_hunter:.02f}
+
+    [Illawarra region](https://chrisbillington.net/COVID_NSW_illawarra.png): R_eff =
+    {R_eff_illawarra:.02f} ± {u_R_eff_illawarra:.02f}
+
+    [Western New South Wales](https://chrisbillington.net/COVID_NSW_wnsw.png): R_eff =
+    {R_eff_wnsw:.02f} ± {u_R_eff_wnsw:.02f}
 
     Note: LGA/region-specific data is several days out of date compared to total
     numbers.

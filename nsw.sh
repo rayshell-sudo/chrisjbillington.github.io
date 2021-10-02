@@ -10,8 +10,12 @@ done
 python nsw.py others
 python nsw.py concern
 python nsw.py hunter
+python nsw.py illawarra
+python nsw.py wnsw
 python nsw.py others vax
 python nsw.py concern vax
-python nsw.py hunter vax
+# python nsw.py hunter vax
+# python nsw.py illawarra vax
+# python nsw.py wnsw vax
 python nsw.py bipartite
 python nsw_vax.py
