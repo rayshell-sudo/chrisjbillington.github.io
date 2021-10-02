@@ -120,6 +120,18 @@ def lga_data():
     # cases_by_lga = {lga: cases[:-1] for lga, cases in cases_by_lga.items()}
     return dates, cases_by_lga 
 
+def statewide_data():
+    dates, cases_by_lga = lga_data()
+    cases = sum(cases_by_lga.values())
+
+    covidlive_dates, covidlive_cases = covidlive_data()
+    if covidlive_dates[-1] > dates[-1]:
+        # Official dataset not updated yet today, use covidlive number, which ought to
+        # be the "new" number, not the "net" number
+        dates = np.append(dates, [covidlive_dates[-1]])
+        cases = np.append(cases, [covidlive_cases[-1]])
+
+    return dates, cases
 
 def gaussian_smoothing(data, pts):
     """gaussian smooth an array by given number of points"""
@@ -314,11 +326,7 @@ if LGA_IX is not None:
     LGA = sorted_lgas[LGA_IX]
     new = cases_by_lga[LGA]
 else:
-    dates, new = covidlive_data()
-    # Corrections made on Sep 28th:
-    new[dates == np.datetime64('2021-09-25')] += 9
-    new[dates == np.datetime64('2021-09-26')] += 140
-    new[dates == np.datetime64('2021-09-27')] -= 149
+    dates, new = statewide_data()
 
 START_VAX_PROJECTIONS = 111  # August 29, when I started making vaccine projections
 all_dates = dates
