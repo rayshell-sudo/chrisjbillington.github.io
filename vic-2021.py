@@ -425,9 +425,12 @@ for i in range(N_monte_carlo):
 
 
 # Fudge what would happen with a different R_eff:
-# cov_R_new_smoothed[-1] *= 0.05 / np.sqrt(variance_R[-1])
-# R[-1] = 0.75
-# variance_R[-1] = 0.05**2
+# fudged_R = 1.30
+# fudged_u_R = 0.05
+
+# cov_R_new_smoothed[-1] *= fudged_u_R / np.sqrt(variance_R[-1])
+# R[-1] = fudged_R
+# variance_R[-1] = fudged_u_R**2
 
 
 u_R = np.sqrt(variance_R)
