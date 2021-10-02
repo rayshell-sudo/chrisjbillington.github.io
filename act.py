@@ -586,7 +586,7 @@ else:
 
 
 ax1.axhline(1.0, color='k', linewidth=1)
-ax1.axis(xmin=START_PLOT, xmax=END_PLOT, ymin=0, ymax=3)
+ax1.axis(xmin=START_PLOT, xmax=END_PLOT, ymin=0, ymax=4)
 ax1.grid(True, linestyle=":", color='k', alpha=0.5)
 
 ax1.set_ylabel(R"$R_\mathrm{eff}$")
@@ -650,7 +650,7 @@ ax2.fill_between(
 ax2.set_ylabel(f"Daily cases (log scale)")
 
 ax2.set_yscale('log')
-ax2.axis(ymin=1, ymax=1_000)
+ax2.axis(ymin=1, ymax=10_000)
 fig1.tight_layout(pad=1.8)
 
 handles, labels = ax1.get_legend_handles_labels()
