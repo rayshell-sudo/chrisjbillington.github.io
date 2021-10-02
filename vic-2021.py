@@ -121,8 +121,24 @@ def lga_data():
     return dates, cases_by_lga 
 
 def statewide_data():
-    dates, cases_by_lga = lga_data()
-    cases = sum(cases_by_lga.values())
+    
+    url = "https://www.dhhs.vic.gov.au/ncov-covid-cases-by-source-csv"
+
+    df = pd.read_csv(url)
+
+    cases_by_date = {
+        d: 0
+        for d in np.arange(
+            np.datetime64(df['diagnosis_date'].min()),
+            np.datetime64(df['diagnosis_date'].max()) + 1,
+        )
+    }
+
+    for _, row in df[df['acquired'] != "Travel overseas"].iterrows():
+        cases_by_date[np.datetime64(row['diagnosis_date'])] += 1
+
+    dates = np.array(list(cases_by_date.keys()))
+    cases = np.array(list(cases_by_date.values()))
 
     covidlive_dates, covidlive_cases = covidlive_data()
     if covidlive_dates[-1] > dates[-1]:
