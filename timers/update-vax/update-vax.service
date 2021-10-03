@@ -1,0 +1,6 @@
+[Unit]
+Description=Update vax plots
+
+[Service]
+ExecStart=/home/bilbo/chrisbillington.net/chrisjbillington.github.io/timers/update-vax/update-vax.sh
+User=bilbo

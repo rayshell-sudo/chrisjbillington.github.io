@@ -1,9 +1,9 @@
-# script to check if vaccination plots are out of date with respect to covidlive data.
-
 import json
 import requests
 import numpy as np
 from pathlib import Path
+import time
+
 
 def latest_covidlive_date():
     """Return a np.datetime64 for the date covidlive most recently updated its
@@ -41,9 +41,8 @@ def latest_site_update():
     return np.datetime64(json.loads(Path('latest_vax_stats.json').read_text())['today'])
 
 if __name__ == '__main__':
-    # Only out of date once all data sources we use are updated:
+    # Check every 10 minutes if we're out of date:
     updates = [latest_covidlive_date(), latest_AIR_date(), latest_air_residence_date()]
-    if min(updates) > latest_site_update():
-        print("outdated!")
-    else:
-        print("up to date!")
+    while not min(updates) > latest_site_update():
+        time.sleep(600)
+    print("ready!")
