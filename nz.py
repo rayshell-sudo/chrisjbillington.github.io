@@ -519,6 +519,7 @@ else:
 ALERT_LEVEL_1 = np.datetime64('2021-06-29')
 ALERT_LEVEL_4 = np.datetime64('2021-08-17')
 ALERT_LEVEL_3 = np.datetime64('2021-09-22')
+PHASE_1 = np.datetime64('2021-10-06')
 END_LOCKDOWN = dates[-1] + 14 # Who knows?
 
 def whiten(color, f):
@@ -551,11 +552,21 @@ ax1.fill_betweenx(
 ax1.fill_betweenx(
     [-10, 10],
     [ALERT_LEVEL_3, ALERT_LEVEL_3],
-    [END_LOCKDOWN, END_LOCKDOWN],
+    [PHASE_1, PHASE_1],
     color=whiten("#F6AE2F", 0.5),
     # alpha=0.45,
     linewidth=0,
     label="Alert Level 3",
+)
+
+ax1.fill_betweenx(
+    [-10, 10],
+    [PHASE_1, PHASE_1],
+    [END_LOCKDOWN, END_LOCKDOWN],
+    color=whiten("yellow", 0.5),
+    # alpha=0.45,
+    linewidth=0,
+    label="Phase 1",
 )
 
 for i in range(30):
@@ -563,7 +574,7 @@ for i in range(30):
         [-10, 10],
         [END_LOCKDOWN.astype(int) + i / 3] * 2,
         [END_LOCKDOWN.astype(int) + (i + 1) / 3] * 2,
-        color="#F6AE2F",
+        color="yellow",
         alpha=0.45 * (30 - i) / 30,
         linewidth=0,
         zorder=-10,
@@ -690,9 +701,9 @@ handles += handles2
 labels += labels2
 
 if VAX:
-    order = [2, 3, 4, 5, 6, 7, 8, 0, 1]
+    order = [3, 4, 5, 6, 7, 8, 9, 0, 1, 2]
 else:
-    order = [2, 3, 4, 5, 6, 7, 0, 1]
+    order = [3, 4, 5, 6, 7, 8, 0, 1, 2]
 ax2.legend(
     # handles,
     # labels,
