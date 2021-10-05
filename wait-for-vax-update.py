@@ -44,5 +44,6 @@ if __name__ == '__main__':
     # Check every 10 minutes if we're out of date:
     updates = [latest_covidlive_date(), latest_AIR_date(), latest_air_residence_date()]
     while not min(updates) > latest_site_update():
+        print("waiting...")
         time.sleep(600)
     print("ready!")
