@@ -913,6 +913,8 @@ if not LGA:
     maxproj = new_projection[t_projection < (END_PLOT - dates[-1]).astype(int)].max()
     if OLD:
         ymax = 10_000
+    elif not VAX:
+        ymax = 4000
     elif maxproj < 1800:
         ymax = 2400
     elif maxproj < 2400:
