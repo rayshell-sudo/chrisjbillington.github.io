@@ -25,11 +25,12 @@ def get_data():
     df = pd.read_csv(f"{REPO_URL}/{DATA_DIR}/vaccinations.csv")
     df = df[df['location']=="New Zealand"]
     dates = np.array([np.datetime64(d) for d in df['date']])
-    daily_doses_per_100 = np.diff(df['total_vaccinations_per_hundred'], prepend=0)
+    doses_per_100 = np.array(df['total_vaccinations_per_hundred'])
     # Remove NaNs from the dataset, duplicate prev. day instead
-    for i, val in enumerate(daily_doses_per_100):
+    for i, val in enumerate(doses_per_100):
         if np.isnan(val):
-            daily_doses_per_100[i] = daily_doses_per_100[i-1]
+            doses_per_100[i] = doses_per_100[i-1]
+    daily_doses_per_100 = np.diff(doses_per_100, prepend=0)
     return dates, daily_doses_per_100
 
 nz_dates, nz_doses_per_100 = get_data()
@@ -42,9 +43,7 @@ OCT = np.datetime64('2021-10-01')
 
 nz_proj_rate = np.zeros(len(t_projection))
 
-nz_proj_rate[:] =  1.8 # Oct onward
-nz_proj_rate[t_projection < OCT] =  1.6 # Sep
-nz_proj_rate[t_projection < SEP] =  1.0 # Aug
+nz_proj_rate[:] =  1.5 # Oct onward
 # clip to 85% fully vaxed
 initial_coverage =  nz_doses_per_100.sum()
 nz_proj_rate[initial_coverage + nz_proj_rate.cumsum() > 2 * 85] = 0
