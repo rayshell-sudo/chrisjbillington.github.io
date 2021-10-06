@@ -120,7 +120,7 @@ def lga_data():
     # cases_by_lga = {lga: cases[:-1] for lga, cases in cases_by_lga.items()}
     return dates, cases_by_lga 
 
-def statewide_data():
+def statewide_data(start_date=np.datetime64('2021-05-10')):
     
     url = "https://www.dhhs.vic.gov.au/ncov-covid-cases-by-source-csv"
 
@@ -147,6 +147,8 @@ def statewide_data():
         dates = np.append(dates, [covidlive_dates[-1]])
         cases = np.append(cases, [covidlive_cases[-1]])
 
+    cases = cases[dates >= start_date]
+    dates = dates[dates >= start_date]
     return dates, cases
 
 def gaussian_smoothing(data, pts):
