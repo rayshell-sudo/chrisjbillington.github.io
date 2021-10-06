@@ -2,7 +2,7 @@
 Description=Timer for update-nsw-and-post.service
 
 [Timer]
-OnCalendar=*-*-* 11:00:00
+OnCalendar=*-*-* 08:30:00
 
 [Install]
 WantedBy=timers.target
