@@ -450,10 +450,19 @@ for i in range(N_monte_carlo):
     )
 
 
-# Fudge what would happen with a different R_eff:
-# fudged_R = 1.30
-# fudged_u_R = 0.05
+params_post_gf, cov_post_gf = curve_fit(exponential, np.arange(-9, 0), new[-9:])
 
+R_post_gf = np.exp(5 * params_post_gf[1])
+R_post_gf_upper = np.exp(5 * (params_post_gf[1] + np.sqrt(cov_post_gf[1,1])))
+R_post_gf_lower = np.exp(5 * (params_post_gf[1] - np.sqrt(cov_post_gf[1,1])))
+u_R_post_GF = (R_post_gf_upper - R_post_gf_lower) / 2
+print(
+    f"Av R_eff post GF: {R_post_gf:.2f} ({R_post_gf_lower:.2f}–{R_post_gf_upper:.2f})"
+)
+
+# Fudge what would happen with a different R_eff:
+# fudged_R = R_post_gf
+# fudged_u_R = u_R_post_GF
 # cov_R_new_smoothed[-1] *= fudged_u_R / np.sqrt(variance_R[-1])
 # R[-1] = fudged_R
 # variance_R[-1] = fudged_u_R**2
