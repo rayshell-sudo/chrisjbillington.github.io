@@ -389,7 +389,19 @@ tau = 5  # reproductive time of the virus in days
 # fit results prior to smoothing.
 
 FIT_PTS = min(20, len(dates[dates >= START_PLOT]))
-x0 = -10
+
+# Usually fit 14, but switched to 10, ramping back up to 14 again to decrease influence
+# of the likely-temporary grand-final-weekend surge
+if dates[-1] == np.datetime64('2021-10-07'):
+    x0 = -10
+elif dates[-1] == np.datetime64('2021-10-08'):
+    x0 = -11
+elif dates[-1] == np.datetime64('2021-10-09'):
+    x0 = -12
+elif dates[-1] == np.datetime64('2021-10-10'):
+    x0 = -13
+else:
+    x0 = -14
 delta_x = 1
 fit_x = np.arange(-FIT_PTS, 0)
 fit_weights = 1 / (1 + np.exp(-(fit_x - x0) / delta_x))
@@ -404,7 +416,8 @@ def clip_params(params):
     params[1] = min(params[1], np.log(R_CLIP ** (1 / tau)))
 
 
-if True: #VAX:
+# Keep the old methodology for old plots:
+if dates[-1] >= np.datetime64('2021-10-07'):
     padding_model = exponential_with_vax
 else:
     padding_model = exponential
