@@ -45,6 +45,13 @@ def updates():
 
 if __name__ == '__main__':
     # Check every 10 minutes if we're out of date:
-    while not min(updates()) > latest_site_update():
+    while True:
+        try:
+            outdated = min(updates()) > latest_site_update()
+        except Exception as e:
+            print(e)
+            continue
+        if outdated:
+            break
         time.sleep(600)
     print("ready!")
