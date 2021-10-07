@@ -374,6 +374,13 @@ new_padded[: -PADDING] = new
 def exponential(x, A, k):
     return A * np.exp(k * x)
 
+immune = projected_vaccine_immune_population(np.arange(100), doses_per_100)
+s = 1 - immune
+dk_dt = 1 / 5 * (s[1] / s[0] - 1)
+
+# Exponential growth, but with the expected rate of decline in k due to vaccines.
+def exponential_with_vax(x, A, k):
+    return A * np.exp(k * x + 1 / 2 * dk_dt * x ** 2)
 
 tau = 5  # reproductive time of the virus in days
 
@@ -382,7 +389,7 @@ tau = 5  # reproductive time of the virus in days
 # fit results prior to smoothing.
 
 FIT_PTS = min(20, len(dates[dates >= START_PLOT]))
-x0 = -14
+x0 = -10
 delta_x = 1
 fit_x = np.arange(-FIT_PTS, 0)
 fit_weights = 1 / (1 + np.exp(-(fit_x - x0) / delta_x))
@@ -397,9 +404,14 @@ def clip_params(params):
     params[1] = min(params[1], np.log(R_CLIP ** (1 / tau)))
 
 
-params, cov = curve_fit(exponential, fit_x, new[-FIT_PTS:], sigma=1 / fit_weights)
+if True: #VAX:
+    padding_model = exponential_with_vax
+else:
+    padding_model = exponential
+
+params, cov = curve_fit(padding_model, fit_x, new[-FIT_PTS:], sigma=1 / fit_weights)
 clip_params(params)
-fit = exponential(pad_x, *params).clip(0.1, None)
+fit = padding_model(pad_x, *params).clip(0.1, None)
 
 
 new_padded[-PADDING:] = fit
@@ -428,7 +440,7 @@ u_new = SHOT_NOISE_FACTOR * np.sqrt(new)
 for i in range(N_monte_carlo):
     new_with_noise = np.random.normal(new, u_new).clip(0.1, None)
     params, cov = curve_fit(
-        exponential,
+        padding_model,
         fit_x,
         new_with_noise[-FIT_PTS:],
         sigma=1 / fit_weights,
@@ -437,7 +449,7 @@ for i in range(N_monte_carlo):
     clip_params(params)
     scenario_params = np.random.multivariate_normal(params, cov)
     clip_params(scenario_params)
-    fit = exponential(pad_x, *scenario_params).clip(0.1, None)
+    fit = padding_model(pad_x, *scenario_params).clip(0.1, None)
 
     new_padded[:-PADDING] = new_with_noise
     new_padded[-PADDING:] = fit
@@ -450,7 +462,7 @@ for i in range(N_monte_carlo):
     )
 
 
-params_post_gf, cov_post_gf = curve_fit(exponential, np.arange(-9, 0), new[-9:])
+params_post_gf, cov_post_gf = curve_fit(padding_model, np.arange(-9, 0), new[-9:])
 
 R_post_gf = np.exp(5 * params_post_gf[1])
 R_post_gf_upper = np.exp(5 * (params_post_gf[1] + np.sqrt(cov_post_gf[1,1])))
