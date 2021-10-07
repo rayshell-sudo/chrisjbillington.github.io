@@ -390,16 +390,10 @@ tau = 5  # reproductive time of the virus in days
 
 FIT_PTS = min(20, len(dates[dates >= START_PLOT]))
 
-# Usually fit 14, but switched to 10, ramping back up to 14 again to decrease influence
-# of the likely-temporary grand-final-weekend surge
-if dates[-1] == np.datetime64('2021-10-07'):
+# Usually fit 14, but switched to 10 temporarily, to decrease influence of the
+# likely-temporary grand-final-weekend surge
+if dates[-1] >= np.datetime64('2021-10-07'):
     x0 = -10
-elif dates[-1] == np.datetime64('2021-10-08'):
-    x0 = -11
-elif dates[-1] == np.datetime64('2021-10-09'):
-    x0 = -12
-elif dates[-1] == np.datetime64('2021-10-10'):
-    x0 = -13
 else:
     x0 = -14
 delta_x = 1
