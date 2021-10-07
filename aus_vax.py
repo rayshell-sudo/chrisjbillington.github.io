@@ -1114,7 +1114,7 @@ for dates, coverage, label in zip(
         dates, coverage, label=f"{label} ({coverage[-1]:.1f} %)"
     )
 
-plt.legend(loc='upper right', prop={'size': 9})
+plt.legend(loc='lower right', prop={'size': 9})
 plt.grid(True, linestyle=':', color='k', alpha=0.5)
 locator = mdates.DayLocator([1, 15])
 formatter = mdates.ConciseDateFormatter(locator)
@@ -1153,7 +1153,7 @@ for dates, coverage, label in zip(
         smoothed_coverage,
         label=f"{label} ({smoothed_coverage[-1]:.1f} %/week)",
     )
-plt.legend(loc='upper right', prop={'size': 9})
+plt.legend(loc='upper left', prop={'size': 9})
 plt.grid(True, linestyle=':', color='k', alpha=0.5)
 locator = mdates.DayLocator([1, 15])
 formatter = mdates.ConciseDateFormatter(locator)
@@ -1205,7 +1205,7 @@ for dates, coverage, label in zip(
         smoothed_coverage,
         label=f"{label} ({smoothed_coverage[-1]:.1f} %/week)",
     )
-plt.legend(loc='upper right', prop={'size': 9})
+plt.legend(loc='upper left', prop={'size': 9})
 plt.grid(True, linestyle=':', color='k', alpha=0.5)
 locator = mdates.DayLocator([1, 15])
 formatter = mdates.ConciseDateFormatter(locator)
