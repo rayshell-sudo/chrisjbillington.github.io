@@ -370,19 +370,19 @@ PADDING = 3 * int(round(3 * SMOOTHING))
 new_padded = np.zeros(len(new) + PADDING)
 new_padded[: -PADDING] = new
 
+tau = 5  # reproductive time of the virus in days
 
 def exponential(x, A, k):
     return A * np.exp(k * x)
 
 immune = projected_vaccine_immune_population(np.arange(100), doses_per_100)
 s = 1 - immune
-dk_dt = 1 / 5 * (s[1] / s[0] - 1)
+dk_dt = 1 / tau * (s[1] / s[0] - 1)
 
 # Exponential growth, but with the expected rate of decline in k due to vaccines.
 def exponential_with_vax(x, A, k):
     return A * np.exp(k * x + 1 / 2 * dk_dt * x ** 2)
 
-tau = 5  # reproductive time of the virus in days
 
 # Smoothing requires padding to give sensible results at the right edge. Compute an
 # exponential fit to daily cases over the last fortnight, and pad the data with the

@@ -473,12 +473,26 @@ PADDING = 3 * int(round(3 * SMOOTHING))
 new_padded = np.zeros(len(new) + PADDING)
 new_padded[: -PADDING] = new
 
+tau = 5  # reproductive time of the virus in days
 
 def exponential(x, A, k):
     return A * np.exp(k * x)
 
+immune = projected_vaccine_immune_population(np.arange(100), doses_per_100)
+s = 1 - immune
+dk_dt = 1 / 5 * (s[1] / s[0] - 1)
 
-tau = 5  # reproductive time of the virus in days
+# Exponential growth, but with the expected rate of decline in k due to vaccines.
+def exponential_with_vax(x, A, k):
+    return A * np.exp(k * x + 1 / 2 * dk_dt * x ** 2)
+
+# Keep the old methodology for old plots:
+if False:  # dates[-1] >= np.datetime64('2021-10-07'):
+    padding_model = exponential_with_vax
+else:
+    padding_model = exponential
+
+
 
 # Smoothing requires padding to give sensible results at the right edge. Compute an
 # exponential fit to daily cases over the last fortnight, and pad the data with the
@@ -500,9 +514,9 @@ def clip_params(params):
     params[1] = min(params[1], np.log(R_CLIP ** (1 / tau)))
 
 
-params, cov = curve_fit(exponential, fit_x, new[-FIT_PTS:], sigma=1 / fit_weights)
+params, cov = curve_fit(padding_model, fit_x, new[-FIT_PTS:], sigma=1 / fit_weights)
 clip_params(params)
-fit = exponential(pad_x, *params).clip(0.1, None)
+fit = padding_model(pad_x, *params).clip(0.1, None)
 
 
 new_padded[-PADDING:] = fit
@@ -531,7 +545,7 @@ u_new = SHOT_NOISE_FACTOR * np.sqrt(new)
 for i in range(N_monte_carlo):
     new_with_noise = np.random.normal(new, u_new).clip(0.1, None)
     params, cov = curve_fit(
-        exponential,
+        padding_model,
         fit_x,
         new_with_noise[-FIT_PTS:],
         sigma=1 / fit_weights,
@@ -540,7 +554,7 @@ for i in range(N_monte_carlo):
     clip_params(params)
     scenario_params = np.random.multivariate_normal(params, cov)
     clip_params(scenario_params)
-    fit = exponential(pad_x, *scenario_params).clip(0.1, None)
+    fit = padding_model(pad_x, *scenario_params).clip(0.1, None)
 
     new_padded[:-PADDING] = new_with_noise
     new_padded[-PADDING:] = fit
