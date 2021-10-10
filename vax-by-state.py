@@ -233,7 +233,10 @@ for state in STATES:
             args = ['k:']
         else:
             args = []
-        coverage_string = f"{coverage[-1]:.1f}" if coverage[-1] < 94.9 else ">95"
+        if label in ['Ages 16+', 'Ages 12+', 'All ages']:
+            coverage_string = f"{coverage[-1]:.1f}"
+        else:
+            coverage_string = f"{coverage[-1]:.1f}" if coverage[-1] < 94.9 else ">95"
         plt.plot(d, coverage, *args, label=f"{label} ({coverage_string} %)")
 
     plt.legend(loc='upper right', prop={'size': 9})
@@ -264,7 +267,10 @@ for state in STATES:
             args = ['k:']
         else:
             args = []
-        coverage_string = f"{coverage[-1]:.1f}" if coverage[-1] < 94.9 else "> 95"
+        if label in ['Ages 16+', 'Ages 12+', 'All ages']:
+            coverage_string = f"{coverage[-1]:.1f}"
+        else:
+            coverage_string = f"{coverage[-1]:.1f}" if coverage[-1] < 94.9 else ">95"
         plt.plot(d, coverage, *args, label=f"{label} ({coverage_string} %)")
 
     plt.legend(loc='upper right', prop={'size': 9})
