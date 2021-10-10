@@ -395,7 +395,9 @@ FIT_PTS = min(20, len(dates[dates >= START_PLOT]))
 
 # Usually fit 14, but switched to 10 temporarily, to decrease influence of the
 # likely-temporary grand-final-weekend surge
-if dates[-1] >= np.datetime64('2021-10-07'):
+if dates[-1] >= np.datetime64('2021-10-11'):
+    x0 = -14
+elif dates[-1] >= np.datetime64('2021-10-07'):
     x0 = -10
 else:
     x0 = -14
