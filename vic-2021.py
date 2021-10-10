@@ -141,11 +141,14 @@ def statewide_data(start_date=np.datetime64('2021-05-10')):
     cases = np.array(list(cases_by_date.values()))
 
     covidlive_dates, covidlive_cases = covidlive_data()
-    if covidlive_dates[-1] > dates[-1]:
-        # Official dataset not updated yet today, use covidlive number, which ought to
-        # be the "new" number, not the "net" number
-        dates = np.append(dates, [covidlive_dates[-1]])
-        cases = np.append(cases, [covidlive_cases[-1]])
+
+    # Fill in missing data from covidlive. In the mornings this will usually only be one
+    # number, but sometimes when DH fail to update the official dataset for a whole day
+    # it might be two
+    covidlive_more_recent = covidlive_dates > dates[-1]
+    if covidlive_more_recent.any():
+        dates = np.append(dates, covidlive_dates[covidlive_more_recent])
+        cases = np.append(cases, covidlive_cases[covidlive_more_recent])
 
     cases = cases[dates >= start_date]
     dates = dates[dates >= start_date]
