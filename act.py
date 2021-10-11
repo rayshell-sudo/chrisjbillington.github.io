@@ -3,7 +3,7 @@ from datetime import datetime
 from pytz import timezone
 from pathlib import Path
 import json
-
+import requests
 from scipy.optimize import curve_fit
 from scipy.signal import convolve
 import numpy as np
@@ -63,29 +63,38 @@ def covidlive_data(start_date=np.datetime64('2021-05-10')):
     return dates, cases
 
 
-def covidlive_doses_per_100(n):
+def air_doses_per_100(n):
     """return ACT cumulative doses per 100 population for the last n days"""
+    url = "https://vaccinedata.covid19nearme.com.au/data/air_residence.json"
+    data = json.loads(requests.get(url).content)
+    # Convert dates to np.datetime64
+    for row in data:
+        row['DATE_AS_AT'] = np.datetime64(row['DATE_AS_AT'])
+    data.sort(key=lambda row: row['DATE_AS_AT'])
 
-    url = "https://covidlive.com.au/report/daily-vaccinations/act"
+    dates = np.array(sorted(set([row['DATE_AS_AT'] for row in data])))
 
-    df = pd.read_html(url)[1]
-    doses = df['DOSES'][::-1]
-    daily_doses = np.diff(doses, prepend=0).astype(float)
-    dates = np.array(
-        [np.datetime64(datetime.strptime(d, '%d %b %y'), 'D') for d in df['DATE'][::-1]]
-    )
-    act_dates = dates[:-1]
-    act_daily_doses = daily_doses[:-1]
+    total_doses = {d: 0 for d in dates}
 
-    CORRECTION_DATE = np.datetime64('2021-08-16')
-    CORRECTION_DOSES = 40000
-    act_daily_doses = act_daily_doses.astype(float)
-    act_daily_doses[act_dates == CORRECTION_DATE] -= CORRECTION_DOSES
-    sum_prior = act_daily_doses[act_dates < CORRECTION_DATE].sum()
-    SCALE_FACTOR = 1 + CORRECTION_DOSES / sum_prior
-    act_daily_doses[act_dates < CORRECTION_DATE] *= SCALE_FACTOR
+    for row in data:
+        if row['STATE'] != 'ACT':
+            continue
+        date = row['DATE_AS_AT']
+        age_range = (row['AGE_LOWER'], row['AGE_UPPER'] )
+        if age_range == (16, 999): 
+            FIRST_KEY = 'AIR_RESIDENCE_FIRST_DOSE_COUNT'
+            SECOND_KEY = 'AIR_RESIDENCE_SECOND_DOSE_COUNT'
+        elif age_range == (12, 15):
+            FIRST_KEY = 'AIR_RESIDENCE_FIRST_DOSE_APPROX_COUNT'
+            SECOND_KEY = 'AIR_RESIDENCE_SECOND_DOSE_APPROX_COUNT'
+        else:
+            continue
 
-    return 100 * act_daily_doses.cumsum()[-n:] / POP_OF_ACT
+        total_doses[date] += row[FIRST_KEY] + row[SECOND_KEY] 
+
+    doses = np.array(list(total_doses.values()))
+
+    return 100 * doses[-n:] / POP_OF_ACT
 
 
 
@@ -227,13 +236,24 @@ def projected_vaccine_immune_population(t, historical_doses_per_100):
 
     doses_per_100 = np.zeros_like(t)
     doses_per_100[0] = historical_doses_per_100[-1]
+
+    # History of previously projected rates, so I can remake old projections:
+    if dates[-1] >= np.datetime64('2021-10-10'):
+        AUG_RATE = None
+        SEP_RATE = None
+        OCT_RATE = 1.3
+    else:
+        AUG_RATE = 1.4
+        SEP_RATE = 1.6
+        OCT_RATE = 1.8
+
     for i in range(1, len(doses_per_100)):
         if i < SEP:
-            doses_per_100[i] = doses_per_100[i - 1] + 1.4
+            doses_per_100[i] = doses_per_100[i - 1] + AUG_RATE
         elif i < OCT:
-            doses_per_100[i] = doses_per_100[i - 1] + 1.6
+            doses_per_100[i] = doses_per_100[i - 1] + SEP_RATE
         else:
-            doses_per_100[i] = doses_per_100[i - 1] + 1.8
+            doses_per_100[i] = doses_per_100[i - 1] + OCT_RATE
 
     doses_per_100 = np.clip(doses_per_100, 0, 85 * 2)
 
@@ -264,8 +284,7 @@ all_dates = dates
 all_new = new
 
 # Current vaccination level:
-doses_per_100 = covidlive_doses_per_100(n=len(dates))
-
+doses_per_100 = air_doses_per_100(n=len(dates))
 
 # dates = np.append(dates, [dates[-1] + 1])
 # new = np.append(new, [655])

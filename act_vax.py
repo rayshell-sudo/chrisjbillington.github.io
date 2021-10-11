@@ -1,5 +1,6 @@
+import json
+import requests
 import numpy as np
-import pandas as pd
 from datetime import datetime
 import matplotlib.units as munits
 import matplotlib.dates as mdates
@@ -20,18 +21,35 @@ def seven_day_average(data):
 
 
 def get_data(state):
-    url = f"https://covidlive.com.au/report/daily-vaccinations/{state.lower()}"
+    """Return array of dates and total doses administered to residents of the given
+    state/territory"""
+    url = "https://vaccinedata.covid19nearme.com.au/data/air_residence.json"
+    data = json.loads(requests.get(url).content)
+    # Convert dates to np.datetime64
+    for row in data:
+        row['DATE_AS_AT'] = np.datetime64(row['DATE_AS_AT'])
+    data.sort(key=lambda row: row['DATE_AS_AT'])
 
-    df = pd.read_html(url)[1]
+    dates = np.array(sorted(set([row['DATE_AS_AT'] for row in data])))
 
-    doses = df['DOSES'][::-1]
-    doses = np.diff(doses, prepend=0)
-    dates = np.array(
-        [np.datetime64(datetime.strptime(d, '%d %b %y'), 'D') for d in df['DATE'][::-1]]
-    )
-    dates = dates[:-1]
-    doses = doses[:-1]
-    return dates, doses
+    total_doses = {d: 0 for d in dates}
+
+    for row in data:
+        if row['STATE'] != state:
+            continue
+        date = row['DATE_AS_AT']
+        age_range = (row['AGE_LOWER'], row['AGE_UPPER'] )
+        if age_range == (16, 999): 
+            FIRST_KEY = 'AIR_RESIDENCE_FIRST_DOSE_COUNT'
+            SECOND_KEY = 'AIR_RESIDENCE_SECOND_DOSE_COUNT'
+        elif age_range == (12, 15):
+            FIRST_KEY = 'AIR_RESIDENCE_FIRST_DOSE_APPROX_COUNT'
+            SECOND_KEY = 'AIR_RESIDENCE_SECOND_DOSE_APPROX_COUNT'
+        else:
+            continue
+
+        total_doses[date] += row[FIRST_KEY] + row[SECOND_KEY] 
+    return dates, np.diff(np.array(list(total_doses.values())), prepend=0)
 
 POPS = {
     'AUS': 25.36e6,
@@ -48,14 +66,6 @@ STATE = 'ACT'
 
 act_dates, act_doses = get_data(STATE)
 
-# Smooth out the data correction made on Aug 16th:
-CORRECTION_DATE = np.datetime64('2021-08-16')
-CORRECTION_DOSES = 40000
-act_doses = act_doses.astype(float)
-act_doses[act_dates == CORRECTION_DATE] -= CORRECTION_DOSES
-sum_prior = act_doses[act_dates < CORRECTION_DATE].sum()
-SCALE_FACTOR = 1 + CORRECTION_DOSES / sum_prior
-act_doses[act_dates < CORRECTION_DATE] *= SCALE_FACTOR
 
 days_projection = 200
 t_projection = np.arange(act_dates[-1], act_dates[-1] + days_projection + 1)
@@ -65,9 +75,7 @@ OCT = np.datetime64('2021-10-01')
 
 act_proj_rate = np.zeros(len(t_projection))
 
-act_proj_rate[:] =  1.8 # Oct onward
-act_proj_rate[t_projection < OCT] =  1.6 # Sep
-act_proj_rate[t_projection < SEP] =  1.4 # Aug
+act_proj_rate[:] =  1.3 # Oct onward
 # clip to 85% fully vaxed
 initial_coverage =  100 * act_doses.sum() / POPS[STATE]
 act_proj_rate[initial_coverage + act_proj_rate.cumsum() > 2 * 85] = 0
@@ -75,7 +83,7 @@ act_proj_rate[initial_coverage + act_proj_rate.cumsum() > 2 * 85] = 0
 plt.figure(figsize=(10, 5))
 plt.subplot(121)
 act_rate = 100 * seven_day_average(act_doses) / POPS[STATE]
-plt.step(act_dates, act_rate, label="Actual")
+plt.step(act_dates[7:], act_rate[7:], label="Actual")
 plt.step(t_projection, act_proj_rate, label="Assumed for projection")
 plt.legend()
 locator = mdates.DayLocator([1, 15])
