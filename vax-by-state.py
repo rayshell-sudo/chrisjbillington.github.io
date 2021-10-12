@@ -233,7 +233,7 @@ for state in STATES:
             args = ['k:']
         else:
             args = []
-        if label in ['Ages 16+', 'Ages 12+', 'All ages']:
+        if label in ['Ages 16+', 'Ages 12+', 'All ages'] or state == 'AUS':
             coverage_string = f"{coverage[-1]:.1f}"
         else:
             coverage_string = f"{coverage[-1]:.1f}" if coverage[-1] < 94.9 else ">95"
@@ -267,7 +267,7 @@ for state in STATES:
             args = ['k:']
         else:
             args = []
-        if label in ['Ages 16+', 'Ages 12+', 'All ages']:
+        if label in ['Ages 16+', 'Ages 12+', 'All ages'] or state == 'AUS':
             coverage_string = f"{coverage[-1]:.1f}"
         else:
             coverage_string = f"{coverage[-1]:.1f}" if coverage[-1] < 94.9 else ">95"
