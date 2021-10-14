@@ -776,9 +776,9 @@ else:
 if True: # Just to keep the diff with nsw.py sensible here
     ax2.set_yscale('linear')
     if VAX:
-        ymax = 160
+        ymax = 400
     else:
-        ymax = 160
+        ymax = 400
     ax2.axis(ymin=0, ymax=ymax)
     ax2.yaxis.set_major_locator(mticker.MultipleLocator(ymax / 8))
     ax2.set_ylabel("Daily confirmed cases (linear scale)")
