@@ -780,8 +780,8 @@ NONCRITICAL_RETAIL_CLOSED = np.datetime64('2021-07-18')
 STATEWIDE = np.datetime64('2021-08-15')
 CURFEW = np.datetime64('2021-08-23')
 END_CURFEW = np.datetime64('2021-09-16')
-END_LOCKDOWN = np.datetime64('2021-10-11') # Mon after projected 70% 16+ second doses
-EASING_80 = np.datetime64('2021-10-25') # Mon after projected 80% 16+ second doses
+END_LOCKDOWN = np.datetime64('2021-10-11')
+EASING_80 = np.datetime64('2021-10-18')
 
 
 def whiten(color, f):

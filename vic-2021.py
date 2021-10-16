@@ -621,7 +621,7 @@ LOCKDOWN_AGAIN = np.datetime64('2021-08-06')
 CURFEW = np.datetime64('2021-08-16')
 CONSTRUCTION_SHUTDOWN = np.datetime64('2021-09-21')
 END_CONSTRUCTION_SHUTDOWN = CONSTRUCTION_SHUTDOWN + 14
-PHASE_B = np.datetime64('2021-10-26') # indicative as per roadmap
+PHASE_B = np.datetime64('2021-10-23') # Projected
 PHASE_C = np.datetime64('2021-11-05') # indicative as per roadmap
 PHASE_D = np.datetime64('2021-11-19') # indicative as per roadmap
 
@@ -649,7 +649,7 @@ ax1.fill_betweenx(
     [PREV_EASING_2, PREV_EASING_2],
     color=whiten("orange", 0.5),
     linewidth=0,
-    label="Eased stay-at-home orders/Phase B",
+    label="Eased stay-at-home orders",
 )
 
 ax1.fill_betweenx(
@@ -658,7 +658,7 @@ ax1.fill_betweenx(
     [LOCKDOWN, LOCKDOWN],
     color=whiten("yellow", 0.5),
     linewidth=0,
-    label="Eased gathering restrictions/Phase C",
+    label="Eased gathering restrictions/Phase B",
 )
 
 ax1.fill_betweenx(
@@ -724,7 +724,7 @@ ax1.fill_betweenx(
     [-10, 10],
     [PHASE_B, PHASE_B],
     [PHASE_C, PHASE_C],
-    color=whiten("orange", 0.5),
+    color=whiten("yellow", 0.5),
     linewidth=0,
 )
 
@@ -732,7 +732,8 @@ ax1.fill_betweenx(
     [-10, 10],
     [PHASE_C, PHASE_C],
     [PHASE_D, PHASE_D],
-    color=whiten("yellow", 0.5),
+    color=whiten("green", 0.5),
+    label="Phase C",
     linewidth=0,
 )
 
@@ -740,7 +741,7 @@ ax1.fill_betweenx(
     [-10, 10],
     [PHASE_D, PHASE_D],
     [END_PLOT, END_PLOT],
-    color=whiten("green", 0.5),
+    color=whiten("green", 0.25),
     linewidth=0,
     label="Phase D",
 )
@@ -880,16 +881,16 @@ handles += handles2
 labels += labels2
 
 if VAX:
-    order = [6, 8, 7, 9, 10, 11, 12, 5, 2, 1, 0, 3, 4]
+    order = [7, 9, 8, 10, 11, 12, 13, 6, 5, 2, 1, 0, 3, 4]
 else:
-    order = [6, 7, 8, 9, 10, 11, 5, 2, 1, 0, 3, 4]
+    order = [7, 8, 9, 10, 11, 12, 6, 5, 2, 1, 0, 3, 4]
 ax2.legend(
     # handles,
     # labels,
     [handles[idx] for idx in order],
     [labels[idx] for idx in order],
     loc='upper left',
-    ncol=1 if VAX else 2,
+    ncol=1,
     prop={'size': 8},
 )
 
