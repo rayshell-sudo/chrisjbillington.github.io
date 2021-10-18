@@ -108,16 +108,28 @@ def midnight_to_midnight_data():
     counts = np.array([counts[str(d)] if str(d) in counts.index else 0 for d in dates])
     return dates, counts
 
+def linear_interpolate_nans(x):
+    """Replace NaNs with a linear interpolation of nearest non NaNs"""
+    for i, value in enumerate(x):
+        if np.isnan(value):
+            j = i + 1
+            while True:
+                if j == len(x):
+                    x[i] = x[i - 1]
+                    break
+                if not np.isnan(x[j]):
+                    x[i] = x[i - 1] + (x[j] - x[i - 1]) / (j - i)
+                    break
+                j += 1
+
+
 def owid_doses_per_hundred(n):
     REPO_URL = "https://raw.githubusercontent.com/owid/covid-19-data/master"
     DATA_DIR = "public/data/vaccinations"
     df = pd.read_csv(f"{REPO_URL}/{DATA_DIR}/vaccinations.csv")
-    df = df[df['location']=="New Zealand"]
+    df = df[df['location'] == "New Zealand"]
     doses_per_100 = np.array(df['total_vaccinations_per_hundred'])
-    # Remove NaNs from the dataset, duplicate prev. day instead
-    for i, val in enumerate(doses_per_100):
-        if np.isnan(val):
-            doses_per_100[i] = doses_per_100[i-1]
+    linear_interpolate_nans(doses_per_100)
     return np.array(doses_per_100)[-n:]
 
 
@@ -776,9 +788,9 @@ else:
 if True: # Just to keep the diff with nsw.py sensible here
     ax2.set_yscale('linear')
     if VAX:
-        ymax = 400
+        ymax = 200
     else:
-        ymax = 400
+        ymax = 200
     ax2.axis(ymin=0, ymax=ymax)
     ax2.yaxis.set_major_locator(mticker.MultipleLocator(ymax / 8))
     ax2.set_ylabel("Daily confirmed cases (linear scale)")

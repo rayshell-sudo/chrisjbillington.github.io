@@ -19,17 +19,29 @@ def seven_day_average(data):
     return ret / n
 
 
+def linear_interpolate_nans(x):
+    """Replace NaNs with a linear interpolation of nearest non NaNs"""
+    for i, value in enumerate(x):
+        if np.isnan(value):
+            j = i + 1
+            while True:
+                if j == len(x):
+                    x[i] = x[i - 1]
+                    break
+                if not np.isnan(x[j]):
+                    x[i] = x[i - 1] + (x[j] - x[i - 1]) / (j - i)
+                    break
+                j += 1
+
+
 def get_data():
     REPO_URL = "https://raw.githubusercontent.com/owid/covid-19-data/master"
     DATA_DIR = "public/data/vaccinations"
     df = pd.read_csv(f"{REPO_URL}/{DATA_DIR}/vaccinations.csv")
-    df = df[df['location']=="New Zealand"]
+    df = df[df['location'] == "New Zealand"]
     dates = np.array([np.datetime64(d) for d in df['date']])
     doses_per_100 = np.array(df['total_vaccinations_per_hundred'])
-    # Remove NaNs from the dataset, duplicate prev. day instead
-    for i, val in enumerate(doses_per_100):
-        if np.isnan(val):
-            doses_per_100[i] = doses_per_100[i-1]
+    linear_interpolate_nans(doses_per_100)
     daily_doses_per_100 = np.diff(doses_per_100, prepend=0)
     return dates, daily_doses_per_100
 
@@ -50,8 +62,8 @@ nz_proj_rate[initial_coverage + nz_proj_rate.cumsum() > 2 * 85] = 0
 
 plt.figure(figsize=(10, 5))
 plt.subplot(121)
-nsw_rate = seven_day_average(nz_doses_per_100)
-plt.step(nz_dates, nsw_rate, label="Actual")
+nz_rate = seven_day_average(nz_doses_per_100)
+plt.step(nz_dates, nz_rate, label="Actual")
 plt.step(t_projection, nz_proj_rate, label="Assumed for projection")
 plt.legend()
 locator = mdates.DayLocator([1, 15])
