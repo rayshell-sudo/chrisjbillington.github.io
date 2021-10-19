@@ -507,7 +507,7 @@ else:
 
 LOCKDOWN = np.datetime64('2021-08-13')
 END_LOCKDOWN = np.datetime64('2021-10-15')
-FURTHER_EASING = np.datetime64('2021-10-30')
+FURTHER_EASING = np.datetime64('2021-10-22')
 
 def whiten(color, f):
     """Mix a color with white where f is how much of the original colour to keep"""
