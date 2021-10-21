@@ -4,6 +4,7 @@ from pytz import timezone
 from pathlib import Path
 import json
 
+import requests
 from scipy.optimize import curve_fit
 from scipy.signal import convolve
 import numpy as np
@@ -80,6 +81,29 @@ def get_data():
     new = np.diff(df['cumulative_cases'], prepend=0)
 
     return dates, new
+
+
+def get_todays_cases():
+    url = (
+        "https://www.health.govt.nz/our-work/diseases-and-conditions/"
+        "covid-19-novel-coronavirus/covid-19-data-and-statistics/covid-19-current-cases"
+    )
+    df = pd.read_html(requests.get(url, headers=curl_headers).content)[4]
+
+    sourcecol = df.columns[0]
+
+    cases = 0
+    for source in [
+        "People in close contact with someone who caught COVID-19 while overseas",
+        "Caught COVID-19 from someone locally",
+        "Caught COVID-19 within NZ, but source is unknown",
+        "Under investigation",
+    ]:
+        cases += df[df[sourcecol] == source]['Change in last 24 hours'].sum()
+
+    return cases
+
+
 
 def midnight_to_midnight_data():
 
@@ -315,6 +339,11 @@ def projected_vaccine_immune_population(t, historical_doses_per_100):
 # dates, new = get_data()
 
 dates, new = midnight_to_midnight_data()
+# Last day is out of date, we replace it with the net number of cases in the last 24
+# hours as of the latest update. It might be 9am-9am instead of midnight-midnight, but
+# doesn't overlap with any other 24 hour period we're using and is a representative 24
+# hour period so shouldn't bias anything.
+new[-1] = get_todays_cases()
 
 START_VAX_PROJECTIONS = 23  # Sep 2nd
 all_dates = dates
