@@ -284,7 +284,7 @@ def projected_vaccine_immune_population(t, historical_doses_per_100):
         JUL_RATE = None
         AUG_RATE = None
         SEP_RATE = None
-        OCT_RATE = None
+        OCT_RATE = 0.7
         NOV_RATE = 0.7
     elif dates[-1] >= np.datetime64('2021-08-28'):
         JUL_RATE = None
