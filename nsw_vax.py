@@ -66,7 +66,7 @@ OCT = np.datetime64('2021-10-01')
 
 nsw_proj_rate = np.zeros(len(t_projection))
 
-nsw_proj_rate[:] =  1.8 # Oct onward
+nsw_proj_rate[:] =  0.7 # Oct onward
 nsw_proj_rate[t_projection < OCT] =  1.6 # Sep
 nsw_proj_rate[t_projection < SEP] =  1.4 # Aug
 # clip to 85% fully vaxed
