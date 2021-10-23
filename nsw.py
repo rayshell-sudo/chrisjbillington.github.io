@@ -398,7 +398,7 @@ WESTERN_NSW_LGAS = [
     "Bogan",
     "Bourke",
     "Brewarrina",
-    # "Cobar",
+    "Cobar",
     "Coonamble",
     "Dubbo Regional",
     "Gilgandra",
@@ -429,7 +429,7 @@ if LGA_IX is not None or OTHERS or CONCERN or HUNTER or ILLAWARRA or WESTERN_NSW
     # have cases we want to include them. But I can't be sure in advance how they will
     # be named in the dataset - e.g. two may or may not have "Shire" in the name.
     for lga in cases_by_lga:
-        if lga.startswith('Lachlan') or lga.startswith('Cobar') or "Far West" in lga:
+        if lga.startswith('Lachlan') or "Far West" in lga:
             WESTERN_NSW_LGAS.append(lga)
             print(f"There are cases in {lga} now, add it to the list!")
 if LGA_IX is not None:
