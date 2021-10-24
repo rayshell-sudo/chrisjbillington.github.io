@@ -621,9 +621,9 @@ LOCKDOWN_AGAIN = np.datetime64('2021-08-06')
 CURFEW = np.datetime64('2021-08-16')
 CONSTRUCTION_SHUTDOWN = np.datetime64('2021-09-21')
 END_CONSTRUCTION_SHUTDOWN = CONSTRUCTION_SHUTDOWN + 14
-PHASE_B = np.datetime64('2021-10-23') # Projected
-PHASE_C = np.datetime64('2021-11-05') # indicative as per roadmap
-PHASE_D = np.datetime64('2021-11-19') # indicative as per roadmap
+PHASE_B = np.datetime64('2021-10-22')
+PHASE_C = np.datetime64('2021-10-30')
+PHASE_D = np.datetime64('2021-11-24') # indicative as per roadmap
 
 def whiten(color, f):
     """Mix a color with white where f is how much of the original colour to keep"""
