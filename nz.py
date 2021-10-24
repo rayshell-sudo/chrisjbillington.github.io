@@ -98,6 +98,8 @@ def get_todays_cases():
             break
         print(f"Got old covid-19-current-cases page, retrying ({i+1}/10)...")
         time.sleep(5)
+    else:
+        raise ValueError("Didn't get an up-to-date MoH page")
 
     df = pd.read_html(page)[6]
     MIQ = "Managed Isolation & Quarantine"
