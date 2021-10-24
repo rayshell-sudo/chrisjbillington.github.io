@@ -50,5 +50,6 @@ def moh_updated_today():
 if __name__ == '__main__':
     # Hit MoH once every 15 minutes checking if it's updated:
     while not (moh_updated_today() and current_cases_updated_today()):
+        print("waiting...")
         time.sleep(900)
     print("ready!")
