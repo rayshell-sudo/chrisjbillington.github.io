@@ -3,6 +3,7 @@ from datetime import datetime
 from pytz import timezone
 from pathlib import Path
 import json
+import time
 
 import requests
 from scipy.optimize import curve_fit
@@ -88,21 +89,22 @@ def get_todays_cases():
         "https://www.health.govt.nz/our-work/diseases-and-conditions/"
         "covid-19-novel-coronavirus/covid-19-data-and-statistics/covid-19-current-cases"
     )
-    df = pd.read_html(requests.get(url, headers=curl_headers).content)[4]
 
-    sourcecol = df.columns[0]
+    today = datetime.now().strftime('%d %B %Y')
+    updated_today_string = f'Page last updated: <span class="date">{today}</span>'
+    for i in range(10):
+        page = requests.get(url, headers=curl_headers).content.decode('utf8')
+        if updated_today_string in page:
+            break
+        print(f"Got old covid-19-current-cases page, retrying ({i+1}/10)...")
+        time.sleep(5)
 
-    cases = 0
-    for source in [
-        "People in close contact with someone who caught COVID-19 while overseas",
-        "Caught COVID-19 from someone locally",
-        "Caught COVID-19 within NZ, but source is unknown",
-        "Under investigation",
-    ]:
-        cases += df[df[sourcecol] == source]['Change in last 24 hours'].sum()
-
-    return cases
-
+    df = pd.read_html(page)[6]
+    MIQ = "Managed Isolation & Quarantine"
+    NET = "Change in last 24 hours"
+    miq_net = df[df["Location"] == MIQ][NET].sum()
+    all_net = df[df["Location"] == "Total"][NET].sum()
+    return all_net - miq_net
 
 
 def midnight_to_midnight_data():
