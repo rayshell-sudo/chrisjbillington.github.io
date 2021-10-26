@@ -113,7 +113,7 @@ if __name__ == '__main__':
         password=password,
     )
 
-    subreddit = reddit.subreddit("test")
+    subreddit = reddit.subreddit("CoronavirusDownunder")
 
     submission = subreddit.submit_gallery(
         title=make_title(),
