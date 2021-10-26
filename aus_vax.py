@@ -125,6 +125,50 @@ def get_data():
 
     return dates, doses_by_state
 
+
+def first_and_second_by_state(state):
+    df = pd.read_html(
+        f"https://covidlive.com.au/report/daily-vaccinations-first-doses/{state.lower()}"
+    )[1]
+    first = np.array(df['FIRST'][::-1])
+    first_dates = np.array(
+        [np.datetime64(datetime.strptime(d, '%d %b %y'), 'D') for d in df['DATE'][::-1]]
+    )
+
+    df = pd.read_html(
+        f"https://covidlive.com.au/report/daily-vaccinations-people/{state.lower()}"
+    )[1]
+    second = np.array(df['SECOND'][::-1])
+    second_dates = np.array(
+        [np.datetime64(datetime.strptime(d, '%d %b %y'), 'D') for d in df['DATE'][::-1]]
+    )
+
+    first[np.isnan(first)] = 0
+    second[np.isnan(second)] = 0
+    maxlen = max(len(first), len(second))
+    if len(first) < len(second):
+        first = np.concatenate([np.zeros(maxlen - len(first)), first])
+        dates = second_dates
+    elif len(second) < len(first):
+        second = np.concatenate([np.zeros(maxlen - len(second)), second])
+        dates = second_dates
+    else:
+        dates = first_dates
+
+    IX_CORRECTION = np.where(dates==np.datetime64('2021-07-29'))[0][0]
+
+    if state.lower() in ['nt', 'act']:
+        first[:IX_CORRECTION] += first[IX_CORRECTION] - first[IX_CORRECTION - 1]
+        second[:IX_CORRECTION] += second[IX_CORRECTION] - second[IX_CORRECTION - 1]
+
+    if first[-1] == first[-2]:
+        first = first[:-1]
+        dates = dates[:-1]
+        second = second[:-1]
+
+    return dates - 1, first, second
+
+
 dates, doses_by_state = get_data()
 
 PHASE_1B = np.datetime64('2021-03-22')
@@ -790,22 +834,44 @@ ax6 = plt.gca()
 # Plot of projection 1st vs 2nd doses
 fig7 = plt.figure(figsize=(8, 6))
 
-proj_first_doses = diff_and_smooth(AZ_first_doses + pfizer_first_doses).cumsum()
-proj_second_doses = diff_and_smooth(AZ_second_doses + pfizer_second_doses).cumsum()
+firstsecond_dates, first_actual, second_actual = first_and_second_by_state('aus')
+
+interval =  len(second_actual) - np.argwhere(first_actual > second_actual[-1])[0][0]
+seven_day_avg = (first_actual[-1] - first_actual[-8]) / 7
+
+proj_dates = np.arange(firstsecond_dates[-1], firstsecond_dates[-1] + interval)
+proj_first_doses = (first_actual[-1] + seven_day_avg * np.arange(interval))
+proj_second_doses = first_actual[-interval:]
 
 plt.step(
-    all_dates + 1,
-    proj_first_doses / 1e6,
+    firstsecond_dates,
+    first_actual / 1e6,
     where='pre',
     label="First doses",
+    color="C0",
+)
+plt.plot(
+    proj_dates,
+    proj_first_doses / 1e6,
+    label="First doses (projected)",
+    color="C0",
+    linestyle='--'
 )
 plt.step(
-    all_dates + 1,
-    proj_second_doses / 1e6,
+    firstsecond_dates,
+    second_actual / 1e6,
     where='pre',
     label="Second doses",
+    color="C1",
 )
-    
+plt.plot(
+    proj_dates,
+    proj_second_doses / 1e6,
+    label="Second doses (projected)",
+    color="C1",
+    linestyle='--'
+)
+
 # all_first_doses = diff_and_smooth(AZ_first_doses + pfizer_first_doses).cumsum()
 # all_second_doses = diff_and_smooth(AZ_second_doses + pfizer_second_doses).cumsum()
 # adult_first_dose_percent = 100 * all_first_doses / POP_16_PLUS
@@ -831,8 +897,11 @@ plt.axvline(today, linestyle=":", color='k', label=f"Today ({today})")
 plt.gca().yaxis.set_major_locator(ticker.MultipleLocator(2.0))
 ax7 = plt.gca()
 
-PHASE_B_DATE = all_dates[proj_second_doses.searchsorted(0.7 * MAX_ELIGIBLE)] + 1
-PHASE_C_DATE = all_dates[proj_second_doses.searchsorted(0.8 * MAX_ELIGIBLE)] + 1
+PHASE_B_DATE = firstsecond_dates[first_actual.searchsorted(0.7 * MAX_ELIGIBLE)] + 1
+if second_actual[-1] > 0.8 * MAX_ELIGIBLE:
+    PHASE_C_DATE = firstsecond_dates[second_actual.searchsorted(0.8 * MAX_ELIGIBLE)] + 1
+else:
+    PHASE_C_DATE = proj_dates[proj_second_doses.searchsorted(0.8 * MAX_ELIGIBLE)] + 1
 
 plt.axhline(
     0.7 * MAX_ELIGIBLE / 1e6,
@@ -965,11 +1034,13 @@ ax6.legend(
 handles, labels = ax7.get_legend_handles_labels()
 order = [0, 1, 5, 6, 7, 8, 3, 4, 2]
 ax7.legend(
-    [handles[idx] for idx in order],
-    [labels[idx] for idx in order],
-    loc='lower right',
+    handles,
+    labels,
+    # [handles[idx] for idx in order],
+    # [labels[idx] for idx in order],
+    loc='upper left',
     # ncol=2,
-    fontsize="small"
+    fontsize="small",
 )
 
 for ax in [ax1, ax2, ax3, ax4, ax5, ax6, ax7]:
@@ -1231,49 +1302,6 @@ POPS_12_PLUS = {
     'ACT': 363730,
     'NT': 203631,
 }
-
-
-def first_and_second_by_state(state):
-    df = pd.read_html(
-        f"https://covidlive.com.au/report/daily-vaccinations-first-doses/{state.lower()}"
-    )[1]
-    first = np.array(df['FIRST'][::-1])
-    first_dates = np.array(
-        [np.datetime64(datetime.strptime(d, '%d %b %y'), 'D') for d in df['DATE'][::-1]]
-    )
-
-    df = pd.read_html(
-        f"https://covidlive.com.au/report/daily-vaccinations-people/{state.lower()}"
-    )[1]
-    second = np.array(df['SECOND'][::-1])
-    second_dates = np.array(
-        [np.datetime64(datetime.strptime(d, '%d %b %y'), 'D') for d in df['DATE'][::-1]]
-    )
-
-    first[np.isnan(first)] = 0
-    second[np.isnan(second)] = 0
-    maxlen = max(len(first), len(second))
-    if len(first) < len(second):
-        first = np.concatenate([np.zeros(maxlen - len(first)), first])
-        dates = second_dates
-    elif len(second) < len(first):
-        second = np.concatenate([np.zeros(maxlen - len(second)), second])
-        dates = second_dates
-    else:
-        dates = first_dates
-
-    IX_CORRECTION = np.where(dates==np.datetime64('2021-07-29'))[0][0]
-
-    if state.lower() in ['nt', 'act']:
-        first[:IX_CORRECTION] += first[IX_CORRECTION] - first[IX_CORRECTION - 1]
-        second[:IX_CORRECTION] += second[IX_CORRECTION] - second[IX_CORRECTION - 1]
-
-    if first[-1] == first[-2]:
-        first = first[:-1]
-        dates = dates[:-1]
-        second = second[:-1]
-
-    return dates - 1, first, second
 
 
 fig13 = plt.figure(figsize=(8, 6))
