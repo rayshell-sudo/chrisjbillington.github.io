@@ -897,7 +897,7 @@ plt.axvline(today, linestyle=":", color='k', label=f"Today ({today})")
 plt.gca().yaxis.set_major_locator(ticker.MultipleLocator(2.0))
 ax7 = plt.gca()
 
-PHASE_B_DATE = firstsecond_dates[first_actual.searchsorted(0.7 * MAX_ELIGIBLE)] + 1
+PHASE_B_DATE = firstsecond_dates[second_actual.searchsorted(0.7 * MAX_ELIGIBLE)] + 1
 if second_actual[-1] > 0.8 * MAX_ELIGIBLE:
     PHASE_C_DATE = firstsecond_dates[second_actual.searchsorted(0.8 * MAX_ELIGIBLE)] + 1
 else:
