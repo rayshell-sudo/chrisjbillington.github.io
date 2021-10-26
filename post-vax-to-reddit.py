@@ -37,15 +37,13 @@ def make_title():
 
 
 IMAGES = [
-    "daily_doses_by_state.png",
+    "daily_doses_by_state_longproject.png",
     "doses_by_weekday.png",
     "coverage_by_agegroup.png",
     "coverage_2nd_by_agegroup.png",
     "coverage_by_state.png",
     "coverage_2nd_by_state.png",    
-    "cumulative_doses.png",
-    "daily_doses_by_state_longproject.png",
-    "projection_by_type.png",
+    "cumulative_doses_longproject.png",
     "projection_cumulative_by_type.png",
 ]
 
@@ -79,37 +77,15 @@ More info/methodology: https://chrisbillington.net/aus_vaccinations.html
 {extra}
 FAQ:
 
-Q. Why did the projection for the phase C target date move back a few days?
+Q. Why did the projections change?
 
-A. I used to assume all supply would go to ages 16+ first. Now that we have to share
-   with those pesky 12–15 year-olds (and now that I've updated my code to acknowledge
-   this) there's less supply for the rest of us and it'll take a tad longer for us to
-   reach any given threshold.
-
-Q. How come in the "Projected cumulative 1st and 2nd doses" plot, the axis on the right
-   is total eligible (12+) population, but the lines for the 70% and 80% thresholds are
-   labelled "Phase B" and "Phase C", when these phases in the national plan refer to the
-   16+ population?
-
-A. This projection was originally made to project total doses based on available supply,
-   and doesn't have any way of predicting which age group doses will go to first when
-   they're all eligible. So I have simply marked the thresholds for the total eligible
-   population. This will correspond well to the thresholds for the 16+ population only
-   if ages 12–15 have similar coverage at those points in time to the rest of the
-   population (uptake is very fast in the 12–15s right now, so maybe this isn't so
-   unreasonable).
-
-Q. What about hesitancy?
-
-A. These projections completely ignore hesitancy, and represent what would be possible
-   if everyone steps up for a dose when it's their turn. Without knowing what level of
-   hesitancy there will be, I can't take it into account - so you should just mentally
-   draw a horizontal line at whatever level of hesitancy you think there will be. For
-   what it's worth, I am personally sceptical that anything like the 20% levels of
-   hesitancy often cited will eventuate in Australia. Given Australia's past track
-   record on vaccinations, I expect we'll end up one of the most highly vaccinated
-   countries in the world against COVID—the lower takeup seen in many other
-   countries is not indicative of what we can achieve here.
+A. These plots used to make projections based on expected supply, which was more
+   accurate than extrapolating from current dose rates when the rollout was
+   supply-limited. Now that the rollout is demand-limited, I've changed it to instead
+   project future doses based on a fit of recent first-doses to an exponential function
+   approaching some maximum level of uptake. Second doses are assumed to follow first
+   doses after the average dosing interval (i.e. how many days ago the first dose
+   coverage level was equal to the current second-dose coverage level).
 
 This post was made by a [bot]({this_script_url}) 🤖. Please let me know if something
 looks broken."""
@@ -137,7 +113,7 @@ if __name__ == '__main__':
         password=password,
     )
 
-    subreddit = reddit.subreddit("CoronavirusDownunder")
+    subreddit = reddit.subreddit("test")
 
     submission = subreddit.submit_gallery(
         title=make_title(),

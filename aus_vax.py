@@ -318,11 +318,9 @@ PFIZER_PROJECTED_SHIPMENTS= """ # In thousands per week
 2022-01-02 2000 + 600
 """
 
-PLOT_END_DATE = (
-    np.datetime64('2022-01-31') if LONGPROJECT else dates[-1] + 50 #np.datetime64('2021-05-31')
-)
+PLOT_END_DATE = np.datetime64('2022-01-01')
 CUMULATIVE_YMAX = 50  # million
-DAILY_YMAX = 380
+DAILY_YMAX = 300
 
 PROJECT = True
 
