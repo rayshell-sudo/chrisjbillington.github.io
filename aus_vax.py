@@ -10,6 +10,7 @@ import matplotlib.ticker as ticker
 from pathlib import Path
 from pytz import timezone
 import pandas as pd
+from scipy.optimize import curve_fit
 
 converter = mdates.ConciseDateConverter()
 munits.registry[np.datetime64] = converter
@@ -349,8 +350,8 @@ PFIZER_WASTAGE = 0.05
 
 # 90% of ~5M over sixties, 40% of ~3M people in their fifties, 50% of 1M NSW residents
 # in their forties, 50% of ~2M NSW residents 18-39, 350k from early in the rollout
-MAX_AZ_ADMINISTERED = .9 * 5e6 + .4 * 3e6 + .5 * 1e6 + 0.5 * 2e6 + 350e3
-
+# MAX_AZ_ADMINISTERED = .9 * 5e6 + .4 * 3e6 + .5 * 1e6 + 0.5 * 2e6 + 350e3
+MAX_AZ_ADMINISTERED = 7e6
 # Number of people 12 years old and older, from ABS ERP June 2020
 MAX_ELIGIBLE = 21_852_349
 
@@ -513,6 +514,38 @@ for i, date in enumerate(all_dates):
 proj_doses = AZ_first_doses + AZ_second_doses + pfizer_first_doses + pfizer_second_doses
 
 
+# No longer using the above for projected doses. Using an exponential fit to recent
+# first-dose data plus assuming second doses follow first after current dosing interval.
+def exponential(x, A, k, c):
+    return A * np.exp(k * x) + c
+
+firstsecond_dates, first_actual, second_actual = first_and_second_by_state('aus')
+total_actual = first_actual + second_actual
+
+interval =  len(second_actual) - np.argwhere(first_actual > second_actual[-1])[0][0]
+n_fit = 28
+n_extrap = 100
+
+proj_dates = np.arange(firstsecond_dates[-1], firstsecond_dates[-1] + n_extrap)
+x_fit = np.arange(-n_fit, 0)
+y_fit = first_actual[-n_fit:]
+
+params, cov = curve_fit(
+    exponential, x_fit, y_fit, [MAX_ELIGIBLE - y_fit[-1], -1 / 14, MAX_ELIGIBLE]
+)
+
+x_extrap = np.arange(n_extrap)
+proj_first_doses = exponential(x_extrap, *params)
+proj_second_doses = np.concatenate(
+    [first_actual[-interval:], proj_first_doses[1 : n_extrap - interval + 1]]
+)
+proj_total_doses = proj_first_doses + proj_second_doses
+
+
+
+
+
+
 days = (dates - dates[0]).astype(float)
 
 daily_doses = np.diff(doses_by_state['AUS'], prepend=0)
@@ -596,17 +629,14 @@ for i, state in enumerate(['NT', 'ACT', 'TAS', 'SA', 'WA', 'QLD', 'VIC', 'NSW', 
 
 if PROJECT:
     plt.fill_between(
-        all_dates[len(dates) - 1 :] + 1,
-        (
-            doses_by_state['AUS'][-1]
-            + nonreserved_rate[len(dates) - 1 :].cumsum()
-        )
-        / 1e6,
+        proj_dates[1:],
+        proj_total_doses[1:] / 1e6,
         # proj_doses[len(dates) - 1 :] / 1e6,
         label='Projection',
         step='post',
         color='cyan',
-        alpha=0.5, linewidth=0,
+        alpha=0.5,
+        linewidth=0,
     )
 
 ax1 = plt.gca()
@@ -620,10 +650,13 @@ plt.axis(
 
 latest_cumulative_doses = doses_by_state["AUS"][-1]
 
-if LONGPROJECT:
+if False:
     plt.title("Projected cumulative doses")
 else:
-    plt.title(f'AUS cumulative doses. Total to date: {latest_cumulative_doses/1e6:.2f}M')
+    plt.title(
+        'Cumulative doses by administration channel\n'
+        f'National total to date: {latest_cumulative_doses/1e6:.2f}M'
+    )
 plt.ylabel('Cumulative doses (millions)')
 
 
@@ -652,11 +685,13 @@ for i, state in enumerate(['NT', 'ACT', 'TAS', 'SA', 'WA', 'QLD', 'VIC', 'NSW', 
     cumsum += daily_doses
 
 
+combined = np.concatenate([np.diff(total_actual), np.diff(proj_total_doses)])
+proj_daily = n_day_average(combined, 7)
+proj_daily = gaussian_smoothing(proj_daily, 1)[-len(proj_dates) :]
 if PROJECT:
-    daily_proj_doses = np.diff(proj_doses, prepend=0)
     plt.fill_between(
-        all_dates[len(dates) - 1 :] + 1,
-        nonreserved_rate[len(dates) - 1 :] / 1e3,
+        proj_dates + 1,
+        proj_daily / 1e3,
         # gaussian_smoothing(daily_proj_doses / 1e3, 4)[len(dates) - 1 :],
         # padded_gaussian_smoothing(daily_proj_doses / 1e3, 4)[len(dates) - 1 :],
         label='Projection',
@@ -668,7 +703,7 @@ if PROJECT:
 
 latest_daily_doses = cumsum[-1]
 
-if LONGPROJECT:
+if False:
     plt.title("Projected daily doses")
 else:
     plt.title(
@@ -834,15 +869,6 @@ ax6 = plt.gca()
 # Plot of projection 1st vs 2nd doses
 fig7 = plt.figure(figsize=(8, 6))
 
-firstsecond_dates, first_actual, second_actual = first_and_second_by_state('aus')
-
-interval =  len(second_actual) - np.argwhere(first_actual > second_actual[-1])[0][0]
-seven_day_avg = (first_actual[-1] - first_actual[-8]) / 7
-
-proj_dates = np.arange(firstsecond_dates[-1], firstsecond_dates[-1] + interval)
-proj_first_doses = (first_actual[-1] + seven_day_avg * np.arange(interval))
-proj_second_doses = first_actual[-interval:]
-
 plt.step(
     firstsecond_dates,
     first_actual / 1e6,
@@ -890,7 +916,7 @@ plt.axis(
     ymax=MAX_ELIGIBLE/1e6 if LONGPROJECT else CUMULATIVE_YMAX,
 
 )
-plt.title('Projected cumulative 1st and 2nd doses')
+plt.title('National cumulative 1st and 2nd doses')
 plt.ylabel('Cumulative doses (millions)')
 today = np.datetime64(datetime.now(), 'D')
 plt.axvline(today, linestyle=":", color='k', label=f"Today ({today})")
@@ -902,6 +928,10 @@ if second_actual[-1] > 0.8 * MAX_ELIGIBLE:
     PHASE_C_DATE = firstsecond_dates[second_actual.searchsorted(0.8 * MAX_ELIGIBLE)] + 1
 else:
     PHASE_C_DATE = proj_dates[proj_second_doses.searchsorted(0.8 * MAX_ELIGIBLE)] + 1
+if second_actual[-1] > 0.9 * MAX_ELIGIBLE:
+    PHASE_D_DATE = firstsecond_dates[second_actual.searchsorted(0.9 * MAX_ELIGIBLE)] + 1
+else:
+    PHASE_D_DATE = proj_dates[proj_second_doses.searchsorted(0.9 * MAX_ELIGIBLE)] + 1
 
 plt.axhline(
     0.7 * MAX_ELIGIBLE / 1e6,
@@ -915,7 +945,12 @@ plt.axhline(
     color='C2',
     label=f"Phase C 80% target ({PHASE_C_DATE})",
 )
-
+plt.axhline(
+    0.9 * MAX_ELIGIBLE / 1e6,
+    linestyle="--",
+    color='C5',
+    label=f"90% target ({PHASE_D_DATE})",
+)
 twinax = plt.twinx()
 twinax.axis(ymin=0, ymax=100)
 twinax.yaxis.set_major_locator(ticker.MultipleLocator(10.0))
