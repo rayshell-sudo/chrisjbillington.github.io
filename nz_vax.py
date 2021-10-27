@@ -1,6 +1,9 @@
+import urllib
+from datetime import datetime, timedelta
+
 import numpy as np
 import pandas as pd
-from datetime import datetime
+
 import matplotlib.units as munits
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
@@ -11,6 +14,7 @@ munits.registry[np.datetime64] = converter
 munits.registry[datetime.date] = converter
 munits.registry[datetime] = converter
 
+POP_OF_NZ = 4.917e6
 
 def seven_day_average(data):
     n = 7
@@ -19,31 +23,54 @@ def seven_day_average(data):
     return ret / n
 
 
-def linear_interpolate_nans(x):
-    """Replace NaNs with a linear interpolation of nearest non NaNs"""
-    for i, value in enumerate(x):
-        if np.isnan(value):
-            j = i + 1
-            while True:
-                if j == len(x):
-                    x[i] = x[i - 1]
-                    break
-                if not np.isnan(x[j]):
-                    x[i] = x[i - 1] + (x[j] - x[i - 1]) / (j - i)
-                    break
-                j += 1
+# def linear_interpolate_nans(x):
+#     """Replace NaNs with a linear interpolation of nearest non NaNs"""
+#     for i, value in enumerate(x):
+#         if np.isnan(value):
+#             j = i + 1
+#             while True:
+#                 if j == len(x):
+#                     x[i] = x[i - 1]
+#                     break
+#                 if not np.isnan(x[j]):
+#                     x[i] = x[i - 1] + (x[j] - x[i - 1]) / (j - i)
+#                     break
+#                 j += 1
+
+
+# def get_data():
+#     REPO_URL = "https://raw.githubusercontent.com/owid/covid-19-data/master"
+#     DATA_DIR = "public/data/vaccinations"
+#     df = pd.read_csv(f"{REPO_URL}/{DATA_DIR}/vaccinations.csv")
+#     df = df[df['location'] == "New Zealand"]
+#     dates = np.array([np.datetime64(d) for d in df['date']])
+#     doses_per_100 = np.array(df['total_vaccinations_per_hundred'])
+#     linear_interpolate_nans(doses_per_100)
+#     daily_doses_per_100 = np.diff(doses_per_100, prepend=0)
+#     return dates, daily_doses_per_100
 
 
 def get_data():
-    REPO_URL = "https://raw.githubusercontent.com/owid/covid-19-data/master"
-    DATA_DIR = "public/data/vaccinations"
-    df = pd.read_csv(f"{REPO_URL}/{DATA_DIR}/vaccinations.csv")
-    df = df[df['location'] == "New Zealand"]
-    dates = np.array([np.datetime64(d) for d in df['date']])
-    doses_per_100 = np.array(df['total_vaccinations_per_hundred'])
-    linear_interpolate_nans(doses_per_100)
-    daily_doses_per_100 = np.diff(doses_per_100, prepend=0)
-    return dates, daily_doses_per_100
+    # HTTP headers to emulate curl
+    curl_headers = {'user-agent': 'curl/7.64.1'}
+
+    for i in range(1, 8):
+        datestring = (datetime.now() - timedelta(days=i)).strftime("%d_%m_%Y")
+        url = (
+            "https://www.health.govt.nz/system/files/documents/pages/"
+            f"covid_vaccinations_{datestring}.xlsx"
+        )
+        print(url)
+        try:
+            df = pd.read_excel(url, sheet_name="Date", storage_options=curl_headers)
+            break
+        except urllib.error.HTTPError:
+            continue
+
+    dates = np.array(df['Date'], dtype='datetime64[D]')
+    doses = np.array(df['First dose administered'] + df['Second dose administered'])
+    return dates, 100 * doses / POP_OF_NZ
+
 
 nz_dates, nz_doses_per_100 = get_data()
 
@@ -55,9 +82,9 @@ OCT = np.datetime64('2021-10-01')
 
 nz_proj_rate = np.zeros(len(t_projection))
 
-nz_proj_rate[:] =  1.5 # Oct onward
+nz_proj_rate[:] = 0.75  # Oct onward
 # clip to 85% fully vaxed
-initial_coverage =  nz_doses_per_100.sum()
+initial_coverage = nz_doses_per_100.sum()
 nz_proj_rate[initial_coverage + nz_proj_rate.cumsum() > 2 * 85] = 0
 
 plt.figure(figsize=(10, 5))

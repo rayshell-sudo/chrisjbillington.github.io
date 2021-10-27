@@ -1,5 +1,5 @@
 import sys
-from datetime import datetime
+from datetime import datetime, timedelta
 from pytz import timezone
 from pathlib import Path
 import json
@@ -136,29 +136,23 @@ def midnight_to_midnight_data():
     counts = np.array([counts[str(d)] if str(d) in counts.index else 0 for d in dates])
     return dates, counts
 
-def linear_interpolate_nans(x):
-    """Replace NaNs with a linear interpolation of nearest non NaNs"""
-    for i, value in enumerate(x):
-        if np.isnan(value):
-            j = i + 1
-            while True:
-                if j == len(x):
-                    x[i] = x[i - 1]
-                    break
-                if not np.isnan(x[j]):
-                    x[i] = x[i - 1] + (x[j] - x[i - 1]) / (j - i)
-                    break
-                j += 1
 
+def moh_doses_per_100(n):
+    for i in range(1, 8):
+        datestring = (datetime.now() - timedelta(days=i)).strftime("%d_%m_%Y")
+        url = (
+            "https://www.health.govt.nz/system/files/documents/pages/"
+            f"covid_vaccinations_{datestring}.xlsx"
+        )
+        print(url)
+        try:
+            df = pd.read_excel(url, sheet_name="Date", storage_options=curl_headers)
+            break
+        except urllib.error.HTTPError:
+            continue
 
-def owid_doses_per_hundred(n):
-    REPO_URL = "https://raw.githubusercontent.com/owid/covid-19-data/master"
-    DATA_DIR = "public/data/vaccinations"
-    df = pd.read_csv(f"{REPO_URL}/{DATA_DIR}/vaccinations.csv")
-    df = df[df['location'] == "New Zealand"]
-    doses_per_100 = np.array(df['total_vaccinations_per_hundred'])
-    linear_interpolate_nans(doses_per_100)
-    return np.array(doses_per_100)[-n:]
+    doses = np.array(df['First dose administered'] + df['Second dose administered'])
+    return 100 * doses.cumsum()[-n:] / POP_OF_NZ
 
 
 def gaussian_smoothing(data, pts):
@@ -301,7 +295,11 @@ def projected_vaccine_immune_population(t, historical_doses_per_100):
     doses_per_100[0] = historical_doses_per_100[-1]
 
     # History of previously projected rates, so I can remake old projections:
-    if dates[-1] >= np.datetime64('2021-10-06'):
+    if dates[-1] >= np.datetime64('2021-10-27'):
+        AUG_RATE = None
+        SEP_RATE = None
+        OCT_RATE = 0.75
+    elif dates[-1] >= np.datetime64('2021-10-06'):
         AUG_RATE = None
         SEP_RATE = None
         OCT_RATE = 1.5
@@ -354,7 +352,7 @@ all_dates = dates
 all_new = new
 
 # Current vaccination level:
-doses_per_100 = owid_doses_per_hundred(n=5*len(dates))
+doses_per_100 = moh_doses_per_100(n=5*len(dates))
 
 if OLD:
     dates = dates[:START_VAX_PROJECTIONS + OLD_END_IX]
