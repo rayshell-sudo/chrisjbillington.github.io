@@ -921,7 +921,7 @@ text.set_bbox(dict(facecolor='white', alpha=0.8, linewidth=0))
 if VAX:
     total_cases_range = f"{total_cases_lower/1000:.0f}k—{total_cases_upper/1000:.0f}k"
     text = fig1.text(
-        0.63,
+        0.65,
         0.83,
         "\n".join(
             [
@@ -948,9 +948,7 @@ if not LGA:
     ax2.set_yscale('linear')
     maxproj = new_projection[t_projection < (END_PLOT - dates[-1]).astype(int)].max()
     if OLD:
-        ymax = 10_000
-    elif not VAX:
-        ymax = 4000
+        ymax = 8000
     elif maxproj < 1800:
         ymax = 2400
     elif maxproj < 2400:
