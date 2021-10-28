@@ -239,7 +239,7 @@ for state in STATES:
             coverage_string = f"{coverage[-1]:.1f}" if coverage[-1] < 94.9 else ">95"
         plt.plot(d, coverage, *args, label=f"{label} ({coverage_string} %)")
 
-    plt.legend(loc='upper right', prop={'size': 9})
+    plt.legend(loc='lower right', prop={'size': 8})
     plt.grid(True, linestyle=':', color='k', alpha=0.5)
     locator = mdates.DayLocator([1, 15])
     formatter = mdates.ConciseDateFormatter(locator)
@@ -248,7 +248,7 @@ for state in STATES:
     plt.gca().yaxis.set_major_locator(ticker.MultipleLocator(10))
     plt.axis(
         xmin=np.datetime64('2021-07-28'),
-        xmax=np.datetime64('2022-01-01'),
+        xmax=np.datetime64('2022-02-01'),
         ymin=0,
         ymax=100,
     )
@@ -273,7 +273,7 @@ for state in STATES:
             coverage_string = f"{coverage[-1]:.1f}" if coverage[-1] < 94.9 else ">95"
         plt.plot(d, coverage, *args, label=f"{label} ({coverage_string} %)")
 
-    plt.legend(loc='upper right', prop={'size': 9})
+    plt.legend(loc='lower right', prop={'size': 8})
     plt.grid(True, linestyle=':', color='k', alpha=0.5)
     locator = mdates.DayLocator([1, 15])
     formatter = mdates.ConciseDateFormatter(locator)
@@ -282,7 +282,7 @@ for state in STATES:
     plt.gca().yaxis.set_major_locator(ticker.MultipleLocator(10))
     plt.axis(
         xmin=np.datetime64('2021-07-28'),
-        xmax=np.datetime64('2022-01-01'),
+        xmax=np.datetime64('2022-02-01'),
         ymin=0,
         ymax=100,
     )

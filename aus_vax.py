@@ -318,7 +318,7 @@ PFIZER_PROJECTED_SHIPMENTS= """ # In thousands per week
 2022-01-02 2000 + 600
 """
 
-PLOT_END_DATE = np.datetime64('2022-01-01')
+PLOT_END_DATE = np.datetime64('2022-02-01')
 CUMULATIVE_YMAX = 50  # million
 DAILY_YMAX = 300
 
@@ -1226,7 +1226,10 @@ plt.gca().xaxis.set_major_locator(locator)
 plt.gca().xaxis.set_major_formatter(formatter)
 plt.gca().yaxis.set_major_locator(ticker.MultipleLocator(10))
 plt.axis(
-    xmin=np.datetime64('2021-05-09'), xmax=np.datetime64('2022-01-01'), ymin=0, ymax=100
+    xmin=np.datetime64('2021-05-09'),
+    xmax=np.datetime64('2022-02-01'),
+    ymin=0,
+    ymax=100,
 )
 plt.title("First dose coverage by age group")
 plt.ylabel("Vaccine coverage (%)")
@@ -1265,7 +1268,10 @@ plt.gca().xaxis.set_major_locator(locator)
 plt.gca().xaxis.set_major_formatter(formatter)
 plt.gca().yaxis.set_major_locator(ticker.MultipleLocator(1.0))
 plt.axis(
-    xmin=np.datetime64('2021-05-09'), xmax=np.datetime64('2022-01-01'), ymin=0, ymax=15
+    xmin=np.datetime64('2021-05-09'),
+    xmax=np.datetime64('2022-02-01'),
+    ymin=0,
+    ymax=15,
 )
 plt.title("First dose weekly increase by age group")
 plt.ylabel("Vaccination rate (% of age group / week)")
@@ -1286,7 +1292,10 @@ plt.gca().xaxis.set_major_locator(locator)
 plt.gca().xaxis.set_major_formatter(formatter)
 plt.gca().yaxis.set_major_locator(ticker.MultipleLocator(10))
 plt.axis(
-    xmin=np.datetime64('2021-05-09'), xmax=np.datetime64('2022-01-01'), ymin=0, ymax=100
+    xmin=np.datetime64('2021-05-09'),
+    xmax=np.datetime64('2022-02-01'),
+    ymin=0,
+    ymax=100,
 )
 plt.title("Second dose coverage by age group")
 plt.ylabel("Vaccine coverage (%)")
@@ -1317,7 +1326,10 @@ plt.gca().xaxis.set_major_locator(locator)
 plt.gca().xaxis.set_major_formatter(formatter)
 plt.gca().yaxis.set_major_locator(ticker.MultipleLocator(1.0))
 plt.axis(
-    xmin=np.datetime64('2021-05-09'), xmax=np.datetime64('2022-01-01'), ymin=0, ymax=15
+    xmin=np.datetime64('2021-05-09'),
+    xmax=np.datetime64('2022-02-01'),
+    ymin=0,
+    ymax=15,
 )
 plt.title("Second dose weekly increase by age group")
 plt.ylabel("Vaccination rate (% of age group / week)")
@@ -1384,7 +1396,7 @@ for state, pop in POPS_12_PLUS.items():
 
 for ax in [ax13, ax14, ax15, ax16]:
     rate_plot = ax in [ax15, ax16]
-    ax.legend(loc='upper right', prop={'size': 9})
+    ax.legend(loc='upper right' if rate_plot else 'lower right', prop={'size': 8})
     ax.grid(True, linestyle=':', color='k', alpha=0.5)
     locator = mdates.DayLocator([1, 15])
     formatter = mdates.ConciseDateFormatter(locator)
@@ -1393,7 +1405,7 @@ for ax in [ax13, ax14, ax15, ax16]:
     ax.yaxis.set_major_locator(ticker.MultipleLocator(1 if rate_plot else 10))
     ax.axis(
         xmin=np.datetime64('2021-07-15'),
-        xmax=np.datetime64('2022-01-01'),
+        xmax=np.datetime64('2022-02-01'),
         ymin=0,
         ymax=10 if rate_plot else 100,
     )
