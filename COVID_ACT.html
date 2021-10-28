@@ -200,113 +200,185 @@
       salt—it is merely an indication of the trend as it is right now.
     </p> 
 
-    <h3 id="methodology">Methodology</h3>
+  <h3 id="methodology">Methodology</h3>
 
-    <h4>Smoothing, calculating <i>R</i><sub>eff</sub> and projections</h4>
+  <h4>Padding, smoothing, and calculating <i>R</i><sub>eff</sub></h4>
 
-    <p>
-      Daily case numbers have been smoothed with 4-day Gaussian smoothing:
-      <br>
-      <br>
-      <i>N</i><sub>smoothed</sub>(<i>t</i>) = <i>N</i>(<i>t</i>) ∗
-      (2<i>πT</i><sub>s</sub><sup>2</sup>)<sup>-1/2</sup> exp(-<i>t</i><sup>2</sup> /
-      2<i>T</i><sub>s</sub><sup>2</sup>)
-      <br>
-      <br>
-      where <i>T</i><sub>s</sub> = 4 days
-      and ∗ is the convolution operation.
-    </p>
+  <p>
+    Before calculating <i>R</i><sub>eff</sub>, the daily case numbers are padded on the
+    right and smoothed. A symmetric smoothing method is used, which is why padding on the
+    right is necessary before smoothing.
+  </p>
+  <p>
+    The padding is an extrapolation based on a fit to the most recent 14 days of daily
+    case numbers <i>n</i>(<i>t</i>), with the following fit function:
+  </p>
+  <p>
 
-    <p>
-      Before smoothing, the daily case numbers are padded on the right with an
-      extrapolation based on a exponential fit to the most recent 14 days of data.
-    </p>
+    <i>n</i>(<i>t</i>) = <i>A</i> exp[
+    <i>k</i>(
+    <i>t</i>-<i>t</i><sub>today</sub>)
+    + 1/2 <i>k̇</i> (<i>t</i>-<i>t</i><sub>today</sub>
+    )<sup>2</sup>
+    ]
 
-    <p>
-      <i>R</i><sub>eff</sub> is then calculated for each day as:
-      <br>
-      <br>
-      <i>R</i><sub>eff</sub>(<i>t<sub>i</sub></i>) = (<i>N</i><sub>smoothed</sub>(<i>t<sub>i</sub></i>) / <i>N</i><sub>smoothed</sub>(<i>t</i><sub><i>i</i>-1</sub>))<sup><i>T</i><sub>g</sub></sup>
-      <br>
-      <br>
-      where <i>T</i><sub>g</sub> = 5 days is the approximate generation time of the virus.
-    </p>
-    <p>
-      The uncertainty in <i>R</i><sub>eff</sub> has contributions from the uncertainty
-      in the above-mentioned exponential fit, as well as uncertainty in daily case
-      numbers. The latter is considered to be Poisson noise scaled by a constant, chosen
-      so as to make the reduced chi squared between raw and smoothed daily case numbers
-      equal to 1.0.
-    </p>
-    <p>
-      The extrapolation of daily case numbers is based on exponential growth/decay using
-      the most recent value of <i>R</i><sub>eff</sub> and its uncertainty range:
-      <br>
-      <br>
-      <i>N</i><sub>extrap</sub>(<i>t<sub>i</sub></i>) = <i>N</i><sub>smoothed</sub>(<i>t</i><sub>today</sub>) <i>R</i><sub>eff</sub>(<i>t</i><sub>today</sub>)
-      <sup>(<i>t<sub>i</sub></i> - <i>t</i><sub>today</sub>)/<i>T</i><sub>g</sub></sup>
-      <br>
-      <br>
-    </p>
+  </p>
+  <p>
+    where <i>A</i> and <i>k</i> are the fit parameters for the current daily caseload and
+    exponential growth rate, and <i>k̇</i> is the current expected rate of change of the
+    exponential growth rate due to vaccines:
+  </p>
+  <p>
+    <i>k̇</i> = 1 / 𝜏 (<i>s</i><sub>vax</sub>(<i>t</i><sub>today</sub>) /
+    <i>s</i><sub>vax</sub>(<i>t</i><sub>yesterday</sub>) - 1)
+  </p>
+  <p>
+    where 𝜏 = 5 days is the approximate mean generation time of the virus, and
+    <i>s</i><sub>vax</sub>(<i>t</i><sub>today</sub>) and
+    <i>s</i><sub>vax</sub>(<i>t</i><sub>yesterday</sub>) are the fraction of the
+    population not protected by vaccination from infection today and yesterday. See <a
+    href="#vax-assumptions">vaccination assumptions</a> below for how
+    <i>s</i><sub>vax</sub>(<i>t</i>) is calculated from vaccination numbers.
+  </p>
+  <p>
+    After padding, daily case numbers are smoothed with 4-day Gaussian smoothing:
+  </p>
+  <p>
+    <i>n</i><sub>smoothed</sub>(<i>t</i>) = <i>n</i>(<i>t</i>) ∗
+    (2𝜋<i>T</i><sub>s</sub><sup>2</sup>)<sup>-1/2</sup> exp(-<i>t</i><sup>2</sup> /
+    2<i>T</i><sub>s</sub><sup>2</sup>)
+  </p>
+  <p>
+    where <i>T</i><sub>s</sub> = 4 days and ∗ is the convolution operation.
+  </p>
+  </p>
+  <p>
+    <i>R</i><sub>eff</sub> is then calculated for each day as:
+  </p>
+  <p>
+    <i>R</i><sub>eff</sub>(<i>t<sub>i</sub></i>) =
+    (<i>n</i><sub>smoothed</sub>(<i>t<sub>i</sub></i>) /
+    <i>n</i><sub>smoothed</sub>(<i>t</i><sub><i>i</i>-1</sub>))<sup>𝜏</sup>.
+  </p>
+  <p>
+    The uncertainty in <i>R</i><sub>eff</sub> has contributions from the uncertainty in
+    the above-mentioned fit, as well as uncertainty in daily case numbers. The latter is
+    considered to be Poisson noise scaled by a constant, chosen so as to make the reduced
+    chi squared between raw and smoothed daily case numbers equal to 1.0.
+  </p>
 
-    <h4>Vaccination model</h4>
-    <p>
-      <span style="background-color: #FF00FF"><b>Note 2021-07-30</b></span>: I have
-      changed the model used for the projections of the vaccine rollout to a stochastic
-      SIR model, and the description below is out of date. I haven't yet documented the
-      new model on this page, but the code can be seen <a
-      href="https://github.com/chrisjbillington/chrisjbillington.github.io/blob/6451abd3623be9c571120d7e0e1a85b1fdde6242/nsw.py#L253">here</a>
-      in the meantime. The projected outcomes with the new model are very similar to the
-      old model, which was valid in the limit of infections only reaching a small
-      fraction of the total population.
-    </p>
-    <p>
-      To model vaccines taking effect after a delay, daily vaccine dose numbers
-      <i>V</i>(<i>t</i>) are convolved with a Gaussian offset 1.5
-      weeks in the future, with standard deviation 0.5 weeks:
-      <br>
-      <br>
-      <i>V</i><sub>effective</sub>(<i>t</i>) = <i>V</i>(<i>t</i>) ∗
-      (2<i>πσ</i><sup>2</sup>)<sup>-1/2</sup> exp(-(<i>t</i> - <i>μ</i>)<sup>2</sup> /
-      2<i>σ</i><sup>2</sup>)
-      <br>
-      <br>
-      where <i>μ</i> = 10.5 days, <i>σ</i> = 3.5 days, and ∗ is the convolution
-      operation. This causes the effect of a vaccine dose to over the course of the
-      second week after it is adminsitered, reaching nearly full effectiveness
-      approximately two weeks after administration.
-    </p>
-    <p>
-      I assume that one dose of any vaccine reduces spread by 40%, and two doses reduce
-      spread by 80%. The proportion of the population susceptible to the virus is then:
-      <br>
-      <br>
-      <i>s</i>(<i>t<sub>i</sub></i>) = 1 - 0.4 × <i>D</i>(<i>t</i><sub><i>i</i></sub>)
-      <br>
-      <br>
-      where <i>D</i>(<i>t</i><sub><i>i</i></sub>) is the cumulative number of doses per
-      capita on each day.
-    </p>
-    <p>
-      <i>R</i><sub>eff</sub> is then estimated for any future date as:
-      <br>
-      <br>
-      <i>R</i><sub>eff</sub>(<i>t</i><sub><i>i</i></sub>) = 
-      <i>R</i><sub>eff</sub>(<i>t</i><sub>today</sub>)
-      × <i>s</i>(<i>t<sub>i</sub></i>) / <i>s</i>(t<sub>today</sub>)
-      <br>
-      <br>
-    </p>
-    <p>
-      And case numbers extrapolated from one day to the next, beginning with
-      <i>N</i><sub>smoothed</sub>(<i>t</i><sub>today</sub>), according to:
-      <br>
-      <br>
-      <i>N</i><sub>extrap</sub>(<i>t<sub>i</sub></i>) = <i>N</i><sub>extrap</sub>(<i>t<sub>i-1</sub></i>) <i>R</i><sub>eff</sub>(<i>t</i><sub><i>i</i></sub>)
-      <sup>1/<i>T</i><sub>g</sub></sup>
-      <br>
-      <br>
-    </p>
+  <h4>Trend based on <i>R</i><sub>eff</sub> only</h4>
+
+  <p>
+    The plot(s) with a simple extrapolation of daily case numbers, without taking into
+    account the expected effects of vaccines, is exponential growth/decay using the most
+    recent value of <i>R</i><sub>eff</sub> and its uncertainty range:
+  </p>
+  <p>
+    <i>n</i><sub>extrap</sub> (<i>t<sub>i</sub></i>) =
+    <i>n</i><sub>smoothed</sub>(<i>t</i><sub>today</sub>)
+    <i>R</i><sub>eff</sub>(<i>t</i><sub>today</sub>)
+    <sup>(<i>t<sub>i</sub></i> - <i>t</i><sub>today</sub>) / 𝜏</sup>
+  </p>
+
+  <h4>Projected effect of vaccines</h4>
+  <p>
+
+    To project the effect of vaccines on the progression of daily cases in the future, I use
+    a stochastic SIR model. The model is run 1000 times to project daily case numbers, and
+    the median result and 68% range of outcomes shown in the projection.
+  </p>
+  <p>
+    In each run of the model, a random value for each of
+    <i>R</i><sub>eff</sub>(<i>t</i><sub>today</sub>) and
+    <i>n</i><sub>smoothed</sub>(<i>t</i><sub>today</sub>) is drawn from a multivariate
+    normal distribution, using the mean values and covariance of the estimates of the two
+    parameters.
+  </p>
+  <p>
+    The initial infectious population is taken to be:
+  </p>
+  <p>
+    <i>i</i>(<i>t</i><sub>today</sub>) =
+    𝜏 <i>n</i><sub>smoothed</sub>(<i>t</i><sub>today</sub>)
+  </p>
+  <p>
+    The initial recovered population <i>r</i>(<i>t</i><sub>today</sub>) is taken to be the
+    cumulative number of cases so far in the outbreak, minus the currently infectious
+    population.
+  </p>
+  <p>
+    Each day, the fraction of the population susceptible to infection <i>s</i>(<i>t</i>) is
+    taken to be
+  </p>
+  <p>
+    <i>s</i>(<i>t</i>) = (1 - <i>s</i><sub>vax</sub>(<i>t</i>)) [1 - (<i>r</i>(<i>t</i>) +
+    <i>i</i>(<i>t</i>)) / <i>N</i>]
+  </p>
+  <p>
+    where <i>s</i><sub>vax</sub>(<i>t</i>) is the fraction of the population not protected
+    from infection by vaccines (see See <a href="#vax-assumptions">below</a> for how this
+    is calculated), and <i>N</i> is the total population.
+  </p>
+  <p>
+    Assuming that <i>R</i><sub>eff</sub> is proportional to the susceptible fraction of
+    the population, we can estimate what the reproduction number of the virus would be in
+    the absence of any vaccines or immunity from infection:
+  </p>
+  <p>
+    <i>R</i><sub>naive</sub> = <i>R</i><sub>eff</sub>(<i>t</i><sub>today</sub>) /
+    <i>s</i>(<i>t</i><sub>today</sub>)
+  </p>
+  <p>
+    And compute and <i>R</i><sub>naive</sub> for each future  based on the susceptible
+    fraction of the population that day:
+  </p>
+  <p>
+    <i>R</i><sub>eff</sub>(<i>t</i>) = <i>s</i>(<i>t</i>) <i>R</i><sub>naive</sub>
+  </p>
+  <p>
+    Each day of the model, the infectious population is increased by the number of new
+    infections, and decreased by the number of new recoveries. The recovered population is
+    increased by the number of new recoveries.
+  </p>
+  <p>
+    The number of new infections each day is drawn from a Poission distribution with mean
+    equal to <i>i</i>(<i>t</i>) <i>R</i><sub>eff</sub>(<i>t</i>) / 𝜏.
+  </p>
+  <p>
+    The number of new recoveries each days is drawn from a binomial distribution with
+    number of trials equal to the infectious population <i>i</i>(<i>t</i>), and with
+    probability 1 / 𝜏.
+  </p>
+  <h4 id="vax-assumptions">Vaccination assumptions</h4>
+  <p>
+    To model vaccines taking effect after a delay, daily vaccine dose numbers
+    <i>v</i>(<i>t</i>) are convolved with a Gaussian function offset 1.5 weeks in the
+    future, with standard deviation 0.5 weeks:
+  </p>
+  <p>
+    <i>v</i><sub>effective</sub>(<i>t</i>) = <i>v</i>(<i>t</i>) ∗
+    (2𝜋<i>σ</i><sup>2</sup>)<sup>-1/2</sup> exp(-(<i>t</i> - <i>μ</i>)<sup>2</sup> /
+    2<i>σ</i><sup>2</sup>)
+  </p>
+  <p>
+    where <i>μ</i> = 10.5 days, <i>σ</i> = 3.5 days, and ∗ is the convolution
+    operation. This causes the effect of a vaccine dose to over the course of the
+    second week after it is adminsitered, reaching nearly full effectiveness
+    approximately two weeks after administration.
+  </p>
+  <p>
+    I assume that one dose of any vaccine reduces spread by 40%, and two doses reduce
+    spread by 80%. The proportion of the population not protected by the vaccine against
+    infection is then:
+  </p>
+  <p>
+    <i>s</i><sub>vax</sub>(<i>t<sub>i</sub></i>) = 1 - 0.4 × <i>d</i>(<i>t</i><sub><i>i</i></sub>)
+  </p>
+  <p>
+    where <i>d</i>(<i>t</i><sub><i>i</i></sub>) is the cumulative number of doses per
+    capita on each day.
+  </p>
 
     <h3 id="details">Data sources and contact</h3>
 

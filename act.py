@@ -312,7 +312,7 @@ def exponential(x, A, k):
 
 immune = projected_vaccine_immune_population(np.arange(100), doses_per_100)
 s = 1 - immune
-dk_dt = 1 / 5 * (s[1] / s[0] - 1)
+dk_dt = 1 / tau * (s[1] / s[0] - 1)
 
 # Exponential growth, but with the expected rate of decline in k due to vaccines.
 def exponential_with_vax(x, A, k):
