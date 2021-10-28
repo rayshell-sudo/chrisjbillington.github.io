@@ -493,7 +493,7 @@ def exponential_with_vax(x, A, k):
     return A * np.exp(k * x + 1 / 2 * dk_dt * x ** 2)
 
 # Keep the old methodology for old plots:
-if False:  # dates[-1] >= np.datetime64('2021-10-07'):
+if dates[-1] >= np.datetime64('2021-10-27'):
     padding_model = exponential_with_vax
 else:
     padding_model = exponential
