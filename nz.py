@@ -106,7 +106,7 @@ def get_todays_cases():
     NET = "Change in last 24 hours"
     miq_net = df[df["Location"] == MIQ][NET].sum()
     all_net = df[df["Location"] == "Total"][NET].sum()
-    return int(all_net.strip("*")) - int(miq_net)
+    return int(str(all_net).strip("*")) - int(str(miq_net).strip("*"))
 
 
 def midnight_to_midnight_data():
