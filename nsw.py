@@ -414,6 +414,7 @@ WESTERN_NSW_LGAS = [
     # "Unincorporated Far West",
 ]
 
+# Source: https://lpinsw.maps.arcgis.com/apps/webappviewer/index.html?id=2a8d27c8959c407396be0a3433eb4a58
 GREATER_SYDNEY_LGAS = {
     "Hawkesbury",
     "Central Coast",
