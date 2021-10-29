@@ -31,6 +31,8 @@ POP_OF_NSW = 8.166e6
 VAX = 'vax' in sys.argv
 OTHERS = 'others' in sys.argv
 CONCERN = 'concern' in sys.argv
+SYDNEY = 'sydney' in sys.argv
+NOT_SYDNEY = 'notsydney' in sys.argv
 HUNTER = 'hunter' in sys.argv
 ILLAWARRA = 'illawarra' in sys.argv
 WESTERN_NSW = 'wnsw' in sys.argv
@@ -40,7 +42,7 @@ LGA = None
 OLD = 'old' in sys.argv
 
 if (
-    not (VAX or OTHERS or CONCERN or HUNTER or ILLAWARRA or WESTERN_NSW or BIPARTITE)
+    not (VAX or OTHERS or CONCERN or SYDNEY or NOT_SYDNEY or HUNTER or ILLAWARRA or WESTERN_NSW or BIPARTITE)
     and sys.argv[1:]
 ):
     if (VAX and OTHERS) or (VAX and CONCERN):
@@ -412,9 +414,47 @@ WESTERN_NSW_LGAS = [
     # "Unincorporated Far West",
 ]
 
+GREATER_SYDNEY_LGAS = {
+    "Hawkesbury",
+    "Central Coast",
+    "The Hills Shire",
+    "Hornsby",
+    "Northern Beaches",
+    "Blue Mountains",
+    "Penrith",
+    "Blacktown",
+    "Parramatta",
+    "Ryde",
+    "Willoughby",
+    "Lane Cove",
+    "Hunters Hill",
+    "North Sydney",
+    "Mosman",
+    "Wollondilly",
+    "Liverpool",
+    "Fairfield",
+    "Cumberland",
+    "Strathfield",
+    "Burwood",
+    "Canada Bay",
+    "Inner West",
+    "Sydney",
+    "Woollahra",
+    "Waverley",
+    "Camden",
+    "Campbelltown",
+    "Canterbury-Bankstown",
+    "Georges River",
+    "Bayside",
+    "Randwick",
+    "Sutherland Shire",
+    "Wollongong",
+    "Shellharbour"
+}
+
 dates, cases_by_lga = lga_data()
 
-if LGA_IX is not None or OTHERS or CONCERN or HUNTER or ILLAWARRA or WESTERN_NSW:
+if LGA_IX is not None or OTHERS or CONCERN or SYDNEY or NOT_SYDNEY or HUNTER or ILLAWARRA or WESTERN_NSW:
     dates, cases_by_lga = lga_data()
     # Sort LGAs in reverse order by last 14d cases
     sorted_lgas_of_concern = sorted(
@@ -441,6 +481,12 @@ elif OTHERS:
 elif CONCERN:
     # Sum over all LGAs of concern
     new = sum(cases_by_lga[lga] for lga in cases_by_lga if lga in LGAs_OF_CONCERN) 
+elif SYDNEY:
+    # Sum over all LGAs in Greater Sydney
+    new = sum(cases_by_lga[lga] for lga in cases_by_lga if lga in GREATER_SYDNEY_LGAS) 
+elif NOT_SYDNEY:
+    # Sum over all LGAs *not* in Greater Sydney
+    new = sum(cases_by_lga[lga] for lga in cases_by_lga if lga not in GREATER_SYDNEY_LGAS) 
 elif HUNTER:
     new = sum(cases_by_lga[lga] for lga in cases_by_lga if lga in HUNTER_LGAS) 
 elif ILLAWARRA:
@@ -968,6 +1014,10 @@ if VAX and not BIPARTITE:
         region = "New South Wales (excluding LGAs of concern)"
     elif CONCERN:
         region = "New South Wales LGAs of concern"
+    elif SYDNEY:
+        region = "Greater Sydney"
+    elif NOT_SYDNEY:
+        region = "New South Wales (excluding Greater Sydney)"
     elif HUNTER:
         region = "the Hunter region"
     elif ILLAWARRA:
@@ -1002,6 +1052,10 @@ else:
         region = "New South Wales (excluding LGAs of concern)"
     elif CONCERN:
         region = "New South Wales LGAs of concern"
+    elif SYDNEY:
+        region = "Greater Sydney"
+    elif NOT_SYDNEY:
+        region = "New South Wales (excluding Greater Sydney)"
     elif HUNTER:
         region = "the Hunter region"
     elif ILLAWARRA:
@@ -1125,6 +1179,10 @@ if VAX:
         suffix = "_others_vax"
     elif CONCERN:
         suffix = "_concern_vax"
+    elif SYDNEY:
+        suffix = "_sydney_vax"
+    elif NOT_SYDNEY:
+        suffix = "_not_sydney_vax"
     elif HUNTER:
         suffix = "_hunter_vax"
     elif ILLAWARRA:
@@ -1139,6 +1197,10 @@ elif OTHERS:
     suffix='_LGA_others'
 elif CONCERN:
     suffix = '_LGA_concern'
+elif SYDNEY:
+    suffix = '_sydney'
+elif NOT_SYDNEY:
+    suffix = '_not_sydney'
 elif HUNTER:
     suffix = '_hunter'
 elif ILLAWARRA:
@@ -1153,7 +1215,7 @@ if OLD:
 else:
     fig1.savefig(f'COVID_NSW{suffix}.svg')
     fig1.savefig(f'COVID_NSW{suffix}.png', dpi=133)
-if VAX or not (LGA or OTHERS or CONCERN or HUNTER or ILLAWARRA or WESTERN_NSW):
+if VAX or not (LGA or OTHERS or CONCERN or SYDNEY or NOT_SYDNEY or HUNTER or ILLAWARRA or WESTERN_NSW):
     ax2.set_yscale('linear')
     if OLD:
         ymax = 4000
@@ -1193,6 +1255,18 @@ elif OTHERS and not VAX:
     stats['new_others'] = new_smoothed[-1]
     stats['cov_others'] = cov.tolist()
     stats['initial_cumulative_others'] = int(new.sum())
+elif SYDNEY and not VAX:
+    stats['R_eff_sydney'] = R[-1] 
+    stats['u_R_eff_sydney'] = u_R_latest
+    stats['new_sydney'] = new_smoothed[-1]
+    stats['cov_sydney'] = cov.tolist()
+    stats['initial_cumulative_sydney'] = int(new.sum())
+elif NOT_SYDNEY and not VAX:
+    stats['R_eff_not_sydney'] = R[-1] 
+    stats['u_R_eff_not_sydney'] = u_R_latest
+    stats['new_not_sydney'] = new_smoothed[-1]
+    stats['cov_not_sydney'] = cov.tolist()
+    stats['initial_cumulative_not_sydney'] = int(new.sum())
 elif HUNTER and not VAX:
     stats['R_eff_hunter'] = R[-1] 
     stats['u_R_eff_hunter'] = u_R_latest
@@ -1211,13 +1285,13 @@ elif WESTERN_NSW and not VAX:
     stats['new_wnsw'] = new_smoothed[-1]
     stats['cov_wnsw'] = cov.tolist()
     stats['initial_cumulative_wnsw'] = int(new.sum())
-elif not (LGA or CONCERN or HUNTER or ILLAWARRA or OTHERS or BIPARTITE):
+elif not (LGA or CONCERN or SYDNEY or NOT_SYDNEY or HUNTER or ILLAWARRA or OTHERS or BIPARTITE):
     stats['R_eff'] = R[-1] 
     stats['u_R_eff'] = u_R_latest
     stats['today'] = str(np.datetime64(datetime.now(), 'D'))
 
 if VAX and not (
-    LGA or OTHERS or CONCERN or HUNTER or ILLAWARRA or WESTERN_NSW or BIPARTITE
+    LGA or OTHERS or CONCERN or SYDNEY or NOT_SYDNEY or HUNTER or ILLAWARRA or WESTERN_NSW or BIPARTITE
 ):
     # Case number predictions
     stats['projection'] = []
