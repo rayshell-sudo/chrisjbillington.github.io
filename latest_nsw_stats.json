@@ -656,5 +656,33 @@
             0.01475574178093288
         ]
     ],
-    "initial_cumulative_illawarra": 2482
+    "initial_cumulative_illawarra": 2482,
+    "R_eff_sydney": 0.753326347132327,
+    "u_R_eff_sydney": 0.06868168017206422,
+    "new_sydney": 126.73458654151976,
+    "cov_sydney": [
+        [
+            160.08970545262693,
+            0.7402827647029333
+        ],
+        [
+            0.7402827647029333,
+            0.004717173191257721
+        ]
+    ],
+    "initial_cumulative_sydney": 61677,
+    "R_eff_not_sydney": 1.1505263127038237,
+    "u_R_eff_not_sydney": 0.13290544566752027,
+    "new_not_sydney": 160.59534658674445,
+    "cov_not_sydney": [
+        [
+            373.3461465579886,
+            2.337623573182396
+        ],
+        [
+            2.337623573182396,
+            0.017663857488082173
+        ]
+    ],
+    "initial_cumulative_not_sydney": 7137
 }

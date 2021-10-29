@@ -62,6 +62,26 @@ def tweet_2_text():
 
 def tweet_3_text():
     stats = json.loads(Path("latest_nsw_stats.json").read_text())
+    R_eff_sydney = stats['R_eff_sydney']
+    u_R_eff_sydney = stats['u_R_eff_sydney']
+    R_eff_not_sydney = stats['R_eff_not_sydney']
+    u_R_eff_not_sydney = stats['u_R_eff_not_sydney']
+
+    COMMENT_TEXT = f"""\
+    R_eff in Greater Sydney vs rest of New South Wales:
+
+    Greater Sydney: R_eff = {R_eff_sydney:.02f} ± {u_R_eff_sydney:.02f}
+    NSW excluding Greater Sydney: R_eff = {R_eff_not_sydney:.02f} ± {u_R_eff_not_sydney:.02f}
+
+    (Cases shown on a log scale)
+
+    (note region-specific data is several days old, does not include today's cases)
+
+    #covid19nsw #covidsydney"""
+    return dedent(COMMENT_TEXT)
+
+def tweet_4_text():
+    stats = json.loads(Path("latest_nsw_stats.json").read_text())
     R_eff_concern = stats['R_eff_concern']
     u_R_eff_concern = stats['u_R_eff_concern']
     R_eff_others = stats['R_eff_others']
@@ -80,7 +100,7 @@ def tweet_3_text():
     #covid19nsw #covidsydney"""
     return dedent(COMMENT_TEXT)
 
-def tweet_4_text():
+def tweet_5_text():
     stats = json.loads(Path("latest_nsw_stats.json").read_text())
     R_eff_hunter = stats['R_eff_hunter']
     u_R_eff_hunter = stats['u_R_eff_hunter']
@@ -103,7 +123,7 @@ def tweet_4_text():
     #covid19nsw #covidsydney"""
     return dedent(COMMENT_TEXT)
 
-def tweet_5_text():
+def tweet_6_text():
     stats = json.loads(Path("latest_nsw_stats.json").read_text())
 
     proj_lines = [
@@ -134,9 +154,9 @@ def tweet_5_text():
 
     return dedent(COMMENT_TEXT)
 
-def tweet_6_text():
+def tweet_7_text():
     COMMENT_TEXT = """\
-    Note that these projections do not take into account upcoming easing of
+    Note that these projections do not take into account upcoming easings of
     restrictions. If the trend changes as a result of easing, the projections will also
     change once this is reflected in case numbers, but not in advance."""
     return fmt(COMMENT_TEXT)
@@ -158,6 +178,8 @@ if __name__ == '__main__':
     vax_log = api.media_upload("COVID_NSW_vax.png")
     concern = api.media_upload("COVID_NSW_LGA_concern.png")
     others = api.media_upload("COVID_NSW_LGA_others.png")
+    sydney = api.media_upload("COVID_NSW_LGA_sydney.png")
+    not_sydney = api.media_upload("COVID_NSW_LGA_not_sydney.png")
     hunter = api.media_upload("COVID_NSW_hunter.png")
     illawarra = api.media_upload("COVID_NSW_illawarra.png")
     wnsw = api.media_upload("COVID_NSW_wnsw.png")
@@ -179,25 +201,32 @@ if __name__ == '__main__':
 
     tweet_3 = api.update_status(
         status=tweet_3_text(),
-        media_ids=[concern.media_id, others.media_id],
+        media_ids=[sydney.media_id, not_sydney.media_id],
         in_reply_to_status_id=tweet_2.id,
         auto_populate_reply_metadata=True,
     )
 
     tweet_4 = api.update_status(
-        status=tweet_4_text(),
-        media_ids=[hunter.media_id, illawarra.media_id, wnsw.media_id],
+        status=tweet_3_text(),
+        media_ids=[concern.media_id, others.media_id],
         in_reply_to_status_id=tweet_3.id,
         auto_populate_reply_metadata=True,
     )
 
     tweet_5 = api.update_status(
-        status=tweet_5_text(),
+        status=tweet_4_text(),
+        media_ids=[hunter.media_id, illawarra.media_id, wnsw.media_id],
         in_reply_to_status_id=tweet_4.id,
         auto_populate_reply_metadata=True,
     )
 
     tweet_6 = api.update_status(
+        status=tweet_5_text(),
+        in_reply_to_status_id=tweet_5.id,
+        auto_populate_reply_metadata=True,
+    )
+
+    tweet_7 = api.update_status(
         status=tweet_6_text(),
         in_reply_to_status_id=tweet_5.id,
         auto_populate_reply_metadata=True,

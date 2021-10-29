@@ -43,6 +43,11 @@ def make_comment():
     u_R_eff_illawarra = stats['u_R_eff_illawarra']
     R_eff_wnsw = stats['R_eff_wnsw']
     u_R_eff_wnsw = stats['u_R_eff_wnsw']
+    R_eff_sydney = stats['R_eff_sydney']
+    u_R_eff_sydney = stats['u_R_eff_sydney']
+    R_eff_not_sydney = stats['R_eff_not_sydney']
+    u_R_eff_not_sydney = stats['u_R_eff_not_sydney']
+
 
     proj_lines = [
         "day  cases  68% range",
@@ -74,12 +79,16 @@ def make_comment():
     First two plots have case numbers on a linear scale, next two plots are exactly the
     same but with case numbers on a log scale.
 
-    R_eff in LGAs of concern* vs the rest of NSW (*all of Penrith included):
+    [Greater Sydney](https://chrisbillington.net/COVID_NSW_LGA_sydney.png): R_eff =
+    {R_eff_sydney:.02f} ± {u_R_eff_sydney:.02f}
 
-    [LGAs of concern](https://chrisbillington.net/COVID_NSW_LGA_concern.png): R_eff =
+    [NSW excluding Greater Sydney](https://chrisbillington.net/COVID_NSW_LGA_not_sydney.png): R_eff =
+    {R_eff_not_sydney:.02f} ± {u_R_eff_not_sydney:.02f}
+    
+    [former LGAs of concern](https://chrisbillington.net/COVID_NSW_LGA_concern.png): R_eff =
     {R_eff_concern:.02f} ± {u_R_eff_concern:.02f}
 
-    [NSW excluding LGAs of
+    [NSW excluding former LGAs of
     concern](https://chrisbillington.net/COVID_NSW_LGA_others.png): R_eff =
     {R_eff_others:.02f} ± {u_R_eff_others:.02f}
 
