@@ -9,6 +9,8 @@ do
 done
 python nsw.py others
 python nsw.py concern
+python nsw.py sydney
+python nsw.py notsydney
 python nsw.py hunter
 python nsw.py illawarra
 python nsw.py wnsw
