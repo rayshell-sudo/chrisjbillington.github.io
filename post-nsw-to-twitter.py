@@ -178,8 +178,8 @@ if __name__ == '__main__':
     vax_log = api.media_upload("COVID_NSW_vax.png")
     concern = api.media_upload("COVID_NSW_LGA_concern.png")
     others = api.media_upload("COVID_NSW_LGA_others.png")
-    sydney = api.media_upload("COVID_NSW_LGA_sydney.png")
-    not_sydney = api.media_upload("COVID_NSW_LGA_not_sydney.png")
+    sydney = api.media_upload("COVID_NSW_sydney.png")
+    not_sydney = api.media_upload("COVID_NSW_not_sydney.png")
     hunter = api.media_upload("COVID_NSW_hunter.png")
     illawarra = api.media_upload("COVID_NSW_illawarra.png")
     wnsw = api.media_upload("COVID_NSW_wnsw.png")
@@ -207,28 +207,28 @@ if __name__ == '__main__':
     )
 
     tweet_4 = api.update_status(
-        status=tweet_3_text(),
+        status=tweet_4_text(),
         media_ids=[concern.media_id, others.media_id],
         in_reply_to_status_id=tweet_3.id,
         auto_populate_reply_metadata=True,
     )
 
     tweet_5 = api.update_status(
-        status=tweet_4_text(),
+        status=tweet_5_text(),
         media_ids=[hunter.media_id, illawarra.media_id, wnsw.media_id],
         in_reply_to_status_id=tweet_4.id,
         auto_populate_reply_metadata=True,
     )
 
     tweet_6 = api.update_status(
-        status=tweet_5_text(),
+        status=tweet_6_text(),
         in_reply_to_status_id=tweet_5.id,
         auto_populate_reply_metadata=True,
     )
 
     tweet_7 = api.update_status(
-        status=tweet_6_text(),
-        in_reply_to_status_id=tweet_5.id,
+        status=tweet_7_text(),
+        in_reply_to_status_id=tweet_6.id,
         auto_populate_reply_metadata=True,
         media_ids=[disclaimer.media_id],
     )

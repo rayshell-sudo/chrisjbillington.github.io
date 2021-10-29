@@ -519,7 +519,7 @@ if OLD:
 # new = np.append(new, [655])
 
 START_PLOT = np.datetime64('2021-06-13')
-END_PLOT = np.datetime64('2022-01-01') if VAX else dates[-1] + 28
+END_PLOT = np.datetime64('2022-02-01') if VAX else dates[-1] + 28
 
 SMOOTHING = 4
 PADDING = 3 * int(round(3 * SMOOTHING))

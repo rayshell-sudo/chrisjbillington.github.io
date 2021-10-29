@@ -79,10 +79,10 @@ def make_comment():
     First two plots have case numbers on a linear scale, next two plots are exactly the
     same but with case numbers on a log scale.
 
-    [Greater Sydney](https://chrisbillington.net/COVID_NSW_LGA_sydney.png): R_eff =
+    [Greater Sydney](https://chrisbillington.net/COVID_NSW_sydney.png): R_eff =
     {R_eff_sydney:.02f} ± {u_R_eff_sydney:.02f}
 
-    [NSW excluding Greater Sydney](https://chrisbillington.net/COVID_NSW_LGA_not_sydney.png): R_eff =
+    [NSW excluding Greater Sydney](https://chrisbillington.net/COVID_NSW_not_sydney.png): R_eff =
     {R_eff_not_sydney:.02f} ± {u_R_eff_not_sydney:.02f}
     
     [former LGAs of concern](https://chrisbillington.net/COVID_NSW_LGA_concern.png): R_eff =
