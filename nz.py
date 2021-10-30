@@ -589,7 +589,7 @@ ALERT_LEVEL_1 = np.datetime64('2021-06-29')
 ALERT_LEVEL_4 = np.datetime64('2021-08-17')
 ALERT_LEVEL_3 = np.datetime64('2021-09-22')
 PHASE_1 = np.datetime64('2021-10-06')
-END_LOCKDOWN = dates[-1] + 14 # Who knows?
+END_LOCKDOWN = all_dates[-1] + 14 # Who knows?
 
 def whiten(color, f):
     """Mix a color with white where f is how much of the original colour to keep"""
