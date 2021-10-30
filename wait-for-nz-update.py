@@ -26,6 +26,23 @@ def current_cases_updated_today():
             return True
     return False
 
+def vax_updated_today():
+
+    today = datetime.now().strftime('%d %B %Y')
+    url = (
+        "https://www.health.govt.nz/our-work/diseases-and-conditions/"
+        "covid-19-novel-coronavirus/covid-19-data-and-statistics/covid-19-vaccine-data"
+    )
+    try:
+        page = requests.get(url, headers=curl_headers).content.decode('utf8')
+    except Exception as e:
+        print(e)
+        return False
+    for line in page.splitlines():
+        if today in line and 'Page last updated' in line:
+            return True
+    return False
+
 def moh_updated_today():
     """Check if NZ MOH dataset for today exists yet, return True if it does"""
     today = datetime.now().strftime('%Y-%m-%d')
@@ -49,7 +66,9 @@ def moh_updated_today():
 
 if __name__ == '__main__':
     # Hit MoH once every 5 minutes checking if it's updated:
-    while not (moh_updated_today() and current_cases_updated_today()):
+    while not (
+        moh_updated_today() and current_cases_updated_today() and vax_updated_today()
+    ):
         print("waiting...")
         time.sleep(300)
     print("ready!")

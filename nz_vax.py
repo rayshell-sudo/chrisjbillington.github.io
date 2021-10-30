@@ -3,6 +3,8 @@ from datetime import datetime, timedelta
 
 import numpy as np
 import pandas as pd
+import requests
+import time
 
 import matplotlib.units as munits
 import matplotlib.dates as mdates
@@ -15,6 +17,9 @@ munits.registry[datetime.date] = converter
 munits.registry[datetime] = converter
 
 POP_OF_NZ = 4.917e6
+
+# HTTP headers to emulate curl
+curl_headers = {'user-agent': 'curl/7.64.1'}
 
 def seven_day_average(data):
     n = 7
@@ -50,17 +55,35 @@ def seven_day_average(data):
 #     return dates, daily_doses_per_100
 
 
-def get_data():
-    # HTTP headers to emulate curl
-    curl_headers = {'user-agent': 'curl/7.64.1'}
+def get_latest_data():
+    """Return the most recent cumulative first and second dose numbers"""
+    url = (
+        "https://www.health.govt.nz/our-work/diseases-and-conditions/"
+        "covid-19-novel-coronavirus/covid-19-data-and-statistics/covid-19-vaccine-data"
+    )
 
+    today = datetime.now().strftime('%d %B %Y')
+    updated_today_string = f'Page last updated: <span class="date">{today}</span>'
+    for i in range(10):
+        page = requests.get(url, headers=curl_headers).content.decode('utf8')
+        if updated_today_string in page:
+            break
+        print(f"Got old covid-19-vaccine-data page, retrying ({i+1}/10)...")
+        time.sleep(5)
+    else:
+        raise ValueError("Didn't get an up-to-date covid-19-vaccine-data page")
+
+    df = pd.read_html(page)[0]
+    first, second, _ = df['Cumulative total']
+    return first, second
+
+def get_data():
     for i in range(1, 8):
         datestring = (datetime.now() - timedelta(days=i)).strftime("%d_%m_%Y")
         url = (
             "https://www.health.govt.nz/system/files/documents/pages/"
             f"covid_vaccinations_{datestring}.xlsx"
         )
-        print(url)
         try:
             df = pd.read_excel(url, sheet_name="Date", storage_options=curl_headers)
             break
@@ -68,8 +91,19 @@ def get_data():
             continue
 
     dates = np.array(df['Date'], dtype='datetime64[D]')
-    doses = np.array(df['First dose administered'] + df['Second dose administered'])
-    return dates, 100 * doses / POP_OF_NZ
+    daily_doses = np.array(df['First dose administered'] + df['Second dose administered'])
+
+    # Fill in up to yesterday with the latest cumulative number
+    latest_cumulative = sum(get_latest_data())
+    yesterday = np.datetime64(datetime.now(), 'D') - 1
+    n_days_interp = (yesterday - dates[-1]).astype(int)
+    daily_doses_interp = (latest_cumulative - daily_doses.sum()) / n_days_interp
+    dates = np.append(dates, np.arange(dates[-1] + 1, yesterday + 1))
+    daily_doses = np.append(
+        daily_doses, [int(round(daily_doses_interp))] * n_days_interp
+    )
+
+    return dates, 100 * daily_doses / POP_OF_NZ
 
 
 nz_dates, nz_doses_per_100 = get_data()
