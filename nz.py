@@ -352,7 +352,7 @@ all_dates = dates
 all_new = new
 
 # Current vaccination level:
-doses_per_100 = moh_doses_per_100(n=5*len(dates))
+doses_per_100 = moh_doses_per_100(n=len(dates))
 
 if OLD:
     dates = dates[:START_VAX_PROJECTIONS + OLD_END_IX]
