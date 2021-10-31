@@ -154,12 +154,12 @@ def tweet_6_text():
 
     return dedent(COMMENT_TEXT)
 
-def tweet_7_text():
-    COMMENT_TEXT = """\
-    Note that these projections do not take into account upcoming easings of
-    restrictions. If the trend changes as a result of easing, the projections will also
-    change once this is reflected in case numbers, but not in advance."""
-    return fmt(COMMENT_TEXT)
+# def tweet_7_text():
+#     COMMENT_TEXT = """\
+#     Note that these projections do not take into account upcoming easings of
+#     restrictions. If the trend changes as a result of easing, the projections will also
+#     change once this is reflected in case numbers, but not in advance."""
+#     return fmt(COMMENT_TEXT)
 
 if __name__ == '__main__':
     api_key = sys.argv[1]
@@ -226,9 +226,9 @@ if __name__ == '__main__':
         auto_populate_reply_metadata=True,
     )
 
-    tweet_7 = api.update_status(
-        status=tweet_7_text(),
-        in_reply_to_status_id=tweet_6.id,
-        auto_populate_reply_metadata=True,
-        media_ids=[disclaimer.media_id],
-    )
+    # tweet_7 = api.update_status(
+    #     status=tweet_7_text(),
+    #     in_reply_to_status_id=tweet_6.id,
+    #     auto_populate_reply_metadata=True,
+    #     media_ids=[disclaimer.media_id],
+    # )

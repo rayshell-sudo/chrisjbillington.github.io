@@ -93,12 +93,12 @@ def tweet_3_text():
 
     return dedent(COMMENT_TEXT)
 
-def tweet_4_text():
-    COMMENT_TEXT = """\
-    Note that these projections do not take into account recent/upcoming easing of
-    restrictions. If the trend changes as a result of easing, the projections will also
-    change once this is reflected in case numbers, but not in advance."""
-    return fmt(COMMENT_TEXT)
+# def tweet_4_text():
+#     COMMENT_TEXT = """\
+#     Note that these projections do not take into account recent/upcoming easing of
+#     restrictions. If the trend changes as a result of easing, the projections will also
+#     change once this is reflected in case numbers, but not in advance."""
+#     return fmt(COMMENT_TEXT)
 
 # def tweet_5_text():
 #     COMMENT_TEXT = """\
@@ -147,12 +147,12 @@ if __name__ == '__main__':
         auto_populate_reply_metadata=True,
     )
 
-    tweet_4 = api.update_status(
-        status=tweet_4_text(),
-        in_reply_to_status_id=tweet_3.id,
-        auto_populate_reply_metadata=True,
-        media_ids=[disclaimer.media_id],
-    )
+    # tweet_4 = api.update_status(
+    #     status=tweet_4_text(),
+    #     in_reply_to_status_id=tweet_3.id,
+    #     auto_populate_reply_metadata=True,
+    #     media_ids=[disclaimer.media_id],
+    # )
 
     # tweet_5 = api.update_status(
     #     status=tweet_5_text(),
