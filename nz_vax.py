@@ -85,6 +85,7 @@ def get_data():
             f"covid_vaccinations_{datestring}.xlsx"
         )
         try:
+            print(f"trying to get vax data for {datestring}")
             df = pd.read_excel(url, sheet_name="Date", storage_options=curl_headers)
             break
         except urllib.error.HTTPError:
@@ -97,6 +98,7 @@ def get_data():
     latest_cumulative = sum(get_latest_data())
     yesterday = np.datetime64(datetime.now(), 'D') - 1
     n_days_interp = (yesterday - dates[-1]).astype(int)
+    print(f"interpolating {n_days_interp} days")
     daily_doses_interp = (latest_cumulative - daily_doses.sum()) / n_days_interp
     dates = np.append(dates, np.arange(dates[-1] + 1, yesterday + 1))
     daily_doses = np.append(
