@@ -522,7 +522,7 @@ new_smoothed = new_smoothed.clip(0, None)
 
 
 # Projection of daily case numbers:
-days_projection = (np.datetime64('2022-02-01') - dates[-1]).astype(int)
+days_projection = (np.datetime64('2022-05-01') - dates[-1]).astype(int)
 t_projection = np.linspace(0, days_projection, days_projection + 1)
 
 # Construct a covariance matrix for the latest estimate in new_smoothed and R:
