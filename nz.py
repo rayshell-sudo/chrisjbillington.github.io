@@ -396,7 +396,7 @@ if OLD:
     doses_per_100 = doses_per_100[:START_VAX_PROJECTIONS + OLD_END_IX]
 
 START_PLOT = np.datetime64('2021-08-16')
-END_PLOT = np.datetime64('2022-01-01') if VAX else dates[-1] + 28
+END_PLOT = np.datetime64('2022-03-01') if VAX else dates[-1] + 28
 
 SMOOTHING = 4
 PADDING = 3 * int(round(3 * SMOOTHING))
