@@ -182,12 +182,13 @@ def moh_doses_per_100(n):
     latest_cumulative = sum(moh_latest_cumulative_doses())
     yesterday = np.datetime64(datetime.now(), 'D') - 1
     n_days_interp = (yesterday - dates[-1]).astype(int)
-    daily_doses_interp = (latest_cumulative - daily_doses.sum()) / n_days_interp
-    dates = np.append(dates, np.arange(dates[-1] + 1, yesterday + 1))
-    daily_doses = np.append(
-        daily_doses, [int(round(daily_doses_interp))] * n_days_interp
-    )
-
+    if n_days_interp > 0:
+        print(f"interpolating {n_days_interp} days")
+        daily_doses_interp = (latest_cumulative - daily_doses.sum()) / n_days_interp
+        dates = np.append(dates, np.arange(dates[-1] + 1, yesterday + 1))
+        daily_doses = np.append(
+            daily_doses, [int(round(daily_doses_interp))] * n_days_interp
+        )
     return 100 * daily_doses.cumsum()[-n:] / POP_OF_NZ
 
 
