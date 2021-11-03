@@ -931,34 +931,34 @@ if VAX:
         if i < 8:
             print(f"{cases:.0f} {lower:.0f}—{upper:.0f}")
 
-df = pd.DataFrame(
-    {
-        'date': dates[1:],
-        'cases': new[1:],
-        'cases_smoothed': new_smoothed[1:],
-        'cases_smoothed_lower': new_smoothed_lower[1:],
-        'cases_smoothed_upper': new_smoothed_upper[1:],
-        'R_eff': R,
-        'R_eff_lower': R_lower,
-        'R_eff_upper': R_upper,
-    }
-)
+# df = pd.DataFrame(
+#     {
+#         'date': dates[1:],
+#         'cases': new[1:],
+#         'cases_smoothed': new_smoothed[1:],
+#         'cases_smoothed_lower': new_smoothed_lower[1:],
+#         'cases_smoothed_upper': new_smoothed_upper[1:],
+#         'R_eff': R,
+#         'R_eff_lower': R_lower,
+#         'R_eff_upper': R_upper,
+#     }
+# )
 
-df_proj = pd.DataFrame(
-    {
-        'date': dates[-1] + t_projection[1:].astype(int),
-        'cases_projected': new_projection[1:].astype(int),
-        'cases_projected_lower': new_projection_lower[1:].astype(int),
-        'cases_projected_upper': new_projection_upper[1:].astype(int),
-        'R_eff_projected': R_eff_projection[1:],
-        'R_eff_projected_lower': R_eff_projection_lower[1:],
-        'R_eff_projected_upper': R_eff_projection_upper[1:],
-    }
-)
+# df_proj = pd.DataFrame(
+#     {
+#         'date': dates[-1] + t_projection[1:].astype(int),
+#         'cases_projected': new_projection[1:].astype(int),
+#         'cases_projected_lower': new_projection_lower[1:].astype(int),
+#         'cases_projected_upper': new_projection_upper[1:].astype(int),
+#         'R_eff_projected': R_eff_projection[1:],
+#         'R_eff_projected_lower': R_eff_projection_lower[1:],
+#         'R_eff_projected_upper': R_eff_projection_upper[1:],
+#     }
+# )
 
 
-df.to_csv('nz_historical.csv', index=False)
-df_proj.to_csv('nz_projected.csv', index=False)
+# df.to_csv('nz_historical.csv', index=False)
+# df_proj.to_csv('nz_projected.csv', index=False)
 
 if not OLD:
     # Only save data if this isn't a re-run on old data
