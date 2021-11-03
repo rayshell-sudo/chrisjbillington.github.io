@@ -765,7 +765,9 @@ if True: # Just to keep the diff with nsw.py sensible here
     maxproj = new_projection[t_projection < (END_PLOT - dates[-1]).astype(int)].max()
     # if maxproj < 30:
     #     ymax=40
-    if maxproj < 60:
+    if OLD:
+        ymax = 80
+    elif maxproj < 60:
         ymax=80
     elif maxproj < 120:
         ymax=160
