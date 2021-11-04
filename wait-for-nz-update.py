@@ -62,7 +62,7 @@ def moh_updated_today():
         except Exception as e:
             print(e)
             return False
-        return False
+    return False
 
 if __name__ == '__main__':
     # Hit MoH once every 5 minutes checking if it's updated:
