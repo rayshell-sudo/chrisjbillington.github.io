@@ -1438,6 +1438,7 @@ with open("latest_vax_stats.json", 'w') as f:
             'latest_cumulative_doses': latest_cumulative_doses,
             'latest_daily_doses': latest_daily_doses,
             'phase_C_date': str(PHASE_C_DATE),
+            'phase_D_date': str(PHASE_D_DATE),
             'today': str(today),
         },
         f,
