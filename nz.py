@@ -4,6 +4,7 @@ from pytz import timezone
 from pathlib import Path
 import json
 import time
+import io
 
 import requests
 from scipy.optimize import curve_fit
@@ -168,12 +169,15 @@ def moh_doses_per_100(n):
             "https://www.health.govt.nz/system/files/documents/pages/"
             f"covid_vaccinations_{datestring}.xlsx"
         )
-        print(url)
         try:
-            df = pd.read_excel(url, sheet_name="Date", storage_options=curl_headers)
-            break
+            print(f"trying to get vax data for {datestring}")
+            response = requests.get(url, headers=curl_headers)
+            if response.ok:
+                break
         except urllib.error.HTTPError:
             continue
+
+    df = pd.read_excel(io.BytesIO(response.content), sheet_name="Date")
 
     dates = np.array(df['Date'], dtype='datetime64[D]')
     daily_doses = np.array(df['First dose administered'] + df['Second dose administered'])

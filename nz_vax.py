@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 import requests
 import time
+import io
 
 import matplotlib.units as munits
 import matplotlib.dates as mdates
@@ -86,10 +87,13 @@ def get_data():
         )
         try:
             print(f"trying to get vax data for {datestring}")
-            df = pd.read_excel(url, sheet_name="Date", storage_options=curl_headers)
-            break
+            response = requests.get(url, headers=curl_headers)
+            if response.ok:
+                break
         except urllib.error.HTTPError:
             continue
+
+    df = pd.read_excel(io.BytesIO(response.content), sheet_name="Date")
 
     dates = np.array(df['Date'], dtype='datetime64[D]')
     daily_doses = np.array(df['First dose administered'] + df['Second dose administered'])
