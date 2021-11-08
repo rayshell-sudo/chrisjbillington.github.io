@@ -629,8 +629,9 @@ else:
 ALERT_LEVEL_1 = np.datetime64('2021-06-29')
 ALERT_LEVEL_4 = np.datetime64('2021-08-17')
 ALERT_LEVEL_3 = np.datetime64('2021-09-22')
-PHASE_1 = np.datetime64('2021-10-06')
-END_LOCKDOWN = all_dates[-1] + 14 # Who knows?
+STEP_1 = np.datetime64('2021-10-06')
+STEP_2 = np.datetime64('2021-11-10')
+END_LOCKDOWN = all_dates[-1] + 28 # Who knows?
 
 def whiten(color, f):
     """Mix a color with white where f is how much of the original colour to keep"""
@@ -662,7 +663,7 @@ ax1.fill_betweenx(
 ax1.fill_betweenx(
     [-10, 10],
     [ALERT_LEVEL_3, ALERT_LEVEL_3],
-    [PHASE_1, PHASE_1],
+    [STEP_1, STEP_1],
     color=whiten("#F6AE2F", 0.5),
     # alpha=0.45,
     linewidth=0,
@@ -671,12 +672,22 @@ ax1.fill_betweenx(
 
 ax1.fill_betweenx(
     [-10, 10],
-    [PHASE_1, PHASE_1],
-    [END_LOCKDOWN, END_LOCKDOWN],
+    [STEP_1, STEP_1],
+    [STEP_2, STEP_2],
     color=whiten("yellow", 0.5),
     # alpha=0.45,
     linewidth=0,
-    label="Phase 1",
+    label="Level 3, Step 1",
+)
+
+ax1.fill_betweenx(
+    [-10, 10],
+    [STEP_2, STEP_2],
+    [END_LOCKDOWN, END_LOCKDOWN],
+    color=whiten("green", 0.5),
+    # alpha=0.45,
+    linewidth=0,
+    label="Level 3, Step 2",
 )
 
 for i in range(30):
@@ -684,7 +695,7 @@ for i in range(30):
         [-10, 10],
         [END_LOCKDOWN.astype(int) + i / 3] * 2,
         [END_LOCKDOWN.astype(int) + (i + 1) / 3] * 2,
-        color="yellow",
+        color="green",
         alpha=0.45 * (30 - i) / 30,
         linewidth=0,
         zorder=-10,
@@ -811,9 +822,9 @@ handles += handles2
 labels += labels2
 
 if VAX:
-    order = [3, 4, 5, 6, 7, 8, 9, 0, 1, 2]
+    order = [4, 5, 6, 7, 8, 9, 10, 0, 1, 2, 3]
 else:
-    order = [3, 4, 5, 6, 7, 8, 0, 1, 2]
+    order = [4, 5, 6, 7, 8, 9, 0, 1, 2, 3]
 ax2.legend(
     # handles,
     # labels,
