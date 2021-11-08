@@ -528,6 +528,7 @@ else:
 LOCKDOWN = np.datetime64('2021-08-13')
 END_LOCKDOWN = np.datetime64('2021-10-15')
 FURTHER_EASING = np.datetime64('2021-10-22')
+EASING_95  = np.datetime64('2021-11-12')
 
 def whiten(color, f):
     """Mix a color with white where f is how much of the original colour to keep"""
@@ -560,10 +561,19 @@ ax1.fill_betweenx(
 ax1.fill_betweenx(
     [-10, 10],
     [FURTHER_EASING, FURTHER_EASING],
-    [END_PLOT, END_PLOT],
+    [EASING_95, EASING_95],
     color=whiten("green", 0.5),
     linewidth=0,
     label="Further easing",
+)
+
+ax1.fill_betweenx(
+    [-10, 10],
+    [EASING_95, EASING_95],
+    [END_PLOT, END_PLOT],
+    color=whiten("green", 0.25),
+    linewidth=0,
+    label="95% vaccinated easing",
 )
 
 
@@ -699,9 +709,9 @@ handles += handles2
 labels += labels2
 
 if VAX:
-    order = [3, 4, 5, 6, 7, 8, 9, 0, 1, 2]
+    order = [4, 5, 6, 7, 8, 9, 10, 0, 1, 2, 3]
 else:
-    order = [3, 4, 5, 6, 7, 8, 0, 1, 2]
+    order = [4, 5, 6, 7, 8, 9, 0, 1, 2, 3]
 ax2.legend(
     # handles,
     # labels,
