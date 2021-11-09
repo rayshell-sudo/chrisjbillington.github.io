@@ -66,7 +66,7 @@ OCT = np.datetime64('2021-10-01')
 
 vic_proj_rate = np.zeros(len(t_projection))
 
-vic_proj_rate[:] =  0.75
+vic_proj_rate[:] =  0.5
 # clip to 85% fully vaxed
 initial_coverage =  100 * vic_doses.sum() / POPS[STATE]
 vic_proj_rate[initial_coverage + vic_proj_rate.cumsum() > 2 * 85] = 0
