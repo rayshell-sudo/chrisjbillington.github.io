@@ -318,7 +318,7 @@ PFIZER_PROJECTED_SHIPMENTS= """ # In thousands per week
 2022-01-02 2000 + 600
 """
 
-PLOT_END_DATE = np.datetime64('2022-02-01')
+PLOT_END_DATE = np.datetime64('2022-06-01')
 CUMULATIVE_YMAX = 50  # million
 DAILY_YMAX = 300
 
@@ -518,11 +518,19 @@ def exponential(x, A, k, c):
     return A * np.exp(k * x) + c
 
 firstsecond_dates, first_actual, second_actual = first_and_second_by_state('aus')
-total_actual = first_actual + second_actual
+total_actual = doses_by_state['AUS'][-len(firstsecond_dates):]
+third_actual = total_actual - first_actual - second_actual
 
-interval =  len(second_actual) - np.argwhere(first_actual > second_actual[-1])[0][0]
+first_second_interval = (
+    len(second_actual) - np.argwhere(first_actual > second_actual[-1])[0][0]
+)
+
+second_third_interval = (
+    len(third_actual) - np.argwhere(second_actual > third_actual[-1])[0][0]
+)
+
 n_fit = 28
-n_extrap = 100
+n_extrap = 300
 
 proj_dates = np.arange(firstsecond_dates[-1], firstsecond_dates[-1] + n_extrap)
 x_fit = np.arange(-n_fit, 0)
@@ -535,11 +543,18 @@ params, cov = curve_fit(
 x_extrap = np.arange(n_extrap)
 proj_first_doses = exponential(x_extrap, *params)
 proj_second_doses = np.concatenate(
-    [first_actual[-interval:], proj_first_doses[1 : n_extrap - interval + 1]]
+    [
+        first_actual[-first_second_interval:],
+        proj_first_doses[1 : n_extrap - first_second_interval + 1],
+    ]
 )
-proj_total_doses = proj_first_doses + proj_second_doses
-
-
+proj_third_doses = np.concatenate(
+    [
+        second_actual[-second_third_interval:],
+        proj_second_doses[1 : n_extrap - second_third_interval + 1],
+    ]
+)
+proj_total_doses = proj_first_doses + proj_second_doses + proj_third_doses
 
 
 
@@ -643,7 +658,7 @@ plt.axis(
     xmin=dates[0].astype(int) + 1,
     xmax=PLOT_END_DATE,
     ymin=0,
-    ymax=2*MAX_ELIGIBLE/1e6 if LONGPROJECT else CUMULATIVE_YMAX,
+    ymax=3*MAX_ELIGIBLE/1e6 if LONGPROJECT else CUMULATIVE_YMAX,
 )
 
 latest_cumulative_doses = doses_by_state["AUS"][-1]
@@ -683,9 +698,10 @@ for i, state in enumerate(['NT', 'ACT', 'TAS', 'SA', 'WA', 'QLD', 'VIC', 'NSW', 
     cumsum += daily_doses
 
 
-combined = np.concatenate([np.diff(total_actual), np.diff(proj_total_doses)])
-proj_daily = n_day_average(combined, 7)
-proj_daily = gaussian_smoothing(proj_daily, 1)[-len(proj_dates) :]
+proj_daily = diff_and_smooth(np.concatenate([total_actual, proj_total_doses]))[-len(proj_dates) :]
+# combined = np.concatenate([np.diff(total_actual), np.diff(proj_total_doses)])
+# proj_daily = n_day_average(combined, 7)
+# proj_daily = gaussian_smoothing(proj_daily, 1)[-len(proj_dates) :]
 if PROJECT:
     plt.fill_between(
         proj_dates + 1,
@@ -879,7 +895,7 @@ plt.plot(
     proj_first_doses / 1e6,
     label="First doses (projected)",
     color="C0",
-    linestyle='--'
+    linestyle='--',
 )
 plt.step(
     firstsecond_dates,
@@ -893,7 +909,22 @@ plt.plot(
     proj_second_doses / 1e6,
     label="Second doses (projected)",
     color="C1",
-    linestyle='--'
+    linestyle='--',
+)
+THIRD_DOSES_VALID = firstsecond_dates > np.datetime64('2021-10-01')
+plt.step(
+    firstsecond_dates[THIRD_DOSES_VALID],
+    third_actual[THIRD_DOSES_VALID] / 1e6,
+    where='pre',
+    label="Third doses",
+    color="C2",
+)
+plt.plot(
+    proj_dates,
+    proj_third_doses / 1e6,
+    label="Third doses (projected)",
+    color="C2",
+    linestyle='--',
 )
 
 # all_first_doses = diff_and_smooth(AZ_first_doses + pfizer_first_doses).cumsum()
@@ -914,7 +945,7 @@ plt.axis(
     ymax=MAX_ELIGIBLE/1e6 if LONGPROJECT else CUMULATIVE_YMAX,
 
 )
-plt.title('National cumulative 1st and 2nd doses')
+plt.title('National cumulative 1st/2nd/3rd doses')
 plt.ylabel('Cumulative doses (millions)')
 today = np.datetime64(datetime.now(), 'D')
 plt.axvline(today, linestyle=":", color='k', label=f"Today ({today})")
@@ -934,14 +965,14 @@ else:
 plt.axhline(
     0.7 * MAX_ELIGIBLE / 1e6,
     linestyle="--",
-    color='C4',
-    label=f"Phase B 70% target ({PHASE_B_DATE})",
+    color='C3',
+    label=f"70% target ({PHASE_B_DATE})",
 )
 plt.axhline(
     0.8 * MAX_ELIGIBLE / 1e6,
     linestyle="--",
-    color='C2',
-    label=f"Phase C 80% target ({PHASE_C_DATE})",
+    color='C4',
+    label=f"80% target ({PHASE_C_DATE})",
 )
 plt.axhline(
     0.9 * MAX_ELIGIBLE / 1e6,
@@ -992,24 +1023,24 @@ for ax in [ax1, ax2, ax3, ax4, ax5, ax6, ax7]:
     ax.fill_betweenx(
         [0, ax.get_ylim()[1]],
         2 * [PHASE_2B.astype(int)],
-        2 * [max(dates[-1], PHASE_2B).astype(int) + 20],
+        2 * [PLOT_END_DATE],
         color='green',
         alpha=0.25,
         linewidth=0,
-        label='Phase 2b',
+        label='Phase 2b and Phase 3',
         zorder=-10,
     )
 
-    for i in range(10):
-        ax.fill_betweenx(
-            [0, ax.get_ylim()[1]],
-            2 * [max(dates[-1], PHASE_2B).astype(int) + 20 + i],
-            2 * [max(dates[-1], PHASE_2B).astype(int) + 21 + i],
-            color='green',
-            alpha=0.25 * (10 - i) / 10,
-            linewidth=0,
-            zorder=-10,
-        )
+    # for i in range(10):
+    #     ax.fill_betweenx(
+    #         [0, ax.get_ylim()[1]],
+    #         2 * [max(dates[-1], PHASE_2B).astype(int) + 20 + i],
+    #         2 * [max(dates[-1], PHASE_2B).astype(int) + 21 + i],
+    #         color='green',
+    #         alpha=0.25 * (10 - i) / 10,
+    #         linewidth=0,
+    #         zorder=-10,
+    #     )
 
 
 handles, labels = ax1.get_legend_handles_labels()
