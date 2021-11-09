@@ -336,7 +336,11 @@ def projected_vaccine_immune_population(t, historical_doses_per_100):
     doses_per_100[0] = historical_doses_per_100[-1]
 
     # History of previously projected rates, so I can remake old projections:
-    if dates[-1] >= np.datetime64('2021-10-26'):
+    if dates[-1] >= np.datetime64('2021-11-09'):
+        AUG_RATE = None
+        SEP_RATE = None
+        OCT_RATE = 0.5
+    elif dates[-1] >= np.datetime64('2021-10-26'):
         AUG_RATE = None
         SEP_RATE = None
         OCT_RATE = 0.75

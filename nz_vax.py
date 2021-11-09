@@ -123,7 +123,7 @@ OCT = np.datetime64('2021-10-01')
 
 nz_proj_rate = np.zeros(len(t_projection))
 
-nz_proj_rate[:] = 0.75  # Oct onward
+nz_proj_rate[:] = 0.5  # Oct onward
 # clip to 85% fully vaxed
 initial_coverage = nz_doses_per_100.sum()
 nz_proj_rate[initial_coverage + nz_proj_rate.cumsum() > 2 * 85] = 0
