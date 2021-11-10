@@ -821,9 +821,18 @@ u_R_latest = (R_upper[-1] - R_lower[-1]) / 2
 
 R_eff_string = fR"$R_\mathrm{{eff}}={R[-1]:.02f} \pm {u_R_latest:.02f}$"
 
+def th(n):
+    """Ordinal of an integer, eg "1st", "2nd" etc"""
+    return str(n) + (
+        "th" if 4 <= n % 100 <= 20 else {1: "st", 2: "nd", 3: "rd"}.get(n % 10, "th")
+    )
+
+latest_update_day = datetime.fromisoformat(str(dates[-1] + 1))
+latest_update_day = f'{latest_update_day.strftime("%B")} {th(latest_update_day.day)}'
+
 if VAX:
     title_lines = [
-        "Projected effect of Victorian vaccination rollout",
+        f"Projected effect of Victorian vaccination rollout as of {latest_update_day}",
         f"Starting from currently estimated {R_eff_string}",
     ]
 else:
@@ -832,7 +841,7 @@ else:
     else:
         region = "Victoria"
     title_lines = [
-        f"$R_\\mathrm{{eff}}$ in {region}, with Melbourne restriction levels and daily cases",
+        f"$R_\\mathrm{{eff}}$ in {region} as of {latest_update_day}, with Melbourne restriction levels and daily cases",
         f"Latest estimate: {R_eff_string}",
     ]
     
