@@ -93,9 +93,15 @@ def make_comment():
     return dedent(COMMENT_TEXT)
 
 def get_flair_id(subreddit):
+    patterns = {
+        'newzealand': 'Coronavirus',
+        'CoronavirusDownunder': 'Independent Data Analysis',
+    }
+    pattern = patterns[subreddit.display_name]
     for flair in subreddit.flair.link_templates:
-        if flair['text'] == 'Independent Data Analysis':
+        if pattern in flair['text']:
             return flair['id']
+    raise LookupError(f"Couldn't find flair for subreddit {subreddit.display_name}")
 
 
 IMAGES = [
@@ -121,11 +127,12 @@ if __name__ == '__main__':
         password=password,
     )
 
-    subreddit = reddit.subreddit("CoronavirusDownunder")
+    for subreddit_name in ["newzealand", "CoronavirusDownunder"]:
+        subreddit = reddit.subreddit(subreddit_name)
 
-    submission = subreddit.submit_gallery(
-        title=make_title(),
-        images=[{"image_path": p} for p in IMAGES],
-        flair_id=get_flair_id(subreddit),
-    )
-    submission.reply(make_comment())
+        submission = subreddit.submit_gallery(
+            title=make_title(),
+            images=[{"image_path": p} for p in IMAGES],
+            flair_id=get_flair_id(subreddit),
+        )
+        submission.reply(make_comment())
