@@ -210,6 +210,10 @@ def fourteen_day_average(data):
     ret[14:] = ret[14:] - ret[:-14]
     return ret / 14
 
+def n_day_average(data, n):
+    ret = np.cumsum(data, dtype=float)
+    ret[n:] = ret[n:] - ret[:-n]
+    return ret / n
 
 def partial_derivatives(function, x, params, u_params):
     model_at_center = function(x, *params)
@@ -453,8 +457,21 @@ def clip_params(params):
     params[0] = min(params[0], 2 * new[-FIT_PTS:].max() + 1)
     params[1] = min(params[1], np.log(R_CLIP ** (1 / tau)))
 
+# 5dma of data prior to the fit. Change of methodology as of 2021-11-15, so keep old
+# methodology for remaking plots prior to then:
+PRE_FIT_SMOOTHING = 5
+DO_PRE_FIT_SMOOTHING = dates[-1] > np.datetime64('2021-11-14')
 
-params, cov = curve_fit(padding_model, fit_x, new[-FIT_PTS:], sigma=1 / fit_weights)
+params, _ = curve_fit(
+    padding_model,
+    fit_x,
+    (
+        n_day_average(new, PRE_FIT_SMOOTHING)[-FIT_PTS:]
+        if DO_PRE_FIT_SMOOTHING
+        else new[-FIT_PTS:]
+    ),
+    sigma=1 / fit_weights,
+)
 clip_params(params)
 fit = padding_model(pad_x, *params).clip(0.1, None)
 
@@ -487,10 +504,17 @@ for i in range(N_monte_carlo):
     params, cov = curve_fit(
         padding_model,
         fit_x,
-        new_with_noise[-FIT_PTS:],
+        (
+            n_day_average(new_with_noise, PRE_FIT_SMOOTHING)[-FIT_PTS:]
+            if DO_PRE_FIT_SMOOTHING
+            else new_with_noise[-FIT_PTS:]
+        ),
         sigma=1 / fit_weights,
         maxfev=20000,
     )
+    if DO_PRE_FIT_SMOOTHING:
+        # Compensate for the decreased noise caused by the additional smoothing:
+        cov *= PRE_FIT_SMOOTHING
     clip_params(params)
     scenario_params = np.random.multivariate_normal(params, cov)
     clip_params(scenario_params)
@@ -529,6 +553,17 @@ new_smoothed_upper = new_smoothed_upper.clip(0, None)
 new_smoothed_lower = new_smoothed_lower.clip(0, None)
 new_smoothed = new_smoothed.clip(0, None)
 
+# R_DATA_FILE = Path('nz_smoothed_log.json')
+# try:
+#     r_data = json.loads(R_DATA_FILE.read_text())
+# except FileNotFoundError:
+#     r_data = {}
+
+# r_data[str(dates[-1])] = (R[-1], u_R[-1])
+
+# R_DATA_FILE.write_text(json.dumps(r_data))
+
+# sys.exit(0)
 
 # Projection of daily case numbers:
 days_projection = (np.datetime64('2022-05-01') - dates[-1]).astype(int)
