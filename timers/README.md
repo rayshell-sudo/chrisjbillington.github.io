@@ -72,7 +72,7 @@ to list timers and see when they ran last/will run next:
 systemctl list-timers
 ```
 
-to view logs for a unit:
+to view logs for a unit (last 1000 lines + live updating):
 ```
-journalctl -u foo
+journalctl -u foo.service -n 1000 -f
 ```
