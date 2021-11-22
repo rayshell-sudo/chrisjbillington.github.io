@@ -123,10 +123,10 @@ OCT = np.datetime64('2021-10-01')
 
 nz_proj_rate = np.zeros(len(t_projection))
 
-nz_proj_rate[:] = 0.5  # Oct onward
+nz_proj_rate[:] = 0.25  # Oct onward
 # clip to 85% fully vaxed
 initial_coverage = nz_doses_per_100.sum()
-nz_proj_rate[initial_coverage + nz_proj_rate.cumsum() > 2 * 85] = 0
+nz_proj_rate[initial_coverage + nz_proj_rate.cumsum() > 2 * 80] = 0
 
 plt.figure(figsize=(10, 5))
 plt.subplot(121)
@@ -140,7 +140,7 @@ plt.gca().xaxis.set_major_locator(locator)
 plt.gca().xaxis.set_major_formatter(formatter)
 plt.grid(True, color='k', linestyle=":", alpha=0.5)
 plt.axis(
-    xmin=np.datetime64('2021-05-01'), xmax=np.datetime64('2021-12-31'), ymax=2.2, ymin=0
+    xmin=np.datetime64('2021-05-01'), xmax=np.datetime64('2022-01-31'), ymax=2.2, ymin=0
 )
 plt.ylabel('7d avg doses per hundred population per day')
 plt.title(f"NZ daily vaccinations per capita")
@@ -161,7 +161,7 @@ plt.gca().xaxis.set_major_locator(locator)
 plt.gca().xaxis.set_major_formatter(formatter)
 plt.grid(True, color='k', linestyle=":", alpha=0.5)
 plt.axis(
-    xmin=np.datetime64('2021-05-01'), xmax=np.datetime64('2021-12-31'), ymax=200, ymin=0
+    xmin=np.datetime64('2021-05-01'), xmax=np.datetime64('2022-01-31'), ymax=200, ymin=0
 )
 plt.ylabel('cumulative doses per hundred population')
 plt.title(f"NZ cumulative vaccinations per capita")
