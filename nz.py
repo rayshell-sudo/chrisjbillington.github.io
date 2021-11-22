@@ -340,7 +340,11 @@ def projected_vaccine_immune_population(t, historical_doses_per_100):
     doses_per_100[0] = historical_doses_per_100[-1]
 
     # History of previously projected rates, so I can remake old projections:
-    if dates[-1] >= np.datetime64('2021-11-09'):
+    if dates[-1] >= np.datetime64('2021-11-21'):
+        AUG_RATE = None
+        SEP_RATE = None
+        OCT_RATE = 0.25
+    elif dates[-1] >= np.datetime64('2021-11-09'):
         AUG_RATE = None
         SEP_RATE = None
         OCT_RATE = 0.5
@@ -365,7 +369,11 @@ def projected_vaccine_immune_population(t, historical_doses_per_100):
         else:
             doses_per_100[i] = doses_per_100[i - 1] + OCT_RATE
 
-    doses_per_100 = np.clip(doses_per_100, 0, 85 * 2)
+    if dates[-1] >= np.datetime64('2021-11-21'):
+        MAX_DOSES_PER_100 = 2 * 80.0
+    else:
+        MAX_DOSES_PER_100 = 2 * 85.0
+    doses_per_100 = np.clip(doses_per_100, 0, MAX_DOSES_PER_100)
 
     all_doses_per_100 = np.concatenate([historical_doses_per_100, doses_per_100])
     # The "prepend=0" makes it as if all the doses in the initial day were just

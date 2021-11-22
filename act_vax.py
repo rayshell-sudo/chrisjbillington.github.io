@@ -75,10 +75,10 @@ OCT = np.datetime64('2021-10-01')
 
 act_proj_rate = np.zeros(len(t_projection))
 
-act_proj_rate[:] =  0.5
+act_proj_rate[:] =  0.1
 # clip to 85% fully vaxed
 initial_coverage =  100 * act_doses.sum() / POPS[STATE]
-act_proj_rate[initial_coverage + act_proj_rate.cumsum() > 2 * 85] = 0
+act_proj_rate[initial_coverage + act_proj_rate.cumsum() > 2 * 84] = 0
 
 plt.figure(figsize=(10, 5))
 plt.subplot(121)
