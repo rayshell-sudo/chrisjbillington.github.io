@@ -46,7 +46,7 @@ def vax_updated_today():
 def moh_updated_today():
     """Check if NZ MOH dataset for today exists yet, return True if it does"""
     today = datetime.now().strftime('%Y-%m-%d')
-    URL = f"https://www.health.govt.nz/system/files/documents/pages/covid_cases_{today}.csv"
+    URL = f"https://www.health.govt.nz/system/files/documents/pages/covid_cases_2-{today}.csv"
 
     for suffix in ['', '_0', '_1', '_2', '_3']:
         try:

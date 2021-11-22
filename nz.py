@@ -113,7 +113,7 @@ def get_todays_cases():
 def midnight_to_midnight_data():
 
     today = datetime.now().strftime('%Y-%m-%d')
-    URL = f"https://www.health.govt.nz/system/files/documents/pages/covid_cases_{today}.csv"
+    URL = f"https://www.health.govt.nz/system/files/documents/pages/covid_cases_2-{today}.csv"
 
     df = None
     for suffix in ['', '_0', '_1', '_2', '_3']:
