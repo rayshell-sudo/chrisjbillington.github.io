@@ -37,18 +37,18 @@ POP_OF_AUCKLAND = 1.657e6
 
 VAX = 'vax' in sys.argv
 OLD = 'old' in sys.argv
+AUCKLAND = 'auckland' in sys.argv
+NOTAUCKLAND = 'notauckland' in sys.argv
 
-
-if not VAX and sys.argv[1:]:
-    if len(sys.argv) == 2:
-        LGA_IX = int(sys.argv[1])
-    elif OLD and len(sys.argv) == 3:
+if not VAX and not (AUCKLAND or NOTAUCKLAND) and sys.argv[1:]:
+    if OLD and len(sys.argv) == 3:
         OLD_END_IX = int(sys.argv[2])
     else:
         raise ValueError(sys.argv[1:])
 
 if OLD:
     VAX = True
+
 
 # Data from MoH
 def get_data():
@@ -130,6 +130,14 @@ def midnight_to_midnight_data():
     df = df[
         (df["DHB"] != "Managed Isolation & Quarantine") & (df["Historical"] != "Yes")
     ]
+
+    AUCKLAND_DHBs = ["Auckland", "Counties Manukau", "Waitemata"]
+
+    in_auckland = df["DHB"].isin(AUCKLAND_DHBs)
+    if AUCKLAND:
+        df = df[in_auckland]
+    elif NOTAUCKLAND:
+        df = df[~in_auckland]
 
     # Deliberately excluding today, as it is incomplete data
     dates = np.arange(np.datetime64('2021-08-10'), np.datetime64(today))
@@ -398,11 +406,18 @@ def projected_vaccine_immune_population(t, historical_doses_per_100):
 # dates, new = get_data()
 
 dates, new = midnight_to_midnight_data()
-# Last day is out of date, we replace it with the net number of cases in the last 24
-# hours as of the latest update. It might be 9am-9am instead of midnight-midnight, but
-# doesn't overlap with any other 24 hour period we're using and is a representative 24
-# hour period so shouldn't bias anything.
-new[-1] = get_todays_cases()
+if not (AUCKLAND or NOTAUCKLAND):
+    # Last day is out of date, we replace it with the net number of cases in the last 24
+    # hours as of the latest update. It might be 9am-9am instead of midnight-midnight, but
+    # doesn't overlap with any other 24 hour period we're using and is a representative 24
+    # hour period so shouldn't bias anything.
+    new[-1] = get_todays_cases()
+else:
+    # For region-specific data, we're a day out of date. Could get more up to date by
+    # reading the right row of data from the page in get_todays_cases(), but haven't
+    # done this yet
+    dates = dates[:-1]
+    new = new[:-1]
 
 START_VAX_PROJECTIONS = 23  # Sep 2nd
 all_dates = dates
@@ -819,7 +834,12 @@ if VAX:
         f"Starting from currently estimated {R_eff_string}",
     ]
 else:
-    region = "New Zealand"
+    if AUCKLAND:
+        region = "Auckland"
+    elif NOTAUCKLAND:
+        region = "New Zealand excluding Auckland"
+    else:
+        region = "New Zealand"
     title_lines = [
         f"$R_\\mathrm{{eff}}$ in {region} as of {latest_update_day}, with Auckland alert level and daily cases",
         f"Latest estimate: {R_eff_string}",
