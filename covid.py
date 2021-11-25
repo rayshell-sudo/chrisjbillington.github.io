@@ -25,7 +25,7 @@ matplotlib.rc('ytick', labelsize=9)
 matplotlib.rc('axes', labelsize=9) 
 
 import matplotlib.pyplot as plt
-plt.rcParams['svg.fonttype'] = 'none'
+# plt.rcParams['svg.fonttype'] = 'none'
 
 CRITICAL_CASES = 0.05
 
