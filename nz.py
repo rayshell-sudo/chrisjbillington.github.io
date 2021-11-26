@@ -107,7 +107,23 @@ def get_todays_cases():
     NET = "Change in last 24 hours"
     miq_net = df[df["Location"] == MIQ][NET].sum()
     all_net = df[df["Location"] == "Total"][NET].sum()
-    return int(str(all_net).strip("*")) - int(str(miq_net).strip("*"))
+
+    # This isn't global because Waitematā is spelled with an "ā" on this webpage, but
+    # with an "a" in the csv data:
+    AUCKLAND_DHBs = ["Auckland", "Counties Manukau", "Waitematā"]
+
+    def clean(n):
+        return int(str(n).strip("*"))
+
+    auckland_dhbs_net = df[df["Location"].isin(AUCKLAND_DHBs)][NET]
+
+    auckland_net = sum(clean(n) for n in auckland_dhbs_net)
+    national_net = clean(all_net) - clean(miq_net)
+    if AUCKLAND:
+        return auckland_net
+    elif NOTAUCKLAND:
+        return national_net - auckland_net
+    return national_net
 
 
 def midnight_to_midnight_data():
@@ -406,18 +422,11 @@ def projected_vaccine_immune_population(t, historical_doses_per_100):
 # dates, new = get_data()
 
 dates, new = midnight_to_midnight_data()
-if not (AUCKLAND or NOTAUCKLAND):
-    # Last day is out of date, we replace it with the net number of cases in the last 24
-    # hours as of the latest update. It might be 9am-9am instead of midnight-midnight, but
-    # doesn't overlap with any other 24 hour period we're using and is a representative 24
-    # hour period so shouldn't bias anything.
-    new[-1] = get_todays_cases()
-else:
-    # For region-specific data, we're a day out of date. Could get more up to date by
-    # reading the right row of data from the page in get_todays_cases(), but haven't
-    # done this yet
-    dates = dates[:-1]
-    new = new[:-1]
+# Last day is out of date, we replace it with the net number of cases in the last 24
+# hours as of the latest update. It might be 9am-9am instead of midnight-midnight, but
+# doesn't overlap with any other 24 hour period we're using and is a representative 24
+# hour period so shouldn't bias anything.
+new[-1] = get_todays_cases()
 
 START_VAX_PROJECTIONS = 23  # Sep 2nd
 all_dates = dates
