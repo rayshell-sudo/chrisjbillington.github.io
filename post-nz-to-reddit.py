@@ -33,6 +33,10 @@ def make_title():
 
 def make_comment():
     stats = json.loads(Path("latest_nz_stats.json").read_text())
+    R_eff_auckland = stats['R_eff_auckland']
+    u_R_eff_auckland = stats['u_R_eff_auckland']
+    R_eff_notauckland = stats['R_eff_notauckland']
+    u_R_eff_notauckland = stats['u_R_eff_notauckland']
 
     proj_lines = [
         "day  cases  68% range",
@@ -63,6 +67,18 @@ def make_comment():
 
     First two plots have case numbers on a linear scale, next two plots are exactly
     the same but with case numbers on a log scale.
+
+    [Auckland](https://chrisbillington.net/COVID_NZ_auckland.png): R_eff =
+    {R_eff_auckland:.02f} ± {u_R_eff_auckland:.02f}
+
+    [NZ excluding Auckland](https://chrisbillington.net/COVID_NZ_notauckland.png): R_eff =
+    {R_eff_notauckland:.02f} ± {u_R_eff_notauckland:.02f}
+
+    The R_eff estimate outside of Auckland should be interpreted with caution. Because
+    case growth outside of Auckland is a due to a mix of local transmission and an
+    increase in cases from Auckland, attributing it all to local transmission (as this
+    R_eff estimate does) may result in an overestimate. This will likely become less true
+    as time goes on and local transmission becomes the dominant source of case growth.
 
     Expected case numbers if the current  trend continues:
 

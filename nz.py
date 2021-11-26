@@ -960,6 +960,10 @@ if VAX:
     text.set_bbox(dict(facecolor='white', alpha=0.8, linewidth=0))
 
     suffix = '_vax'
+elif AUCKLAND:
+    suffix = '_auckland'
+elif NOTAUCKLAND:
+    suffix = '_notauckland'
 else:
     suffix = ''
 
@@ -968,7 +972,7 @@ if OLD:
 else:
     fig1.savefig(f'COVID_NZ{suffix}.svg')
     fig1.savefig(f'COVID_NZ{suffix}.png', dpi=133)
-if True:  # Just to keep the diff with nsw.py sensible here
+if not (AUCKLAND or NOTAUCKLAND):
     ax2.set_yscale('linear')
     maxproj = new_projection[t_projection < (END_PLOT - dates[-1]).astype(int)].max()
     if OLD:
@@ -1007,7 +1011,13 @@ try:
 except FileNotFoundError:
     stats = {}
 
-if True: # keep the diff simple
+if AUCKLAND:
+    stats['R_eff_auckland'] = R[-1] 
+    stats['u_R_eff_auckland'] = u_R_latest
+elif NOTAUCKLAND:
+    stats['R_eff_notauckland'] = R[-1] 
+    stats['u_R_eff_notauckland'] = u_R_latest
+else:
     stats['R_eff'] = R[-1] 
     stats['u_R_eff'] = u_R_latest
     stats['today'] = str(np.datetime64(datetime.now(), 'D'))

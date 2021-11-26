@@ -58,6 +58,25 @@ def tweet_2_text():
 
 def tweet_3_text():
     stats = json.loads(Path("latest_nz_stats.json").read_text())
+    R_eff_auckland = stats['R_eff_auckland']
+    u_R_eff_auckland = stats['u_R_eff_auckland']
+    R_eff_notauckland = stats['R_eff_notauckland']
+    u_R_eff_notauckland = stats['u_R_eff_notauckland']
+
+    COMMENT_TEXT = f"""\
+    Auckland: R_eff = {R_eff_auckland:.02f} ± {u_R_eff_auckland:.02f}
+    NZ excluding Auckland: R_eff = {R_eff_notauckland:.02f} ± {u_R_eff_notauckland:.02f}
+
+    (Cases shown on a log scale)
+
+    Case growth outside Auckland should be interpreted with cauttion, as it is a mix of
+    local growth and cases leaking from Auckland. Thus this R_eff may be an
+    overestimate.
+    """
+    return dedent(COMMENT_TEXT)
+
+def tweet_4_text():
+    stats = json.loads(Path("latest_nz_stats.json").read_text())
 
     proj_lines = [
         "day  cases  68% range",
@@ -103,6 +122,8 @@ if __name__ == '__main__':
     vax_linear = api.media_upload("COVID_NZ_vax_linear.png")
     log = api.media_upload("COVID_NZ.png")
     vax_log = api.media_upload("COVID_NZ_vax.png")
+    auckland = api.media_upload("COVID_NZ_auckland.png")
+    notauckland = api.media_upload("COVID_NZ_notauckland.png")
  
     # Post tweets with images
     tweet_1 = api.update_status(
@@ -120,5 +141,12 @@ if __name__ == '__main__':
     tweet_3 = api.update_status(
         status=tweet_3_text(),
         in_reply_to_status_id=tweet_2.id,
+        media_ids=[auckland.media_id, notauckland.media_id],
+        auto_populate_reply_metadata=True,
+    )
+
+    tweet_4 = api.update_status(
+        status=tweet_4_text(),
+        in_reply_to_status_id=tweet_3.id,
         auto_populate_reply_metadata=True,
     )
