@@ -65,15 +65,16 @@ def tweet_3_text():
 
     COMMENT_TEXT = f"""\
     Auckland: R_eff = {R_eff_auckland:.02f} ± {u_R_eff_auckland:.02f}
+    
     NZ excluding Auckland: R_eff = {R_eff_notauckland:.02f} ± {u_R_eff_notauckland:.02f}
 
     (Cases shown on a log scale)
 
-    Case growth outside Auckland should be interpreted with cauttion, as it is a mix of
+    Case growth outside Auckland should be interpreted with caution, as it is a mix of
     local growth and cases leaking from Auckland. Thus this R_eff may be an
     overestimate.
     """
-    return dedent(COMMENT_TEXT)
+    return fmt(COMMENT_TEXT)
 
 def tweet_4_text():
     stats = json.loads(Path("latest_nz_stats.json").read_text())
