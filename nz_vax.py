@@ -75,7 +75,7 @@ def get_latest_data():
         raise ValueError("Didn't get an up-to-date covid-19-vaccine-data page")
 
     df = pd.read_html(page)[0]
-    first, second, _ = df['Cumulative total']
+    first, second, _, _, _ = df['Cumulative total']
     return first, second
 
 def get_data():
