@@ -19,19 +19,47 @@ def seven_day_average(data):
     return ret / n
 
 
-def get_data(state):
-    url = f"https://covidlive.com.au/report/daily-vaccinations/{state.lower()}"
-
-    df = pd.read_html(url)[1]
-
-    doses = df['DOSES'][::-1]
-    doses = np.diff(doses, prepend=0)
-    dates = np.array(
+def first_and_second_by_state(state):
+    df = pd.read_html(
+        f"https://covidlive.com.au/report/daily-vaccinations-first-doses/{state.lower()}"
+    )[1]
+    first = np.array(df['FIRST'][::-1])
+    first_dates = np.array(
         [np.datetime64(datetime.strptime(d, '%d %b %y'), 'D') for d in df['DATE'][::-1]]
     )
-    dates = dates[:-1]
-    doses = doses[:-1]
-    return dates, doses
+
+    df = pd.read_html(
+        f"https://covidlive.com.au/report/daily-vaccinations-people/{state.lower()}"
+    )[1]
+    second = np.array(df['SECOND'][::-1])
+    second_dates = np.array(
+        [np.datetime64(datetime.strptime(d, '%d %b %y'), 'D') for d in df['DATE'][::-1]]
+    )
+
+    first[np.isnan(first)] = 0
+    second[np.isnan(second)] = 0
+    maxlen = max(len(first), len(second))
+    if len(first) < len(second):
+        first = np.concatenate([np.zeros(maxlen - len(first)), first])
+        dates = second_dates
+    elif len(second) < len(first):
+        second = np.concatenate([np.zeros(maxlen - len(second)), second])
+        dates = second_dates
+    else:
+        dates = first_dates
+
+    IX_CORRECTION = np.where(dates==np.datetime64('2021-07-29'))[0][0]
+
+    if state.lower() in ['nt', 'act']:
+        first[:IX_CORRECTION] += first[IX_CORRECTION] - first[IX_CORRECTION - 1]
+        second[:IX_CORRECTION] += second[IX_CORRECTION] - second[IX_CORRECTION - 1]
+
+    if first[-1] == first[-2]:
+        first = first[:-1]
+        dates = dates[:-1]
+        second = second[:-1]
+
+    return dates - 1, np.diff(first + second, prepend=0)
 
 POPS = {
     'AUS': 25.36e6,
@@ -46,16 +74,16 @@ POPS = {
 
 STATE = 'NSW'
 
-nsw_dates, nsw_doses = get_data(STATE)
+nsw_dates, nsw_doses = first_and_second_by_state(STATE)
 
 # Smooth out the data correction made on Aug 16th:
-CORRECTION_DATE = np.datetime64('2021-08-16')
-CORRECTION_DOSES = 93000
-nsw_doses = nsw_doses.astype(float)
-nsw_doses[nsw_dates == CORRECTION_DATE] -= CORRECTION_DOSES
-sum_prior = nsw_doses[nsw_dates < CORRECTION_DATE].sum()
-SCALE_FACTOR = 1 + CORRECTION_DOSES / sum_prior
-nsw_doses[nsw_dates < CORRECTION_DATE] *= SCALE_FACTOR
+# CORRECTION_DATE = np.datetime64('2021-08-16')
+# CORRECTION_DOSES = 93000
+# nsw_doses = nsw_doses.astype(float)
+# nsw_doses[nsw_dates == CORRECTION_DATE] -= CORRECTION_DOSES
+# sum_prior = nsw_doses[nsw_dates < CORRECTION_DATE].sum()
+# SCALE_FACTOR = 1 + CORRECTION_DOSES / sum_prior
+# nsw_doses[nsw_dates < CORRECTION_DATE] *= SCALE_FACTOR
 
 
 days_projection = 200
