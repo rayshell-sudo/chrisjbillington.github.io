@@ -66,27 +66,49 @@ def covidlive_data(start_date=np.datetime64('2021-05-10')):
     return dates, cases
 
 
-def covidlive_doses_per_100(n):
-    """return VIC cumulative doses per 100 population for the last n days"""
+def covidlive_doses_per_100(n, state='VIC'):
+    """return VIC cumulative 1st + 2nd doses per 100 population for the last n days"""
 
-    url = "https://covidlive.com.au/report/daily-vaccinations/vic"
-
-    df = pd.read_html(url)[1]
-    doses = df['DOSES'][::-1]
-    daily_doses = np.diff(doses, prepend=0).astype(float)
-    dates = np.array(
+    df = pd.read_html(
+        f"https://covidlive.com.au/report/daily-vaccinations-first-doses/{state.lower()}"
+    )[1]
+    first = np.array(df['FIRST'][::-1])
+    first_dates = np.array(
         [np.datetime64(datetime.strptime(d, '%d %b %y'), 'D') for d in df['DATE'][::-1]]
     )
-    dates = dates[:-1]
-    daily_doses = daily_doses[:-1]
 
-    # Smooth out the data correction made on Aug 16th:
-    CORRECTION_DATE = np.datetime64('2021-08-16')
-    CORRECTION_DOSES = -75000
-    daily_doses[dates == CORRECTION_DATE] -= CORRECTION_DOSES
-    sum_prior = daily_doses[dates < CORRECTION_DATE].sum()
-    SCALE_FACTOR = 1 + CORRECTION_DOSES / sum_prior
-    daily_doses[dates < CORRECTION_DATE] *= SCALE_FACTOR
+    df = pd.read_html(
+        f"https://covidlive.com.au/report/daily-vaccinations-people/{state.lower()}"
+    )[1]
+    second = np.array(df['SECOND'][::-1])
+    second_dates = np.array(
+        [np.datetime64(datetime.strptime(d, '%d %b %y'), 'D') for d in df['DATE'][::-1]]
+    )
+
+    first[np.isnan(first)] = 0
+    second[np.isnan(second)] = 0
+    maxlen = max(len(first), len(second))
+    if len(first) < len(second):
+        first = np.concatenate([np.zeros(maxlen - len(first)), first])
+        dates = second_dates
+    elif len(second) < len(first):
+        second = np.concatenate([np.zeros(maxlen - len(second)), second])
+        dates = second_dates
+    else:
+        dates = first_dates
+
+    IX_CORRECTION = np.where(dates==np.datetime64('2021-07-29'))[0][0]
+
+    if state.lower() in ['nt', 'act']:
+        first[:IX_CORRECTION] += first[IX_CORRECTION] - first[IX_CORRECTION - 1]
+        second[:IX_CORRECTION] += second[IX_CORRECTION] - second[IX_CORRECTION - 1]
+
+    if first[-1] == first[-2]:
+        first = first[:-1]
+        dates = dates[:-1]
+        second = second[:-1]
+
+    daily_doses = np.diff(first + second, prepend=0)
 
     return 100 * daily_doses.cumsum()[-n:] / POP_OF_VIC
 
@@ -386,7 +408,7 @@ if OLD:
 # new = np.append(new, [655])
 
 START_PLOT = np.datetime64('2021-05-20')
-END_PLOT = np.datetime64('2022-01-01') if VAX else dates[-1] + 28
+END_PLOT = np.datetime64('2022-03-01') if VAX else dates[-1] + 28
 
 SMOOTHING = 4
 PADDING = 3 * int(round(3 * SMOOTHING))
@@ -551,7 +573,7 @@ new_smoothed = new_smoothed.clip(0, None)
 
 
 # Projection of daily case numbers:
-days_projection = (np.datetime64('2022-02-01') - dates[-1]).astype(int)
+days_projection = (np.datetime64('2022-03-01') - dates[-1]).astype(int)
 t_projection = np.linspace(0, days_projection, days_projection + 1)
 
 # Construct a covariance matrix for the latest estimate in new_smoothed and R:
