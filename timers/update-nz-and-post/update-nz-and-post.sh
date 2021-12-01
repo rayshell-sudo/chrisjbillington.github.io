@@ -11,17 +11,17 @@ if python wait-for-nz-update.py | grep "ready!"; then
 fi
 
 # Post to reddit:
-# python post-nz-to-reddit.py \
-#   "${REDDIT_CLIENT_ID}" \
-#   "${REDDIT_CLIENT_SECRET}" \
-#   "${REDDIT_PASSWORD}"
+python post-nz-to-reddit.py \
+  "${REDDIT_CLIENT_ID}" \
+  "${REDDIT_CLIENT_SECRET}" \
+  "${REDDIT_PASSWORD}"
 
-# # Post to twitter:
-# python post-nz-to-twitter.py \
-#   "${TWITTER_API_KEY}" \
-#   "${TWITTER_API_SECRET_KEY}" \
-#   "${TWITTER_ACCESS_TOKEN}" \
-#   "${TWITTER_ACCESS_TOKEN_SECRET}"
+# Post to twitter:
+python post-nz-to-twitter.py \
+  "${TWITTER_API_KEY}" \
+  "${TWITTER_API_SECRET_KEY}" \
+  "${TWITTER_ACCESS_TOKEN}" \
+  "${TWITTER_ACCESS_TOKEN_SECRET}"
 
 # Commit and push
 git commit --all -m "NZ update"
