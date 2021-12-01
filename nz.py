@@ -191,7 +191,7 @@ def moh_doses_per_100(n):
         datestring = (datetime.now() - timedelta(days=i)).strftime("%d_%m_%Y")
         url = (
             "https://www.health.govt.nz/system/files/documents/pages/"
-            f"covid_vaccinations_{datestring}.xlsx"
+            f"covid_vaccinations_{datestring}_0.xlsx"
         )
         try:
             print(f"trying to get vax data for {datestring}")
@@ -200,11 +200,13 @@ def moh_doses_per_100(n):
                 break
         except urllib.error.HTTPError:
             continue
+    else:
+        raise RuntimeError("No vax excel spreadsheet found")
 
     df = pd.read_excel(io.BytesIO(response.content), sheet_name="Date")
 
     dates = np.array(df['Date'], dtype='datetime64[D]')
-    daily_doses = np.array(df['First dose administered'] + df['Second dose administered'])
+    daily_doses = np.array(df['First doses'] + df['Second doses'])
 
     # Interpolate up to yesterday based on the latest cumulative number
     latest_cumulative = sum(moh_latest_cumulative_doses())
