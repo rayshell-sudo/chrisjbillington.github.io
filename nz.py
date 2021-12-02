@@ -704,7 +704,8 @@ ALERT_LEVEL_4 = np.datetime64('2021-08-17')
 ALERT_LEVEL_3 = np.datetime64('2021-09-22')
 STEP_1 = np.datetime64('2021-10-06')
 STEP_2 = np.datetime64('2021-11-10')
-END_LOCKDOWN = all_dates[-1] + 28 # Who knows?
+TRAFFIC_LIGHT_SYSTEM = np.datetime64('2021-12-03')
+# END_LOCKDOWN = all_dates[-1] + 28
 
 def whiten(color, f):
     """Mix a color with white where f is how much of the original colour to keep"""
@@ -756,23 +757,32 @@ ax1.fill_betweenx(
 ax1.fill_betweenx(
     [-10, 10],
     [STEP_2, STEP_2],
-    [END_LOCKDOWN, END_LOCKDOWN],
+    [TRAFFIC_LIGHT_SYSTEM, TRAFFIC_LIGHT_SYSTEM],
     color=whiten("green", 0.5),
     # alpha=0.45,
     linewidth=0,
     label="Level 3, Step 2",
 )
+ax1.fill_betweenx(
+    [-10, 10],
+    [TRAFFIC_LIGHT_SYSTEM, TRAFFIC_LIGHT_SYSTEM],
+    [END_PLOT, END_PLOT],
+    color=whiten("green", 0.25),
+    # alpha=0.45,
+    linewidth=0,
+    label="Traffic light system",
+)
 
-for i in range(30):
-    ax1.fill_betweenx(
-        [-10, 10],
-        [END_LOCKDOWN.astype(int) + i / 3] * 2,
-        [END_LOCKDOWN.astype(int) + (i + 1) / 3] * 2,
-        color="green",
-        alpha=0.45 * (30 - i) / 30,
-        linewidth=0,
-        zorder=-10,
-    )
+# for i in range(30):
+#     ax1.fill_betweenx(
+#         [-10, 10],
+#         [END_LOCKDOWN.astype(int) + i / 3] * 2,
+#         [END_LOCKDOWN.astype(int) + (i + 1) / 3] * 2,
+#         color="green",
+#         alpha=0.45 * (30 - i) / 30,
+#         linewidth=0,
+#         zorder=-10,
+#     )
 
 
 ax1.fill_between(
@@ -909,9 +919,9 @@ handles += handles2
 labels += labels2
 
 if VAX:
-    order = [4, 5, 6, 7, 8, 9, 10, 0, 1, 2, 3]
+    order = [5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4]
 else:
-    order = [4, 5, 6, 7, 8, 9, 0, 1, 2, 3]
+    order = [5, 6, 7, 8, 9, 10, 0, 1, 2, 3, 4]
 ax2.legend(
     # handles,
     # labels,
