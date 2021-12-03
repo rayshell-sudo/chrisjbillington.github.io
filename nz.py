@@ -987,26 +987,27 @@ else:
 if not (AUCKLAND or NOTAUCKLAND):
     ax2.set_yscale('linear')
     maxproj = new_projection[t_projection < (END_PLOT - dates[-1]).astype(int)].max()
-    if OLD:
-        ymax = 400
-    elif maxproj < 60:
-        ymax = 80
-    elif maxproj < 120:
-        ymax = 160
-    elif maxproj < 150:
-        ymax = 200
-    elif maxproj < 300:
-        ymax = 400
-    elif maxproj < 600:
-        ymax = 800
-    elif maxproj < 1200:
-        ymax = 1600
-    elif maxproj < 1800:
-        ymax = 2400
-    elif maxproj < 2400:
-        ymax = 3200
-    else:
-        ymax = 4000
+    ymax = 400
+    # if OLD:
+    #     ymax = 400
+    # elif maxproj < 60:
+    #     ymax = 80
+    # elif maxproj < 120:
+    #     ymax = 160
+    # elif maxproj < 150:
+    #     ymax = 200
+    # elif maxproj < 300:
+    #     ymax = 400
+    # elif maxproj < 600:
+    #     ymax = 800
+    # elif maxproj < 1200:
+    #     ymax = 1600
+    # elif maxproj < 1800:
+    #     ymax = 2400
+    # elif maxproj < 2400:
+    #     ymax = 3200
+    # else:
+    #     ymax = 4000
     ax2.axis(ymin=0, ymax=ymax)
     ax2.yaxis.set_major_locator(mticker.MultipleLocator(ymax / 8))
     ax2.set_ylabel("Daily confirmed cases (linear scale)")
