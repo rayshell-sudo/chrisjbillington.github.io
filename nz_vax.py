@@ -83,7 +83,7 @@ def get_data():
         datestring = (datetime.now() - timedelta(days=i)).strftime("%d_%m_%Y")
         url = (
             "https://www.health.govt.nz/system/files/documents/pages/"
-            f"covid_vaccinations_{datestring}_3_0.xlsx"
+            f"covid_vaccinations_{datestring}.xlsx"
         )
         print(url)
         try:
