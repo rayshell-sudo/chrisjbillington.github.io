@@ -610,9 +610,16 @@ def clip_params(params):
 
 
 # 5dma of data prior to the fit. Change of methodology as of 2021-11-19, so keep old
-# methodology for remaking plots prior to then:
+# methodology for remaking plots prior to then. Changed methodology back on 2021-12-11.
 PRE_FIT_SMOOTHING = 5
-DO_PRE_FIT_SMOOTHING = dates[-1] > np.datetime64('2021-11-18')
+
+if dates[-1] > np.datetime64('2021-12-10'):
+    DO_PRE_FIT_SMOOTHING = False
+elif dates[-1] > np.datetime64('2021-11-18'):
+    DO_PRE_FIT_SMOOTHING = True
+else:
+    DO_PRE_FIT_SMOOTHING = False
+
 
 params, _ = curve_fit(
     padding_model,
