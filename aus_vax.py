@@ -383,9 +383,9 @@ AZ_production = np.diff(AZ_local_supply, prepend=0)
 
 if PROJECT:
     if LONGPROJECT:
-        projection_end = np.datetime64('2022-01-31')
+        projection_end = np.datetime64('2022-06-01')
     else:
-        projection_end = np.datetime64('2022-01-31')
+        projection_end = np.datetime64('2022-06-01')
     projection_dates = np.arange(dates[-1] + 1, projection_end)
     all_dates = np.concatenate((dates, projection_dates))
 else:
