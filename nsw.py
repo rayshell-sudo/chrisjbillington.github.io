@@ -558,10 +558,10 @@ if OLD:
 
 
 # dates = np.append(dates, [dates[-1] + 1])
-# new = np.append(new, [655])
+# new = np.append(new, [804])
 
 START_PLOT = np.datetime64('2021-06-13')
-END_PLOT = np.datetime64('2022-03-01') if VAX else dates[-1] + 28
+END_PLOT = np.datetime64('2022-06-01') if VAX else dates[-1] + 28
 
 SMOOTHING = 4
 PADDING = 3 * int(round(3 * SMOOTHING))
@@ -714,7 +714,7 @@ new_smoothed = new_smoothed.clip(0, None)
 
 
 # Projection of daily case numbers:
-days_projection = (np.datetime64('2022-03-01') - dates[-1]).astype(int)
+days_projection = (np.datetime64('2022-06-01') - dates[-1]).astype(int)
 t_projection = np.linspace(0, days_projection, days_projection + 1)
 
 # Construct a covariance matrix for the latest estimate in new_smoothed and R:
@@ -1071,7 +1071,7 @@ else:
 
 
 ax1.axhline(1.0, color='k', linewidth=1)
-ax1.axis(xmin=START_PLOT, xmax=END_PLOT, ymin=0, ymax=4)
+ax1.axis(xmin=START_PLOT, xmax=END_PLOT, ymin=0, ymax=5)
 ax1.grid(True, linestyle=":", color='k', alpha=0.5)
 
 ax1.set_ylabel(R"$R_\mathrm{eff}$")
@@ -1192,7 +1192,7 @@ ax2.fill_between(
 ax2.set_ylabel(f"Daily cases (log scale)")
 
 ax2.set_yscale('log')
-ax2.axis(ymin=1, ymax=10_000)
+ax2.axis(ymin=1, ymax=100_000)
 fig1.tight_layout(pad=1.8)
 
 handles, labels = ax1.get_legend_handles_labels()
@@ -1210,8 +1210,8 @@ ax2.legend(
     # labels,
     [handles[idx] for idx in order],
     [labels[idx] for idx in order],
-    loc='center right' if VAX else 'upper left',
-    ncol=1 if VAX else 2,
+    loc='upper left',
+    ncol=2,
     prop={'size': 8}
 )
 
@@ -1298,15 +1298,15 @@ else:
 if VAX or not (LGA or OTHERS or CONCERN or SYDNEY or NOT_SYDNEY or HUNTER or ILLAWARRA or WESTERN_NSW):
     ax2.set_yscale('linear')
     if OLD:
-        ymax = 4000
+        ymax = 5000
     elif HUNTER:
-        ymax = 400
+        ymax = 500
     elif ILLAWARRA:
-        ymax = 400
+        ymax = 500
     elif WESTERN_NSW:
-        ymax = 400
+        ymax = 500
     else:
-        ymax = 2000
+        ymax = 10000
     ax2.axis(ymin=0, ymax=ymax)
     ax2.yaxis.set_major_locator(mticker.MultipleLocator(ymax / 8))
     ax2.set_ylabel("Daily confirmed cases (linear scale)")
