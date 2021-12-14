@@ -905,6 +905,7 @@ CURFEW = np.datetime64('2021-08-23')
 END_CURFEW = np.datetime64('2021-09-16')
 END_LOCKDOWN = np.datetime64('2021-10-11')
 EASING_80 = np.datetime64('2021-10-18')
+END_MASKS = np.datetime64('2021-12-15')
 
 
 def whiten(color, f):
@@ -1007,10 +1008,19 @@ ax1.fill_betweenx(
 ax1.fill_betweenx(
     [-10, 10],
     [EASING_80, EASING_80],
-    [END_PLOT, END_PLOT],
+    [END_MASKS, END_MASKS],
     color=whiten("green", 0.5),
     linewidth=0,
     label="80% easing",
+)
+
+ax1.fill_betweenx(
+    [-10, 10],
+    [END_MASKS, END_MASKS],
+    [END_PLOT, END_PLOT],
+    color=whiten("green", 0.25),
+    linewidth=0,
+    label="End mandatory masks",
 )
 
 # for i in range(30):
@@ -1202,9 +1212,9 @@ handles += handles2
 labels += labels2
 
 if VAX:
-    order = [8, 10, 9, 11, 12, 13, 14, 7, 0, 1, 2, 3, 4, 5, 6]
+    order = [9, 11, 10, 12, 13, 14, 15, 8, 7, 0, 1, 2, 3, 4, 5, 6]
 else:
-    order = [8, 9, 10, 11, 12, 13, 7, 0, 1, 2, 3, 4, 5, 6]
+    order = [9, 10, 11, 12, 13, 14, 8, 7, 0, 1, 2, 3, 4, 5, 6]
 ax2.legend(
     # handles,
     # labels,
