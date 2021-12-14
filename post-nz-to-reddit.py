@@ -26,8 +26,8 @@ def make_title():
     today = f'{today.strftime("%B")} {th(today.day)}'
 
     title=f"""NZ R_eff as of {today}, with daily cases and restrictions. Latest
-        estimate: R_eff = {R_eff:.02f} ± {u_R_eff:.02f}. Plus projected effect of
-        vaccination rollout. (images with both linear and log scales)
+        estimate: R_eff = {R_eff:.02f} ± {u_R_eff:.02f}. (images with both linear and
+        log scales)
     """
     return " ".join(title.split())
 
@@ -65,7 +65,7 @@ def make_comment():
     COMMENT_TEXT = f"""\
     More info/methodology: https://chrisbillington.net/COVID_NZ.html
 
-    First two plots have case numbers on a linear scale, next two plots are exactly
+    First plot has case numbers on a linear scale, second plot is exactly the
     the same but with case numbers on a log scale.
 
     [Auckland](https://chrisbillington.net/COVID_NZ_auckland.png): R_eff =
@@ -73,12 +73,6 @@ def make_comment():
 
     [NZ excluding Auckland](https://chrisbillington.net/COVID_NZ_notauckland.png): R_eff =
     {R_eff_notauckland:.02f} ± {u_R_eff_notauckland:.02f}
-
-    The R_eff estimate outside of Auckland should be interpreted with caution. Because
-    case growth outside of Auckland is a due to a mix of local transmission and an
-    increase in cases from Auckland, attributing it all to local transmission (as this
-    R_eff estimate does) may result in an overestimate. This will likely become less true
-    as time goes on and local transmission becomes the dominant source of case growth.
 
     Expected case numbers if the current  trend continues:
 
@@ -93,10 +87,7 @@ def make_comment():
     >its current value. This does not take into account that things are in a state of
     >flux. As restrictions take effect, the virus should have fewer opportunities for
     >spread, and Reff will decrease. If restrictions are eased, it may increase. Contact
-    >tracing may suppress spread to a greater or lesser degree over time. The above plot
-    >specifically showing the effect of vaccines does take into account a reduction in
-    >R_eff as vaccination coverage increases, but ignores any other possible future
-    >changes in R_eff.
+    >tracing may suppress spread to a greater or lesser degree over time.
     >
     >Furthermore, when case numbers are small, the random chance of how many people each
     >infected person subsequently infects can cause estimates of R_eff to vary randomly
@@ -122,9 +113,7 @@ def get_flair_id(subreddit):
 
 IMAGES = [
     "COVID_NZ_linear.png",
-    "COVID_NZ_vax_linear.png",
     "COVID_NZ.png",
-    "COVID_NZ_vax.png",
 ]
 
 if __name__ == '__main__':

@@ -26,8 +26,8 @@ def make_title():
     today = f'{today.strftime("%B")} {th(today.day)}'
 
     title=f"""ACT R_eff as of {today}, with daily cases and restrictions. Latest
-        estimate: R_eff = {R_eff:.02f} ± {u_R_eff:.02f}. Plus projected effect of
-        vaccination rollout. (images with both linear and log scales)
+        estimate: R_eff = {R_eff:.02f} ± {u_R_eff:.02f}. (images with both linear and
+        log scales)
     """
     return " ".join(title.split())
 
@@ -61,7 +61,7 @@ def make_comment():
     COMMENT_TEXT = f"""\
     More info/methodology: https://chrisbillington.net/COVID_ACT.html
 
-    First two plots have case numbers on a linear scale, next two plots are exactly
+    First plot has case numbers on a linear scale, second plot is exactly the
     the same but with case numbers on a log scale.
 
     Expected case numbers if the current  trend continues:
@@ -77,10 +77,7 @@ def make_comment():
     >its current value. This does not take into account that things are in a state of
     >flux. As restrictions take effect, the virus should have fewer opportunities for
     >spread, and Reff will decrease. If restrictions are eased, it may increase. Contact
-    >tracing may suppress spread to a greater or lesser degree over time. The above plot
-    >specifically showing the effect of vaccines does take into account a reduction in
-    >R_eff as vaccination coverage increases, but ignores any other possible future
-    >changes in R_eff.
+    >tracing may suppress spread to a greater or lesser degree over time.
     >
     >Furthermore, when case numbers are small, the random chance of how many people each
     >infected person subsequently infects can cause estimates of R_eff to vary randomly
@@ -100,9 +97,7 @@ def get_flair_id(subreddit):
 
 IMAGES = [
     "COVID_ACT_linear.png",
-    "COVID_ACT_vax_linear.png",
     "COVID_ACT.png",
-    "COVID_ACT_vax.png",
 ]
 
 if __name__ == '__main__':

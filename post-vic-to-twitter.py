@@ -36,9 +36,7 @@ def tweet_1_text():
     VIC R_eff as of {today} with daily cases and restrictions. Latest estimate:
     R_eff = {R_eff:.2f} ± {u_R_eff:.2f}
 
-    Plus projected effect of vaccination rollout.
-
-    Cases shown on a linear scale (log scale in next tweet).
+    Cases shown on both a linear scale (first image) and log scale (second image).
 
     More info https://chrisbillington.net/COVID_VIC_2021.html
 
@@ -46,21 +44,6 @@ def tweet_1_text():
     return fmt(COMMENT_TEXT)
 
 def tweet_2_text():
-    today, R_eff, u_R_eff = stats()
-    COMMENT_TEXT = f"""\
-    VIC R_eff as of {today} with daily cases and restrictions. Latest estimate:
-    R_eff = {R_eff:.2f} ± {u_R_eff:.2f}
-
-    Plus projected effect of vaccination rollout.
-
-    (Cases shown on a log scale)
-
-    More info https://chrisbillington.net/COVID_VIC_2021.html
-
-    #COVID19Vic"""
-    return fmt(COMMENT_TEXT)
-
-def tweet_3_text():
     stats = json.loads(Path("latest_vic_stats.json").read_text())
 
     proj_lines = [
@@ -93,23 +76,6 @@ def tweet_3_text():
 
     return dedent(COMMENT_TEXT)
 
-# def tweet_4_text():
-#     COMMENT_TEXT = """\
-#     Note that these projections do not take into account recent/upcoming easing of
-#     restrictions. If the trend changes as a result of easing, the projections will also
-#     change once this is reflected in case numbers, but not in advance."""
-#     return fmt(COMMENT_TEXT)
-
-# def tweet_5_text():
-#     COMMENT_TEXT = """\
-
-#     Vaccination is the only way out of this lockdown. See where vaccines are available
-#     near you: https://covid19nearme.com.au/state/vic/vaccination. If you're already
-#     booked in, keep an eye out as more supply might mean you can move it up.
-
-#     #Covid19Vic
-#     """
-#     return fmt(COMMENT_TEXT)
 
 if __name__ == '__main__':
     api_key = sys.argv[1]
@@ -123,40 +89,17 @@ if __name__ == '__main__':
 
     # Upload images
     linear = api.media_upload("COVID_VIC_2021_linear.png")
-    vax_linear = api.media_upload("COVID_VIC_2021_vax_linear.png")
     log = api.media_upload("COVID_VIC_2021.png")
-    vax_log = api.media_upload("COVID_VIC_2021_vax.png")
-    disclaimer = api.media_upload("disclaimer.png")
  
     # Post tweets with images
     tweet_1 = api.update_status(
         status=tweet_1_text(),
-        media_ids=[linear.media_id, vax_linear.media_id],
+        media_ids=[linear.media_id, log.media_id],
     )
  
     tweet_2 = api.update_status(
         status=tweet_2_text(),
-        media_ids=[log.media_id, vax_log.media_id],
         in_reply_to_status_id=tweet_1.id,
         auto_populate_reply_metadata=True,
     )
-
-    tweet_3 = api.update_status(
-        status=tweet_3_text(),
-        in_reply_to_status_id=tweet_2.id,
-        auto_populate_reply_metadata=True,
-    )
-
-    # tweet_4 = api.update_status(
-    #     status=tweet_4_text(),
-    #     in_reply_to_status_id=tweet_3.id,
-    #     auto_populate_reply_metadata=True,
-    #     media_ids=[disclaimer.media_id],
-    # )
-
-    # tweet_5 = api.update_status(
-    #     status=tweet_5_text(),
-    #     in_reply_to_status_id=tweet_4.id,
-    #     auto_populate_reply_metadata=True,
-    # )
 

@@ -36,9 +36,7 @@ def tweet_1_text():
     NSW R_eff as of {today} with daily cases and restrictions. Latest estimate:
     R_eff = {R_eff:.2f} ± {u_R_eff:.2f}
 
-    Plus projected effect of vaccination rollout.
-
-    Cases shown on a linear scale (log scale in next tweet).
+    Cases shown on both a linear scale (first image) and log scale (second image).
 
     More info https://chrisbillington.net/COVID_NSW.html
 
@@ -46,21 +44,6 @@ def tweet_1_text():
     return fmt(COMMENT_TEXT)
 
 def tweet_2_text():
-    today, R_eff, u_R_eff = stats()
-    COMMENT_TEXT = f"""\
-    NSW R_eff as of {today} with daily cases and restrictions. Latest estimate:
-    R_eff = {R_eff:.2f} ± {u_R_eff:.2f}
-
-    Plus projected effect of vaccination rollout.
-
-    (Cases shown on a log scale)
-
-    More info https://chrisbillington.net/COVID_NSW.html
-
-    #covid19nsw #covidsydney"""
-    return fmt(COMMENT_TEXT)
-
-def tweet_3_text():
     stats = json.loads(Path("latest_nsw_stats.json").read_text())
     R_eff_sydney = stats['R_eff_sydney']
     u_R_eff_sydney = stats['u_R_eff_sydney']
@@ -80,7 +63,7 @@ def tweet_3_text():
     #covid19nsw #covidsydney"""
     return dedent(COMMENT_TEXT)
 
-def tweet_4_text():
+def tweet_3_text():
     stats = json.loads(Path("latest_nsw_stats.json").read_text())
     R_eff_concern = stats['R_eff_concern']
     u_R_eff_concern = stats['u_R_eff_concern']
@@ -100,7 +83,7 @@ def tweet_4_text():
     #covid19nsw #covidsydney"""
     return dedent(COMMENT_TEXT)
 
-def tweet_5_text():
+def tweet_4_text():
     stats = json.loads(Path("latest_nsw_stats.json").read_text())
     R_eff_hunter = stats['R_eff_hunter']
     u_R_eff_hunter = stats['u_R_eff_hunter']
@@ -123,7 +106,7 @@ def tweet_5_text():
     #covid19nsw #covidsydney"""
     return dedent(COMMENT_TEXT)
 
-def tweet_6_text():
+def tweet_5_text():
     stats = json.loads(Path("latest_nsw_stats.json").read_text())
 
     proj_lines = [
@@ -154,13 +137,6 @@ def tweet_6_text():
 
     return dedent(COMMENT_TEXT)
 
-# def tweet_7_text():
-#     COMMENT_TEXT = """\
-#     Note that these projections do not take into account upcoming easings of
-#     restrictions. If the trend changes as a result of easing, the projections will also
-#     change once this is reflected in case numbers, but not in advance."""
-#     return fmt(COMMENT_TEXT)
-
 if __name__ == '__main__':
     api_key = sys.argv[1]
     api_secret_key = sys.argv[2]
@@ -173,9 +149,7 @@ if __name__ == '__main__':
 
     # Upload images
     linear = api.media_upload("COVID_NSW_linear.png")
-    vax_linear = api.media_upload("COVID_NSW_vax_linear.png")
     log = api.media_upload("COVID_NSW.png")
-    vax_log = api.media_upload("COVID_NSW_vax.png")
     concern = api.media_upload("COVID_NSW_LGA_concern.png")
     others = api.media_upload("COVID_NSW_LGA_others.png")
     sydney = api.media_upload("COVID_NSW_sydney.png")
@@ -184,51 +158,35 @@ if __name__ == '__main__':
     illawarra = api.media_upload("COVID_NSW_illawarra.png")
     wnsw = api.media_upload("COVID_NSW_wnsw.png")
 
-    disclaimer = api.media_upload("disclaimer.png")
- 
     # Post tweets with images
     tweet_1 = api.update_status(
         status=tweet_1_text(),
-        media_ids=[linear.media_id, vax_linear.media_id],
+        media_ids=[linear.media_id, log.media_id],
     )
  
     tweet_2 = api.update_status(
         status=tweet_2_text(),
-        media_ids=[log.media_id, vax_log.media_id],
+        media_ids=[sydney.media_id, not_sydney.media_id],
         in_reply_to_status_id=tweet_1.id,
         auto_populate_reply_metadata=True,
     )
 
     tweet_3 = api.update_status(
         status=tweet_3_text(),
-        media_ids=[sydney.media_id, not_sydney.media_id],
+        media_ids=[concern.media_id, others.media_id],
         in_reply_to_status_id=tweet_2.id,
         auto_populate_reply_metadata=True,
     )
 
     tweet_4 = api.update_status(
         status=tweet_4_text(),
-        media_ids=[concern.media_id, others.media_id],
+        media_ids=[hunter.media_id, illawarra.media_id, wnsw.media_id],
         in_reply_to_status_id=tweet_3.id,
         auto_populate_reply_metadata=True,
     )
 
     tweet_5 = api.update_status(
         status=tweet_5_text(),
-        media_ids=[hunter.media_id, illawarra.media_id, wnsw.media_id],
         in_reply_to_status_id=tweet_4.id,
         auto_populate_reply_metadata=True,
     )
-
-    tweet_6 = api.update_status(
-        status=tweet_6_text(),
-        in_reply_to_status_id=tweet_5.id,
-        auto_populate_reply_metadata=True,
-    )
-
-    # tweet_7 = api.update_status(
-    #     status=tweet_7_text(),
-    #     in_reply_to_status_id=tweet_6.id,
-    #     auto_populate_reply_metadata=True,
-    #     media_ids=[disclaimer.media_id],
-    # )
