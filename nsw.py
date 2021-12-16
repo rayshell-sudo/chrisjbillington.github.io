@@ -174,6 +174,12 @@ def gaussian_smoothing(data, pts):
     return smoothed / normalisation
 
 
+def log_gaussian_smoothing(data, pts, vmin=0.1):
+    """Take the log of the data, clipped from below to vmin, apply gaussian smoothing by
+    given number of points, then exponentiate and return"""
+    return np.exp(gaussian_smoothing(np.log(data.clip(vmin)), pts))
+
+
 def fourteen_day_average(data):
     ret = np.cumsum(data, dtype=float)
     ret[14:] = ret[14:] - ret[:-14]
@@ -636,7 +642,7 @@ fit = padding_model(pad_x, *params).clip(0.1, None)
 
 
 new_padded[-PADDING:] = fit
-new_smoothed = gaussian_smoothing(new_padded, SMOOTHING)[: -PADDING]
+new_smoothed = log_gaussian_smoothing(new_padded, SMOOTHING)[: -PADDING]
 R = (new_smoothed[1:] / new_smoothed[:-1]) ** tau
 
 N_monte_carlo = 1000
@@ -681,7 +687,7 @@ for i in range(N_monte_carlo):
 
     new_padded[:-PADDING] = new_with_noise
     new_padded[-PADDING:] = fit
-    new_smoothed_noisy = gaussian_smoothing(new_padded, SMOOTHING)[:-PADDING]
+    new_smoothed_noisy = log_gaussian_smoothing(new_padded, SMOOTHING)[:-PADDING]
     variance_new_smoothed += (new_smoothed_noisy - new_smoothed) ** 2 / N_monte_carlo
     R_noisy = (new_smoothed_noisy[1:] / new_smoothed_noisy[:-1]) ** tau
     variance_R += (R_noisy - R) ** 2 / N_monte_carlo
