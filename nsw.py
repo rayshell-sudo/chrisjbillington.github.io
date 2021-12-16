@@ -731,12 +731,29 @@ cov = np.array(
     ]
 )
 
+# We define R_eff as the 5-day growth factor in cases, implicitly assuming a generation
+# distribution that is a delta function at 5 days. However, the SIR model is going to
+# generated secondary cases using an exponential generation distribution. So we need to
+# produce an R_eff for use by the SIR model, which, if fed to an exponential generation
+# distribution, would result in the same growth factor over the mean generation
+# interval, otherwise the SIR model will predict unrealistically fast growth (the cases
+# that transmit early have more opportunity for further spread). This conversion derived
+# from details in https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1766383/
+R_eff_exp = 1 + np.log(R[-1])
+
+# Scale the covariance matrix accordingly as well:
+cov_exp = cov.copy()
+cov_exp[1,1] *= (R_eff_exp / R[-1])**2
+cov_exp[0,1] *= R_eff_exp / R[-1]
+cov_exp[1,0] *= R_eff_exp / R[-1]
+
+
 if VAX and not BIPARTITE:
     # Fancy stochastic SIR model
     trials_infected_today, trials_cumulative, trials_R_eff = stochastic_sir(
         initial_caseload=new_smoothed[-1],
         initial_cumulative_cases=new.sum(),
-        initial_R_eff=R[-1],
+        initial_R_eff=R_eff_exp,
         tau=tau,
         population_size=POP_OF_SYD,
         vaccine_immunity=projected_vaccine_immune_population(
@@ -744,7 +761,7 @@ if VAX and not BIPARTITE:
         ),
         n_days=days_projection + 1,
         n_trials=1000 if OLD else 10000, # just save some time if we're animating
-        cov_caseload_R_eff=cov,
+        cov_caseload_R_eff=cov_exp,
     )
 
     new_projection, (
@@ -1311,6 +1328,9 @@ if OLD:
 else:
     fig1.savefig(f'COVID_NSW{suffix}.svg')
     fig1.savefig(f'COVID_NSW{suffix}.png', dpi=133)
+
+plt.show()
+
 if VAX or not (LGA or OTHERS or CONCERN or SYDNEY or NOT_SYDNEY or HUNTER or ILLAWARRA or WESTERN_NSW):
     ax2.set_yscale('linear')
     if OLD:
