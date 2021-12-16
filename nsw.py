@@ -773,6 +773,9 @@ if VAX and not BIPARTITE:
         trials_cumulative,
     )
 
+    # Convert R_eff back to delta-generation-distribution-Reffs:
+    trials_R_eff = np.exp(trials_R_eff - 1)
+
     R_eff_projection, (
         R_eff_projection_lower,
         R_eff_projection_upper,
