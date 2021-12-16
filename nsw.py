@@ -24,9 +24,8 @@ munits.registry[datetime.date] = converter
 munits.registry[datetime] = converter
 
 
-POP_OF_SYD = 5_312_163
 POP_OF_NSW = 8.166e6
-
+TEST_DETECTION_RATE = 0.2
 
 VAX = 'vax' in sys.argv
 OTHERS = 'others' in sys.argv
@@ -567,7 +566,7 @@ if OLD:
 # new = np.append(new, [804])
 
 START_PLOT = np.datetime64('2021-06-13')
-END_PLOT = np.datetime64('2022-06-01') if VAX else dates[-1] + 28
+END_PLOT = np.datetime64('2022-05-01') if VAX else dates[-1] + 28
 
 SMOOTHING = 4
 PADDING = 3 * int(round(3 * SMOOTHING))
@@ -645,10 +644,23 @@ new_padded[-PADDING:] = fit
 new_smoothed = log_gaussian_smoothing(new_padded, SMOOTHING)[: -PADDING]
 R = (new_smoothed[1:] / new_smoothed[:-1]) ** tau
 
+# We define R_eff as the 5-day growth factor in cases, implicitly assuming a generation
+# distribution that is a delta function at 5 days. However, the SIR model is going to
+# generated secondary cases using an exponential generation distribution. So we need to
+# produce an R_eff for use by the SIR model, which, if fed to an exponential generation
+# distribution, would result in the same growth factor over the mean generation
+# interval, otherwise the SIR model will predict unrealistically fast growth (the cases
+# that transmit early have more opportunity for further spread). This conversion derived
+# from details in https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1766383/
+R_exp = 1 + np.log(R)
+
+
 N_monte_carlo = 1000
 variance_R = np.zeros_like(R)
+variance_R_exp = np.zeros_like(R)
 variance_new_smoothed = np.zeros_like(new_smoothed)
 cov_R_new_smoothed = np.zeros_like(R)
+cov_R_exp_new_smoothed = np.zeros_like(R)
 
 # Uncertainty in new cases is whatever multiple of Poisson noise puts them on average 1
 # sigma away from the smoothed new cases curve. Only use data when smoothed data > 1.0
@@ -690,9 +702,14 @@ for i in range(N_monte_carlo):
     new_smoothed_noisy = log_gaussian_smoothing(new_padded, SMOOTHING)[:-PADDING]
     variance_new_smoothed += (new_smoothed_noisy - new_smoothed) ** 2 / N_monte_carlo
     R_noisy = (new_smoothed_noisy[1:] / new_smoothed_noisy[:-1]) ** tau
+    R_exp_noisy = 1 + np.log(R_noisy)
     variance_R += (R_noisy - R) ** 2 / N_monte_carlo
+    variance_R_exp += (R_exp_noisy - R_exp) ** 2 / N_monte_carlo
     cov_R_new_smoothed += (
         (new_smoothed_noisy[1:] - new_smoothed[1:]) * (R_noisy - R) / N_monte_carlo
+    )
+    cov_R_exp_new_smoothed += (
+        (new_smoothed_noisy[1:] - new_smoothed[1:]) * (R_exp_noisy - R_exp) / N_monte_carlo
     )
 
 
@@ -720,32 +737,16 @@ new_smoothed = new_smoothed.clip(0, None)
 
 
 # Projection of daily case numbers:
-days_projection = (np.datetime64('2022-06-01') - dates[-1]).astype(int)
+days_projection = (np.datetime64('2022-05-01') - dates[-1]).astype(int)
 t_projection = np.linspace(0, days_projection, days_projection + 1)
 
-# Construct a covariance matrix for the latest estimate in new_smoothed and R:
+# Construct a covariance matrix for the latest estimate in new_smoothed and R_exp:
 cov = np.array(
     [
-        [variance_new_smoothed[-1], cov_R_new_smoothed[-1]],
-        [cov_R_new_smoothed[-1], variance_R[-1]],
+        [variance_new_smoothed[-1], cov_R_exp_new_smoothed[-1]],
+        [cov_R_exp_new_smoothed[-1], variance_R_exp[-1]],
     ]
 )
-
-# We define R_eff as the 5-day growth factor in cases, implicitly assuming a generation
-# distribution that is a delta function at 5 days. However, the SIR model is going to
-# generated secondary cases using an exponential generation distribution. So we need to
-# produce an R_eff for use by the SIR model, which, if fed to an exponential generation
-# distribution, would result in the same growth factor over the mean generation
-# interval, otherwise the SIR model will predict unrealistically fast growth (the cases
-# that transmit early have more opportunity for further spread). This conversion derived
-# from details in https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1766383/
-R_eff_exp = 1 + np.log(R[-1])
-
-# Scale the covariance matrix accordingly as well:
-cov_exp = cov.copy()
-cov_exp[1,1] *= (R_eff_exp / R[-1])**2
-cov_exp[0,1] *= R_eff_exp / R[-1]
-cov_exp[1,0] *= R_eff_exp / R[-1]
 
 
 if VAX and not BIPARTITE:
@@ -753,15 +754,15 @@ if VAX and not BIPARTITE:
     trials_infected_today, trials_cumulative, trials_R_eff = stochastic_sir(
         initial_caseload=new_smoothed[-1],
         initial_cumulative_cases=new.sum(),
-        initial_R_eff=R_eff_exp,
+        initial_R_eff=R_exp[-1],
         tau=tau,
-        population_size=POP_OF_SYD,
+        population_size=POP_OF_NSW * TEST_DETECTION_RATE,
         vaccine_immunity=projected_vaccine_immune_population(
             t_projection, doses_per_100
         ),
         n_days=days_projection + 1,
         n_trials=1000 if OLD else 10000, # just save some time if we're animating
-        cov_caseload_R_eff=cov_exp,
+        cov_caseload_R_eff=cov,
     )
 
     new_projection, (
@@ -785,89 +786,89 @@ if VAX and not BIPARTITE:
     total_cases_lower = cumulative_lower[-1]
     total_cases_upper = cumulative_upper[-1]
 
-elif BIPARTITE:
+# elif BIPARTITE:
 
-    # Sum of two models - one for LGAs of concern, and one for the rest of NSW
-    stats = json.loads(Path("latest_nsw_stats.json").read_text())
-    R_concern = stats['R_eff_concern']
-    new_concern = stats['new_concern']
-    cov_concern = np.array(stats['cov_concern'])
-    initial_cumulative_concern = stats['initial_cumulative_concern']
-    R_others = stats['R_eff_others']
-    new_others = stats['new_others']
-    cov_others = np.array(stats['cov_others'])
-    initial_cumulative_others = stats['initial_cumulative_others']
+#     # Sum of two models - one for LGAs of concern, and one for the rest of NSW
+#     stats = json.loads(Path("latest_nsw_stats.json").read_text())
+#     R_concern = stats['R_eff_concern']
+#     new_concern = stats['new_concern']
+#     cov_concern = np.array(stats['cov_concern'])
+#     initial_cumulative_concern = stats['initial_cumulative_concern']
+#     R_others = stats['R_eff_others']
+#     new_others = stats['new_others']
+#     cov_others = np.array(stats['cov_others'])
+#     initial_cumulative_others = stats['initial_cumulative_others']
 
-    # # LGA data is a tad out of date. Scale new and cumulative cases proportionally to
-    # # match total new and cumulative caseloads.
-    # caseload_factor = new_smoothed[-1] / (new_concern + new_others)
-    # cumulative_factor = new.sum() / (initial_cumulative_concern + initial_cumulative_others)
+#     # # LGA data is a tad out of date. Scale new and cumulative cases proportionally to
+#     # # match total new and cumulative caseloads.
+#     # caseload_factor = new_smoothed[-1] / (new_concern + new_others)
+#     # cumulative_factor = new.sum() / (initial_cumulative_concern + initial_cumulative_others)
 
-    # new_concern = caseload_factor * new_concern
-    # new_others = caseload_factor * new_others
-    # initial_cumulative_concern = cumulative_factor * initial_cumulative_concern
-    # initial_cumulative_others = cumulative_factor * initial_cumulative_others
+#     # new_concern = caseload_factor * new_concern
+#     # new_others = caseload_factor * new_others
+#     # initial_cumulative_concern = cumulative_factor * initial_cumulative_concern
+#     # initial_cumulative_others = cumulative_factor * initial_cumulative_others
 
-    # # Scale both R values to match what we would expect from the latest statewide R
-    # # value:
-    # R_composite = (new_concern * R_concern + new_others * R_others) / (new_concern + new_others)
-    # R_factor = R[-1] / (R_composite)
-    # R_concern *= R_factor
-    # R_others *= R_factor
+#     # # Scale both R values to match what we would expect from the latest statewide R
+#     # # value:
+#     # R_composite = (new_concern * R_concern + new_others * R_others) / (new_concern + new_others)
+#     # R_factor = R[-1] / (R_composite)
+#     # R_concern *= R_factor
+#     # R_others *= R_factor
 
-    # Fancy stochastic SIR model
-    concern_infected_today, concern_cumulative, concern_R_eff  = stochastic_sir(
-        initial_caseload=new_concern,
-        initial_cumulative_cases=initial_cumulative_concern,
-        initial_R_eff=R_concern,
-        tau=tau,
-        population_size=POP_OF_SYD,
-        vaccine_immunity=projected_vaccine_immune_population(
-            t_projection, doses_per_100
-        ),
-        n_days=days_projection + 1,
-        n_trials=10000,
-        cov_caseload_R_eff=cov_concern,
-    )
+#     # Fancy stochastic SIR model
+#     concern_infected_today, concern_cumulative, concern_R_eff  = stochastic_sir(
+#         initial_caseload=new_concern,
+#         initial_cumulative_cases=initial_cumulative_concern,
+#         initial_R_eff=R_concern,
+#         tau=tau,
+#         population_size=POP_OF_SYD,
+#         vaccine_immunity=projected_vaccine_immune_population(
+#             t_projection, doses_per_100
+#         ),
+#         n_days=days_projection + 1,
+#         n_trials=10000,
+#         cov_caseload_R_eff=cov_concern,
+#     )
 
-    others_infected_today, others_cumulative, others_R_eff  = stochastic_sir(
-        initial_caseload=new_others,
-        initial_cumulative_cases=initial_cumulative_others,
-        initial_R_eff=R_others,
-        tau=tau,
-        population_size=POP_OF_SYD,
-        vaccine_immunity=projected_vaccine_immune_population(
-            t_projection, doses_per_100
-        ),
-        n_days=days_projection + 1,
-        n_trials=10000,
-        cov_caseload_R_eff=cov_others,
-    )
+#     others_infected_today, others_cumulative, others_R_eff  = stochastic_sir(
+#         initial_caseload=new_others,
+#         initial_cumulative_cases=initial_cumulative_others,
+#         initial_R_eff=R_others,
+#         tau=tau,
+#         population_size=POP_OF_SYD,
+#         vaccine_immunity=projected_vaccine_immune_population(
+#             t_projection, doses_per_100
+#         ),
+#         n_days=days_projection + 1,
+#         n_trials=10000,
+#         cov_caseload_R_eff=cov_others,
+#     )
 
-    trials_infected_today = concern_infected_today + others_infected_today
-    trials_cumulative = concern_cumulative + others_cumulative
+#     trials_infected_today = concern_infected_today + others_infected_today
+#     trials_cumulative = concern_cumulative + others_cumulative
 
-    trials_R_eff = (
-        concern_infected_today * concern_R_eff + others_infected_today * others_R_eff
-    ) / (concern_infected_today + others_infected_today)
+#     trials_R_eff = (
+#         concern_infected_today * concern_R_eff + others_infected_today * others_R_eff
+#     ) / (concern_infected_today + others_infected_today)
 
-    new_projection, (
-        new_projection_lower,
-        new_projection_upper,
-    ) = get_confidence_interval(trials_infected_today)
+#     new_projection, (
+#         new_projection_lower,
+#         new_projection_upper,
+#     ) = get_confidence_interval(trials_infected_today)
 
-    cumulative_median, (cumulative_lower, cumulative_upper) = get_confidence_interval(
-        trials_cumulative,
-    )
+#     cumulative_median, (cumulative_lower, cumulative_upper) = get_confidence_interval(
+#         trials_cumulative,
+#     )
 
-    R_eff_projection, (
-        R_eff_projection_lower,
-        R_eff_projection_upper,
-    ) = get_confidence_interval(trials_R_eff)
+#     R_eff_projection, (
+#         R_eff_projection_lower,
+#         R_eff_projection_upper,
+#     ) = get_confidence_interval(trials_R_eff)
 
-    total_cases = cumulative_median[-1]
-    total_cases_lower = cumulative_lower[-1]
-    total_cases_upper = cumulative_upper[-1]
+#     total_cases = cumulative_median[-1]
+#     total_cases_lower = cumulative_lower[-1]
+#     total_cases_upper = cumulative_upper[-1]
 else:
     # Simple model, no vaccines or community immunity
     def log_projection_model(t, A, R):
@@ -1143,24 +1144,24 @@ if VAX and not BIPARTITE:
     else:
         region = "New South Wales"
     title_lines = [
-        f"Projected effect of vaccination rollout in {region} as of {latest_update_day}",
+        f"SIR model of {region} as of {latest_update_day}",
         f"Starting from currently estimated {R_eff_string}",
     ]
-elif VAX and OTHERS:
-    title_lines = [
-        f"Projected effect of vaccination rollout in NSW excluding LGAs of concern as of {latest_update_day}",
-        f"Starting from currently estimated {R_eff_string}",
-    ]
-elif BIPARTITE:
-    u_R_concern = np.sqrt(cov_concern[1, 1])
-    u_R_others = np.sqrt(cov_others[1, 1])
-    R_eff_str_concern = fR"$R_\mathrm{{eff,concern}}={R_concern:.02f} \pm {u_R_concern:.02f}$"
-    R_eff_str_others = fR"$R_\mathrm{{eff,others}}={R_others:.02f} \pm {u_R_others:.02f}$"
-    title_lines = [
-        "Projected effect of New South Wales vaccination rollout"
-        " with LGAs of concern and others treated separately",
-        f"Starting from current estimates: {R_eff_str_concern} and {R_eff_str_others}",
-    ]
+# elif VAX and OTHERS:
+#     title_lines = [
+#         f"Projected effect of vaccination rollout in NSW excluding LGAs of concern as of {latest_update_day}",
+#         f"Starting from currently estimated {R_eff_string}",
+#     ]
+# elif BIPARTITE:
+#     u_R_concern = np.sqrt(cov_concern[1, 1])
+#     u_R_others = np.sqrt(cov_others[1, 1])
+#     R_eff_str_concern = fR"$R_\mathrm{{eff,concern}}={R_concern:.02f} \pm {u_R_concern:.02f}$"
+#     R_eff_str_others = fR"$R_\mathrm{{eff,others}}={R_others:.02f} \pm {u_R_others:.02f}$"
+#     title_lines = [
+#         "Projected effect of New South Wales vaccination rollout"
+#         " with LGAs of concern and others treated separately",
+#         f"Starting from current estimates: {R_eff_str_concern} and {R_eff_str_others}",
+#     ]
 else:
     if LGA:
         region = LGA
@@ -1332,8 +1333,6 @@ else:
     fig1.savefig(f'COVID_NSW{suffix}.svg')
     fig1.savefig(f'COVID_NSW{suffix}.png', dpi=133)
 
-plt.show()
-
 if VAX or not (LGA or OTHERS or CONCERN or SYDNEY or NOT_SYDNEY or HUNTER or ILLAWARRA or WESTERN_NSW):
     ax2.set_yscale('linear')
     if OLD:
@@ -1345,9 +1344,9 @@ if VAX or not (LGA or OTHERS or CONCERN or SYDNEY or NOT_SYDNEY or HUNTER or ILL
     elif WESTERN_NSW:
         ymax = 500
     else:
-        ymax = 10000
+        ymax = 75000
     ax2.axis(ymin=0, ymax=ymax)
-    ax2.yaxis.set_major_locator(mticker.MultipleLocator(ymax / 8))
+    ax2.yaxis.set_major_locator(mticker.MultipleLocator(ymax / 10))
     ax2.set_ylabel("Daily confirmed cases (linear scale)")
     if OLD:
         fig1.savefig(f'nsw_animated_linear/{OLD_END_IX:04d}.png', dpi=133)

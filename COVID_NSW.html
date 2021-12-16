@@ -49,7 +49,7 @@
 </head>
 <body>
   <div class="content">
-    Last updated: 2021-12-16 17:07 AEST
+    Last updated: 2021-12-16 23:28 AEST
     <br>
     <small>
       Updates daily around 9:20AM Sydney time
@@ -83,7 +83,7 @@
       <p class="toc_title">Contents</p>
       <li><a href="#all"><i>R</i><sub>eff</sub> estimate from all cases</a></li>
       <!-- <li><a href="#noniso"><i>R</i><sub>eff</sub> estimate from non-isolating cases only</a></li> -->
-      <li><a href="#vax">Projected effect of vaccine rollout</a></li>
+      <li><a href="#sir">SIR model projection</a></li>
       <li><a href="#animated">Animated projections over time</a></li>
       <li><a href="#sydney-vs-others"><i>R</i><sub>eff</sub> in Greater Sydney vs rest of NSW</a></li>
       <li><a href="#regions"><i>R</i><sub>eff</sub> in the Hunter, Illawarra, and Western NSW regions</a></li>
@@ -98,10 +98,11 @@
     <h3 id="all"><i>R</i><sub>eff</sub> estimate from all cases</h3>
 
     <p>
-      New South Wales is currently experiencing an outbreak of COVID, due to the delta
-      variant. On June 26th, after a concerning increase in case numbers, the Greater
-      Sydney area was placed under lockdown restrictions, and other restrictions were
-      imposed in regional New South Wales.
+      New South Wales is currently experiencing an outbreak of COVID, due to the omicron
+      variant. This comes after a wave due to the delta variant in mid-2020, during
+      which New South Wales was under lockdown restrictions until vaccination levels
+      were sufficient to slow the spread of the virus. With the omicron variant having
+      significant immune escape, cases are now rising once again.
     </p>
     <p>
       How have New South Wales' restrictions affected the spread of the virus? The below
@@ -129,53 +130,75 @@
     </p>
     <img src="COVID_NSW_noniso.svg"> -->
 
-    <h3 id="vax">Projected effect of vaccine rollout</h3>
+    <h3 id="sir">SIR model projection</h3>
     <p>
       The trendline in the above plot simply projects forward case numbers assuming that
-      <i>R</i><sub>eff</sub> remains at its current estimated value. What about the effect
-      of vaccines? Below is a plot with the projected trend taking into account an
-      estimated reduction of spread due to vaccination levels increasing in New South
-      Wales through the remainder of the year. This projection is a stochastic SIR model,
-      and thus also takes into account immunity due to infections, which would decrease
-      transmission once a non-neglibible fraction of the population has been infected.
-    </p>
-    <p>
-      The rate of vaccination assumed in the model is 0.1 doses per 100 population per
-      day up to a maximum of 80% of the population. Note that the projected rollout rate
-      has been adjusted over time to approximately match the speed of the rollout as it
-      has changed over time. See below for plots of how these assumed rates compare to
-      the vaccination rollout in New South Wales so far. The vaccines are assumed to
-      reduce <i>R</i><sub>eff</sub> by 40% per dose per capita—that is, overall spread
-      is reduced by 40% for a partly-vaccinated individual and 80% for a fully
-      vaccinated individual.
+      <i>R</i><sub>eff</sub> remains at its current estimated value. What about the
+      effect of built-up immunity? Below is a plot with the projected trend taking into
+      account an estimated reduction of spread due to increasing immunity from
+      infections, which slows transmission once a non-negligible fraction of the
+      population has been infected. The projection assumes that only 20% of infections
+      are captured by testing, as such, for every projected case there are an additional
+      four infections implied that are not detected through testing.
     </p>
     <p>
       This projection shows what might be possible if all other factors affecting
       <i>R</i><sub>eff</sub>—such as restrictions—are held constant. If New South Wales
-      eases restrictions, however, then <i>R</i><sub>eff</sub> will likely increase and
-      the effect of vaccines in reducing spread will be delayed compared to this
+      introduces restrictions, then <i>R</i><sub>eff</sub> will likely decrease and
+      growth will slow, resulting in a later and lower peak in cases than the current
       projection.
     </p>
+    <p>
+      Even if no restrictions are introduced, people may modify their behaviour once
+      caseloads become higher, which also may reduce <i>R</i><sub>eff</sub>.    
+    </p>
+    <p>
+      This type of model is very simplistic, and should be taken with a grain of salt.
+      The number of actual cases detected will depend strongly on what fraction of
+      infections come forward for testing, which may change over time. Furthermore, this
+      model treats the entire state as homogenous, whereas in reality some geographic
+      areas or social networks will develop high immunity and thus slower growth before
+      others. This can significantly affect the overall rate of spread, but is not
+      captured in a simple model such as this.
+    </p>
+    <p>
+      The various effects not included in the model are also not included in the
+      projection's uncertainty range, which is solely due uncertainty in the current
+      <i>R</i><sub>eff</sub> estimate and average caseload.
+    </p>
+
     <p>
       The same plot is shown twice, the first with cases on a linear scale, and the
       second on a log scale.
     </p>
     <img src="COVID_NSW_vax_linear.svg">
     <img src="COVID_NSW_vax.svg">
-    <p>
+    <!-- <p>
       Below are plots of the vaccination rollout in New South Wales to date, in terms of
       daily and cumulative doses per 100 population, with the assumed future rate used
       for the above projections also shown.
     </p>
-    <img src="COVID_NSW_projected_doses.svg">
+    <img src="COVID_NSW_projected_doses.svg"> -->
 
     <h3 id="animated">Animated projections over time</h3>
 
-    How have the above projections changed over time? Below are animated versions of the
-    above projection, one with cases on a linear scale, and one with cases on a log
+    <p>
+    How have the above projections changed over time? Below are animated versions of
+    previous projections, one with cases on a linear scale, and one with cases on a log
     scale, run on old data to show how the projections have changed over time. Note that
     these are not 100% identical to the projections actually made on previous days, as
     there have been some slight methodology changes - but they should be very close.
+    </p>
+    <p>
+    Note that previously, projections were based on an estimated reduction in the rate
+    of spread due to vaccines. The model is still the same, but there is no longer any
+    expected future effect from increasing vaccines, as the 1st and 2nd dose rollout is
+    mostly complete. 3rd doses are being rolled out, and this would affect spread, but
+    is not taken into account in the model. At the current rate of spread, the increase
+    in 3rd doses is likely to be too insignificant to make much of a difference to the
+    omicron wave before it peaks in any case. If the wave is prolonged, I'll look into
+    introducing 3rd doses to the model.
+    </p>
 
     <video width=900 controls loop><source src="nsw_animated_linear.webm" type="video/webm"></video>
     <video width=900 controls loop><source src="nsw_animated.webm" type="video/webm"></video>
@@ -353,10 +376,11 @@
     <i>s</i><sub>vax</sub>(<i>t</i>) is calculated from vaccination numbers.
   </p>
   <p>
-    After padding, daily case numbers are smoothed with 4-day Gaussian smoothing:
+    After padding, the log of daily case numbers is smoothed with 4-day Gaussian
+    smoothing, then the result exponentiated to obtain smoothed daily case numbers:
   </p>
   <p>
-    <i>n</i><sub>smoothed</sub>(<i>t</i>) = <i>n</i>(<i>t</i>) ∗
+    log(<i>n</i><sub>smoothed</sub>(<i>t</i>)) = log(<i>n</i>(<i>t</i>)) ∗
     (2𝜋<i>T</i><sub>s</sub><sup>2</sup>)<sup>-1/2</sup> exp(-<i>t</i><sup>2</sup> /
     2<i>T</i><sub>s</sub><sup>2</sup>)
   </p>
@@ -393,12 +417,12 @@
     <sup>(<i>t<sub>i</sub></i> - <i>t</i><sub>today</sub>) / 𝜏</sup>
   </p>
 
-  <h4>Projected effect of vaccines</h4>
+  <h4>SIR model with projected effect of vaccines</h4>
   <p>
-
-    To project the effect of vaccines on the progression of daily cases in the future, I use
-    a stochastic SIR model. The model is run 1000 times to project daily case numbers, and
-    the median result and 68% range of outcomes shown in the projection.
+    To project the effect of vaccines and community immunity on the progression of daily
+    cases in the future, I use a stochastic SIR model. The model is run 1000 times to
+    project daily case numbers, and the median result and 68% range of outcomes shown in
+    the projection.
   </p>
   <p>
     In each run of the model, a random value for each of
@@ -428,9 +452,11 @@
     <i>i</i>(<i>t</i>)) / <i>N</i>]
   </p>
   <p>
-    where <i>s</i><sub>vax</sub>(<i>t</i>) is the fraction of the population not protected
-    from infection by vaccines (see See <a href="#vax-assumptions">below</a> for how this
-    is calculated), and <i>N</i> is the total population.
+
+    where <i>s</i><sub>vax</sub>(<i>t</i>) is the fraction of the population not
+    protected from infection by vaccines (see See <a href="#vax-assumptions">below</a>
+    for how this is calculated), and <i>N</i> is the total population multiplied by the
+    fraction of infections assumed to come forward for testing (20%).
   </p>
   <p>
     Assuming that <i>R</i><sub>eff</sub> is proportional to the susceptible fraction of
