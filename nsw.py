@@ -281,6 +281,7 @@ def stochastic_sir(
             # in absolute nubmers so need to be normalised by population to get
             # susceptible fraction
             s = (1 - vax_immune) * (1 - (recovered + infectious) / population_size)
+            s = max(0, s)
             R_eff = s * R0
             infected_today = np.random.poisson(infectious * R_eff / tau)
             recovered_today = np.random.binomial(infectious, 1 / tau)
