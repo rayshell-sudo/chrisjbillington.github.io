@@ -13,7 +13,6 @@ import matplotlib.pyplot as plt
 import matplotlib.units as munits
 import matplotlib.dates as mdates
 import matplotlib.ticker as mticker
-import matplotlib.colors as mcolors
 import pandas as pd
 import urllib
 
@@ -21,9 +20,10 @@ from reff_plots_common import (
     exponential,
     determine_smoothed_cases_and_Reff,
     exponential_with_vax,
-    th,
     get_SIR_projection,
     get_exp_projection,
+    whiten,
+    th,
 )
 
 # Our uncertainty calculations are stochastic. Make them reproducible, at least:
@@ -429,11 +429,6 @@ STEP_2 = np.datetime64('2021-11-10')
 TRAFFIC_LIGHT_SYSTEM = np.datetime64('2021-12-03')
 # END_LOCKDOWN = all_dates[-1] + 28
 
-def whiten(color, f):
-    """Mix a color with white where f is how much of the original colour to keep"""
-    white = np.array(mcolors.to_rgb("white"))
-    return (1 - f) * white + f * np.array(mcolors.to_rgb(color))
-
 fig1 = plt.figure(figsize=(10, 6))
 ax1 = plt.axes()
 
@@ -546,7 +541,7 @@ latest_update_day = f'{latest_update_day.strftime("%B")} {th(latest_update_day.d
 
 if VAX:
     title_lines = [
-        f"Projected effect of New Zealand vaccination rollout as of {latest_update_day}",
+        f"SIR model of New Zealand as of {latest_update_day}",
         f"Starting from currently estimated {R_eff_string}",
     ]
 else:

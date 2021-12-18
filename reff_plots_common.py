@@ -3,9 +3,16 @@ from scipy.optimize import curve_fit
 from scipy.signal import convolve
 import numpy as np
 import pandas as pd
-
+import matplotlib.colors as mcolors
 
 #Common functions used by the R_eff and SIR plots for Australian states and NZ
+
+
+def whiten(color, f):
+    """Mix a color with white where f is how much of the original colour to keep"""
+    white = np.array(mcolors.to_rgb("white"))
+    return (1 - f) * white + f * np.array(mcolors.to_rgb(color))
+
 
 def th(n):
     """Ordinal of an integer, eg "1st", "2nd" etc"""

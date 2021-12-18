@@ -10,7 +10,6 @@ import matplotlib.pyplot as plt
 import matplotlib.units as munits
 import matplotlib.dates as mdates
 import matplotlib.ticker as mticker
-import matplotlib.colors as mcolors
 import pandas as pd
 
 from reff_plots_common import (
@@ -19,9 +18,10 @@ from reff_plots_common import (
     exponential,
     determine_smoothed_cases_and_Reff,
     exponential_with_vax,
-    th,
     get_SIR_projection,
     get_exp_projection,
+    whiten,
+    th,
 )
 
 # Our uncertainty calculations are stochastic. Make them reproducible, at least:
@@ -353,12 +353,6 @@ END_CONSTRUCTION_SHUTDOWN = CONSTRUCTION_SHUTDOWN + 14
 PHASE_B = np.datetime64('2021-10-22')
 PHASE_C = np.datetime64('2021-10-30')
 PHASE_D = np.datetime64('2021-11-19')
-
-def whiten(color, f):
-    """Mix a color with white where f is how much of the original colour to keep"""
-    white = np.array(mcolors.to_rgb("white"))
-    return (1 - f) * white + f * np.array(mcolors.to_rgb(color))
-
 
 fig1 = plt.figure(figsize=(10, 6))
 ax1 = plt.axes()

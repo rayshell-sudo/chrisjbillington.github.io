@@ -10,7 +10,6 @@ import matplotlib.pyplot as plt
 import matplotlib.units as munits
 import matplotlib.dates as mdates
 import matplotlib.ticker as mticker
-import matplotlib.colors as mcolors
 import pandas as pd
 
 
@@ -20,9 +19,10 @@ from reff_plots_common import (
     exponential,
     determine_smoothed_cases_and_Reff,
     exponential_with_vax,
-    th,
     get_SIR_projection,
     get_exp_projection,
+    whiten,
+    th,
 )
 
 # Our uncertainty calculations are stochastic. Make them reproducible, at least:
@@ -480,12 +480,6 @@ END_CURFEW = np.datetime64('2021-09-16')
 END_LOCKDOWN = np.datetime64('2021-10-11')
 EASING_80 = np.datetime64('2021-10-18')
 END_MASKS = np.datetime64('2021-12-15')
-
-
-def whiten(color, f):
-    """Mix a color with white where f is how much of the original colour to keep"""
-    white = np.array(mcolors.to_rgb("white"))
-    return (1 - f) * white + f * np.array(mcolors.to_rgb(color))
 
 
 fig1 = plt.figure(figsize=(10, 6))
