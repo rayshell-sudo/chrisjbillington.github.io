@@ -351,14 +351,16 @@ elif ILLAWARRA:
 elif WESTERN_NSW:
     new = sum(cases_by_lga[lga] for lga in cases_by_lga if lga in WESTERN_NSW_LGAS) 
 else:
-    dates, new = covidlive_case_data(start_date=np.datetime64('2021-06-10'))
+    dates, new = covidlive_case_data('NSW', start_date=np.datetime64('2021-06-10'))
 
 START_VAX_PROJECTIONS = 42  # July 22nd, when I started making vaccine projections
 all_dates = dates
 all_new = new
 
 doses_per_100 = covidlive_doses_per_100(
-    n=len(dates), state='NSW', population=POP_OF_NSW
+    n=len(dates),
+    state='NSW',
+    population=POP_OF_NSW,
 )
 
 if OLD:
@@ -392,7 +394,7 @@ elif dates[-1] > np.datetime64('2021-11-18'):
 else:
     PRE_FIT_SMOOTHING = None
 
-# Where the magic happens, estiamte everything:
+# Where the magic happens, estimate everything:
 (
     new_smoothed,
     u_new_smoothed,

@@ -14,14 +14,12 @@ def th(n):
     )
 
 
-def covidlive_case_data(start_date=np.datetime64('2021-06-10')):
+def covidlive_case_data(state, start_date=np.datetime64('2021-06-10')):
     """Daily local cases from covidlive"""
-    df = pd.read_html('https://covidlive.com.au/report/daily-source-overseas/nsw')[1]
+    url = f'https://covidlive.com.au/report/daily-source-overseas/{state.lower()}'
+    df = pd.read_html(url)[1]
 
-    df = df[:200]
-
-    if df['NET2'][0] == '-':
-        df = df[1:200]
+    df = df[df['NET2'] != '-']
 
     dates = np.array(
         [
@@ -433,7 +431,7 @@ def determine_smoothed_cases_and_Reff(
 
     u_new_smoothed = np.sqrt(var_new_smoothed)
     u_R = np.sqrt(var_R)
-    
+
     return new_smoothed, u_new_smoothed, R, u_R, R_exp, cov, cov_exp, shot_noise_factor 
 
 
