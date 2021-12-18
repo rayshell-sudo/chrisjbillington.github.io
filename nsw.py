@@ -609,7 +609,7 @@ def clip_params(params):
     # Clip exponential fit params to be within a reasonable range to suppress when
     # unlucky points lead us to an unrealistic exponential blowup. Modifies array
     # in-place.
-    R_CLIP = 5 # Limit the exponential fits to a maximum of R=5
+    R_CLIP = 50 # Limit the exponential fits to a maximum of R=5
     params[0] = min(params[0], 2 * new[-FIT_PTS:].max() + 1)
     params[1] = min(params[1], np.log(R_CLIP ** (1 / tau)))
 
@@ -646,7 +646,7 @@ R = (new_smoothed[1:] / new_smoothed[:-1]) ** tau
 
 # We define R_eff as the 5-day growth factor in cases, implicitly assuming a generation
 # distribution that is a delta function at 5 days. However, the SIR model is going to
-# generated secondary cases using an exponential generation distribution. So we need to
+# generate secondary cases using an exponential generation distribution. So we need to
 # produce an R_eff for use by the SIR model, which, if fed to an exponential generation
 # distribution, would result in the same growth factor over the mean generation
 # interval, otherwise the SIR model will predict unrealistically fast growth (the cases
@@ -727,8 +727,8 @@ u_new_smoothed = np.sqrt(variance_new_smoothed)
 new_smoothed_upper = new_smoothed + u_new_smoothed
 new_smoothed_lower = new_smoothed - u_new_smoothed
 
-R_upper = R_upper.clip(0, 10)
-R_lower = R_lower.clip(0, 10)
+R_upper = R_upper.clip(0, 50)
+R_lower = R_lower.clip(0, 50)
 R = R.clip(0, None)
 
 new_smoothed_upper = new_smoothed_upper.clip(0, None)
