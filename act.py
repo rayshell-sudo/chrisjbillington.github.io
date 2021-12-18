@@ -169,7 +169,7 @@ if OLD:
     doses_per_100 = doses_per_100[:START_VAX_PROJECTIONS + OLD_END_IX]
 
 START_PLOT = np.datetime64('2021-08-10')
-END_PLOT = np.datetime64('2022-03-01') if VAX else dates[-1] + 28
+END_PLOT = np.datetime64('2022-05-01') if VAX else dates[-1] + 28
 
 tau = 5  # reproductive time of the virus in days
 R_clip = 50

@@ -96,10 +96,11 @@ def gaussian_smoothing(data, pts):
     return smoothed / normalisation
 
 
-def log_gaussian_smoothing(data, pts, vmin=0.1):
-    """Take the log of the data, clipped from below to vmin, apply gaussian smoothing by
-    given number of points, then exponentiate and return"""
-    return np.exp(gaussian_smoothing(np.log(data.clip(vmin)), pts))
+def log_gaussian_smoothing(data, pts, vmin=10):
+    """Take the log of the data, apply gaussian smoothing by given number of points,
+    then exponentiate and return. Data is first offset by vmin, which is then subtracted
+    after smoothing."""
+    return np.exp(gaussian_smoothing(np.log(data + vmin), pts)) - vmin
 
 
 def n_day_average(data, n):
