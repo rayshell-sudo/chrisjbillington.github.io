@@ -603,7 +603,7 @@ ax2.legend(
     [handles[idx] for idx in order],
     [labels[idx] for idx in order],
     loc='upper left',
-    ncol=2,
+    ncol=1,
     prop={'size': 8},
 )
 
@@ -729,6 +729,6 @@ if not OLD:
     now = datetime.now(timezone('Australia/Melbourne')).strftime('%Y-%m-%d %H:%M')
     for i, line in enumerate(html_lines):
         if 'Last updated' in line:
-            html_lines[i] = f'    Last updated: {now} AEST'
+            html_lines[i] = f'    Last updated: {now} Melbourne time'
     Path(html_file).write_text('\n'.join(html_lines) + '\n')
     plt.show()

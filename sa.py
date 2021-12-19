@@ -99,7 +99,7 @@ def projected_vaccine_immune_population(t, historical_doses_per_100):
 
 dates, new = covidlive_case_data('SA', start_date=np.datetime64('2021-11-20'))
 
-START_VAX_PROJECTIONS = 221  # Dec 18
+START_VAX_PROJECTIONS = np.argwhere(dates==np.datetime64('2021-12-17'))[0][0]
 all_dates = dates
 all_new = new
 
@@ -124,21 +124,9 @@ immune = projected_vaccine_immune_population(np.arange(100), doses_per_100)
 s = 1 - immune
 dk_dt = 1 / tau * (s[1] / s[0] - 1)
 
-# Keep the old methodology for old plots:
-if dates[-1] >= np.datetime64('2021-10-27'):
-    padding_model = lambda x, A, k: exponential_with_vax(x, A, k, dk_dt)
-else:
-    padding_model = exponential
+padding_model = lambda x, A, k: exponential_with_vax(x, A, k, dk_dt)
 
-# Whether or not to do a 5dma of data prior to the fit. Change of methodology as of
-# 2021-11-19, so keep old methodology for remaking plots prior to then. Changed
-# methodology back on 2021-12-11.
-if dates[-1] > np.datetime64('2021-12-10'):
-    PRE_FIT_SMOOTHING = None
-elif dates[-1] > np.datetime64('2021-11-18'):
-    PRE_FIT_SMOOTHING = 5
-else:
-    PRE_FIT_SMOOTHING = None
+PRE_FIT_SMOOTHING = None
 
     
 # Where the magic happens, estimate everything:
@@ -289,13 +277,13 @@ latest_update_day = f'{latest_update_day.strftime("%B")} {th(latest_update_day.d
 
 if VAX:
     title_lines = [
-        f"SIR model of SA as of {latest_update_day}",
+        f"SIR model of South Australia as of {latest_update_day}",
         f"Starting from currently estimated {R_eff_string}",
     ]
 else:
     region = "South Australia"
     title_lines = [
-        f"$R_\\mathrm{{eff}}$ in {region} as of {latest_update_day}, with restriction levels and daily cases",
+        f"$R_\\mathrm{{eff}}$ in {region} as of {latest_update_day}, with daily cases",
         f"Latest estimate: {R_eff_string}",
     ]
     
@@ -361,7 +349,7 @@ ax2.legend(
     [handles[idx] for idx in order],
     [labels[idx] for idx in order],
     loc='upper left',
-    ncol=2,
+    ncol=1,
     prop={'size': 8},
 )
 
@@ -437,7 +425,7 @@ if True: # Just to keep the diff with nsw.py sensible here
     elif maxproj < 2400:
         ymax=3200
     else:
-        ymax=4000
+        ymax=20000
     # if VAX:
     #     ymax = 40
     # else:
@@ -492,6 +480,6 @@ if not OLD:
     now = datetime.now(timezone('Australia/Melbourne')).strftime('%Y-%m-%d %H:%M')
     for i, line in enumerate(html_lines):
         if 'Last updated' in line:
-            html_lines[i] = f'    Last updated: {now} AEST'
+            html_lines[i] = f'    Last updated: {now} Melbourne time'
     Path(html_file).write_text('\n'.join(html_lines) + '\n')
     plt.show()

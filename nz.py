@@ -616,7 +616,7 @@ ax2.legend(
     [handles[idx] for idx in order],
     [labels[idx] for idx in order],
     loc='upper left',
-    ncol=1 if VAX else 2,
+    ncol=1,
     prop={'size': 8},
 )
 

@@ -375,7 +375,7 @@ latest_update_day = f'{latest_update_day.strftime("%B")} {th(latest_update_day.d
 
 if VAX:
     title_lines = [
-        f"SIR model of the ACT as of {latest_update_day}",
+        f"SIR model of the Australian Capital Territory as of {latest_update_day}",
         f"Starting from currently estimated {R_eff_string}",
     ]
 else:
@@ -447,7 +447,7 @@ ax2.legend(
     [handles[idx] for idx in order],
     [labels[idx] for idx in order],
     loc='upper left',
-    ncol=2,
+    ncol=1,
     prop={'size': 8},
 )
 
@@ -578,6 +578,6 @@ if not OLD:
     now = datetime.now(timezone('Australia/Melbourne')).strftime('%Y-%m-%d %H:%M')
     for i, line in enumerate(html_lines):
         if 'Last updated' in line:
-            html_lines[i] = f'    Last updated: {now} AEST'
+            html_lines[i] = f'    Last updated: {now} Melbourne time'
     Path(html_file).write_text('\n'.join(html_lines) + '\n')
     plt.show()
