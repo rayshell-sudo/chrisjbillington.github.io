@@ -483,7 +483,7 @@ ax1.fill_betweenx(
 
 ax1.fill_between(
     dates[1:] + 1,
-    R,
+    R.clip(0.001), # Avoid log(0) on a log plot
     label=R"$R_\mathrm{eff}$",
     step='pre',
     color='C0',
