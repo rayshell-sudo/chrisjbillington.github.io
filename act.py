@@ -201,9 +201,7 @@ else:
     u_new_smoothed,
     R,
     u_R,
-    R_exp,
     cov,
-    cov_exp,
     shot_noise_factor,
 ) = determine_smoothed_cases_and_Reff(
     new,
@@ -248,7 +246,7 @@ if VAX:
     ) = get_SIR_projection(
         current_caseload=new_smoothed[-1],
         cumulative_cases=new.sum(),
-        R_exp=R_exp[-1],
+        R_eff=R[-1],
         tau=tau,
         population=POP_OF_ACT,
         test_detection_rate=0.2,
@@ -257,7 +255,7 @@ if VAX:
         ),
         n_days=days_projection + 1,
         n_trials=1000 if OLD else 10000,  # just save some time if we're animating
-        cov_exp=cov_exp,
+        cov=cov,
     )
 
 else:

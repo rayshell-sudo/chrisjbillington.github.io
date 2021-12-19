@@ -174,6 +174,12 @@ def stochastic_sir(
     from a multivariate Gaussian distribution each trial. Returns the full dataset of
     daily infections, cumulative infections, and R_eff over time, with the first axis of
     each array being the trial number, and the second axis the day.
+
+    The R_eff given to this function should be the growth factor every tau days, that
+    is, an R_eff that assumes a generation distribution that is delta-distributed at tau
+    days. It will be converted internally to the appropriate R_eff for use with an
+    exponential generation that the SIR model assumes, in order to result in the same
+    tau-day growth factor.
     """
     if not isinstance(vaccine_immunity, np.ndarray):
         vaccine_immunity = np.full(n_days, vaccine_immunity)
@@ -187,10 +193,24 @@ def stochastic_sir(
             caseload, R_eff = np.random.multivariate_normal(
                 [initial_caseload, initial_R_eff], cov_caseload_R_eff
             )
-            R_eff = max(0.1, R_eff)
-            caseload = max(0, caseload)
         else:
             caseload, R_eff = initial_caseload, initial_R_eff
+
+        # We define R_eff as the 5-day growth factor in cases, implicitly assuming a
+        # generation distribution that is a delta function at 5 days. However, the SIR
+        # model is going to generate secondary cases using an exponential generation
+        # distribution. So we need to produce an R_eff for use by the SIR model, which,
+        # if fed to an exponential generation distribution, would result in the same
+        # growth factor over the mean generation time, otherwise the SIR model will
+        # predict unrealistically fast growth (the cases that transmit early have more
+        # opportunity for further spread). This conversion derived from details in
+        # https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1766383/
+        R_eff = 1 + np.log(R_eff)
+
+        # Clipping:
+        caseload = max(0, caseload)
+        R_eff = max(0.1, R_eff)
+
         cumulative = initial_cumulative_cases
         # First we back out an R0 from the R_eff and existing immunity. In this context,
         # R0 is the rate of spread *including* the effects of restrictions and
@@ -339,23 +359,10 @@ def determine_smoothed_cases_and_Reff(
     new_smoothed = log_gaussian_smoothing(new_padded, smoothing)[: -padding]
     R = (new_smoothed[1:] / new_smoothed[:-1]) ** tau
 
-    # We define R_eff as the 5-day growth factor in cases, implicitly assuming a
-    # generation distribution that is a delta function at 5 days. However, the SIR model
-    # is going to generate secondary cases using an exponential generation distribution.
-    # So we need to produce an R_eff for use by the SIR model, which, if fed to an
-    # exponential generation distribution, would result in the same growth factor over
-    # the mean generation interval, otherwise the SIR model will predict unrealistically
-    # fast growth (the cases that transmit early have more opportunity for further
-    # spread). This conversion derived from details in
-    # https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1766383/
-    R_exp = 1 + np.log(R)
-
     # Arrays for variances and covariances:
     var_R = np.zeros_like(R)
-    var_R_exp = np.zeros_like(R)
     var_new_smoothed = np.zeros_like(new_smoothed)
     cov_R_new_smoothed = np.zeros_like(R)
-    cov_R_exp_new_smoothed = np.zeros_like(R)
 
     # Uncertainty in new cases is whatever multiple of Poisson noise puts them on
     # average 1 sigma away from the smoothed new cases curve. Only use data when
@@ -413,25 +420,10 @@ def determine_smoothed_cases_and_Reff(
         new_smoothed_noisy = log_gaussian_smoothing(new_padded, smoothing)[:-padding]
         var_new_smoothed += (new_smoothed_noisy - new_smoothed) ** 2 / N_monte_carlo
         R_noisy = (new_smoothed_noisy[1:] / new_smoothed_noisy[:-1]) ** tau
-        R_exp_noisy = 1 + np.log(R_noisy)
         var_R += (R_noisy - R) ** 2 / N_monte_carlo
-        var_R_exp += (R_exp_noisy - R_exp) ** 2 / N_monte_carlo
         cov_R_new_smoothed += (
             (new_smoothed_noisy[1:] - new_smoothed[1:]) * (R_noisy - R) / N_monte_carlo
         )
-        cov_R_exp_new_smoothed += (
-            (new_smoothed_noisy[1:] - new_smoothed[1:])
-            * (R_exp_noisy - R_exp)
-            / N_monte_carlo
-        )
-
-    # Construct a covariance matrix for the latest estimate in new_smoothed and R_exp:
-    cov_exp = np.array(
-        [
-            [var_new_smoothed[-1], cov_R_exp_new_smoothed[-1]],
-            [cov_R_exp_new_smoothed[-1], var_R_exp[-1]],
-        ]
-    )
 
     # Construct a covariance matrix for the latest estimate in new_smoothed and R:
     cov = np.array(
@@ -444,32 +436,32 @@ def determine_smoothed_cases_and_Reff(
     u_new_smoothed = np.sqrt(var_new_smoothed)
     u_R = np.sqrt(var_R)
 
-    return new_smoothed, u_new_smoothed, R, u_R, R_exp, cov, cov_exp, shot_noise_factor 
+    return new_smoothed, u_new_smoothed, R, u_R, cov, shot_noise_factor 
 
 
 def get_SIR_projection(
     current_caseload,
     cumulative_cases,
-    R_exp,
+    R_eff,
     tau,
     population,
     test_detection_rate,
     vaccine_immunity,
     n_days,
     n_trials,
-    cov_exp,
+    cov,
 ):
 
     trials_infected_today, trials_cumulative, trials_R_eff = stochastic_sir(
         initial_caseload=current_caseload,
         initial_cumulative_cases=cumulative_cases,
-        initial_R_eff=R_exp,
+        initial_R_eff=R_eff,
         tau=tau,
         population_size=population * test_detection_rate,
         vaccine_immunity=vaccine_immunity,
         n_days=n_days,
         n_trials=n_trials,
-        cov_caseload_R_eff=cov_exp,
+        cov_caseload_R_eff=cov,
     )
 
     new_projection, (
