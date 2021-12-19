@@ -1,0 +1,404 @@
+<html>
+<META HTTP-EQUIV="EXPIRES" CONTENT="0">
+<head>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-162432647-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-162432647-1');
+  </script>
+
+  <meta charset="UTF-8">
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="http://chrisbillington.net/COVID_ACT.png">
+  <meta property="og:title" content="Progression of the COVID outbreak in the Australian Capital Territory"/>
+  <meta property="og:description" content="Plot of cases and estimated R_eff for the COVID outbreak in the Australian Capital Territory"/>
+  <meta property="og:url" content="http://chrisbillington.net/COVID_ACT.html">
+
+
+  <style type="text/css">
+  html * {
+    font-family: verdana, arial, sans-serif;
+    line-height: 150%;
+  }
+  div.content { width: 960px; margin:0 auto; }
+
+  #toc_container {
+    background: #f9f9f9 none repeat scroll 0 0;
+    border: 1px solid #aaa;
+    display: table;
+    font-size: 14px;
+    margin-bottom: 1em;
+    padding: 15px;
+    width: auto;
+  }
+
+  .toc_title {
+    font-weight: 700;
+  }
+
+  #toc_container li, #toc_container ul, #toc_container ul li{
+    list-style: outside none none !important;
+  }
+
+</style>
+
+</head>
+<body>
+  <div class="content">
+    Last updated: 2021-12-19 14:32 AEST
+    <br>
+    <small>
+      Updates daily near 12pm Canberra time
+    </small>
+    <h1>
+      Progression of the COVID outbreak in the Australian Capital Territory
+    </h1>
+    <p>
+      <mark><b><a href="COVID.html">←Back to per-country plots</a></b></mark>
+    </p>
+    <p>
+      <span style="background-color: #FF0000" ><b><a href="COVID_NZ.html">Progression of the COVID outbreak in New Zealand</a></b></span>
+    </p>
+    <p>
+      <span style="background-color: #FFA000"><b><a href="COVID_VIC_2021.html">Progression of the COVID outbreak in Victoria</a></b></span>
+    </p>
+<!--     <p>
+      <span style="background-color: #A386D9"><b><a href="COVID_ACT.html">Progression of the COVID outbreak in the Australian Capital Territory</a></b></span>
+    </p> -->
+    <p>
+      <span style="background-color: #00FF00"><b><a href="COVID_NSW.html">Progression of the COVID outbreak in New South Wales</a></b></span>
+    </p>
+    <p>
+      <span style="background-color: #00FFFF"><b><a href="aus_vaccinations.html">Australian vaccination rollout</a></b></span>
+    </p>
+    <p>
+      <span style="background-color: #FF00FF"><b><a href="COVID_VIC.html">The road to a COVID-free Victoria (old 2020 second wave plots)</a></b></span>
+    </p>
+
+    <div id="toc_container">
+      <p class="toc_title">Contents</p>
+      <li><a href="#all"><i>R</i><sub>eff</sub> estimate from all cases</a></li>
+      <!-- <li><a href="#noniso"><i>R</i><sub>eff</sub> estimate from non-isolating cases only</a></li> -->
+      <li><a href="#vax">Projected effect of vaccine rollout</a></li>
+      <li><a href="#animated">Animated projections over time</a></li>
+      <li><a href="#disclaimer">Disclaimer on trends</a></li>
+      <li><a href="#methodology">Methodology</a></li>
+      <li><a href="#details">Data sources and contact</a></li>
+    </div>
+
+    <h3 id="all"><i>R</i><sub>eff</sub> estimate from all cases</h3>
+
+    <p>
+      The Australian Capital Territory is currently experiencing an outbreak of COVID,
+      due to the delta variant. Since August 12th, the Australian Capital Territory has
+      been under lockdown restrictions.
+    </p>
+    <p>
+      How have restrictions in the ACT affected the spread of the virus? The below
+      plot shows how the effective reproduction number of the virus,
+      <i>R</i><sub>eff</sub> has changed over time in the ACT, as well as how
+      the daily cases have changed over time. A trendline shows the approximate
+      trajectory daily case numbers would follow, were the reproduction number of the
+      virus to remain at its current level.
+    </p>
+    <p>
+      The same plot is shown twice, the first with cases on a linear scale, and the
+      second on a log scale—the latter showing how consistently the caseload has
+      followed exponential growth (which forms a straight line on a log scale).
+    </p>
+    <img src="COVID_ACT_linear.svg">
+    <img src="COVID_ACT.svg">
+
+<!--     <h3 id="noniso"><i>R</i><sub>eff</sub> estimate from non-isolating cases only</h3>
+    <p>
+      Cases isolating during their infectious period represent a much lower risk of spread.
+      The growth rate of non-isolating cases is a more leading indicator of whether
+      Victoria is successfully suppressing the outbreak. The below plot is identical to the above
+      one, except it excludes cases that were known to be isolating for their full infectious
+      period.
+    </p>
+    <p>
+      The same plot is shown twice, the first with cases on a linear scale, and the
+      second on a log scale—the latter showing how consistently the caseload has
+      followed exponential growth (which forms a straight line on a log scale).
+    </p>
+
+    <img src="COVID_VIC_2021_noniso_linear.svg">
+    <img src="COVID_VIC_2021_noniso.svg"> -->
+
+    <h3 id="vax">Projected effect of vaccine rollout</h3>
+    <p>
+      The trendlines in the above plots simply project forward case numbers assuming that
+      <i>R</i><sub>eff</sub> remains at its current estimated value. What about the effect
+      of vaccines? Below is a plot with the projected trend taking into account an
+      estimated reduction of spread due to vaccination levels increasing in the ACT
+      through the remainder of the year. This projection is a stochastic SIR model,
+      and thus also takes into account immunity due to infections, which would decrease
+      transmission once a non-neglibible fraction of the population has been infected.
+    </p>
+    <p>
+      The rate of vaccination assumed in the model is 0.1 doses per 100 population per
+      day, up to a maximum of 84% of the population.
+
+      Note that the projected rollout rate has been adjusted over time to approximately
+      match the speed of the rollout as it has changed over time.
+
+      See below for plots of how these assumed rates compare to the vaccination rollout
+      in the ACT so far. The vaccines are assumed to reduce <i>R</i><sub>eff</sub> by
+      40% per dose per capita—that is, overall spread is reduced by 40% for a
+      partly-vaccinated individual and 80% for a fully vaccinated individual.
+    </p>
+    <p>
+      This projection shows what might be possible if all other factors affecting
+      <i>R</i><sub>eff</sub>—such as restrictions—are held constant. If the ACT
+      eases restrictions, however, then <i>R</i><sub>eff</sub> will likely increase and
+      the effect of vaccines in reducing spread will be delayed compared to this
+      projection. On the other hand, if contact tracing is successful in decreasing
+      <i>R</i><sub>eff</sub>, case numbers may decline faster than this projection.
+    </p>
+    <p>
+      The same plot is shown twice, the first with cases on a linear scale, and the
+      second on a log scale.
+    </p>
+    <img src="COVID_ACT_vax_linear.svg">
+    <img src="COVID_ACT_vax.svg">
+    <p>
+      Below are plots of the vaccination rollout in the ACT to date, in terms of
+      daily and cumulative doses per 100 population, with the assumed future rate used
+      for the above projections also shown.
+    </p>
+    <img src="COVID_ACT_projected_doses.svg">
+
+    <h3 id="animated">Animated projections over time</h3>
+
+    How have the above projections changed over time? Below are animated versions of the
+    above projection, one with cases on a linear scale, and one with cases on a log
+    scale, run on old data to show how the projections have changed over time. Note that
+    these are not 100% identical to the projections actually made on previous days, as
+    there have been some slight methodology changes - but they should be very close.
+
+    <video width=900 controls loop><source src="act_animated_linear.webm" type="video/webm"></video>
+    <video width=900 controls loop><source src="act_animated.webm" type="video/webm"></video>
+
+    <h3 id="disclaimer">Disclaimer on trends</h3>
+    <p>
+      The plotted trendlines are simple extrapolations of what will happen if
+      <i>R</i><sub>eff</sub> remains at its current value. This does not take into account
+      that things are in a state of flux. As restrictions take effect, the virus should
+      have fewer opportunities for spread, and <i>R</i><sub>eff</sub> will decrease. If
+      restrictions are eased, it may increase. Contact tracing may suppress spread to a
+      greater or lesser degree over time. The above plots specifically showing the effect
+      of vaccines do take into account a reduction in <i>R</i><sub>eff</sub> as
+      vaccination coverage increases, but ignore any other possible future changes in
+      <i>R</i><sub>eff</sub>.
+    </p>
+    <p>
+      Furthermore, when case numbers are small, the random chance of how many people each
+      infected person subsequently infects can cause estimates of <i>R</i><sub>eff</sub>
+      to vary randomly in time. As such the projection should be taken with a grain of
+      salt—it is merely an indication of the trend as it is right now.
+    </p> 
+
+  <h3 id="methodology">Methodology</h3>
+
+  <h4>Padding, smoothing, and calculating <i>R</i><sub>eff</sub></h4>
+
+  <p>
+    Before calculating <i>R</i><sub>eff</sub>, the daily case numbers are padded on the
+    right and smoothed. A symmetric smoothing method is used, which is why padding on the
+    right is necessary before smoothing.
+  </p>
+  <p>
+    The padding is an extrapolation based on a fit to the most recent 14 days of daily case numbers <i>n</i>(<i>t</i>), with the following
+    fit function:
+  </p>
+  <p>
+
+    <i>n</i>(<i>t</i>) = <i>A</i> exp[
+    <i>k</i>(
+    <i>t</i>-<i>t</i><sub>today</sub>)
+    + 1/2 <i>k̇</i> (<i>t</i>-<i>t</i><sub>today</sub>
+    )<sup>2</sup>
+    ]
+
+  </p>
+  <p>
+    where <i>A</i> and <i>k</i> are the fit parameters for the current daily caseload and
+    exponential growth rate, and <i>k̇</i> is the current expected rate of change of the
+    exponential growth rate due to vaccines:
+  </p>
+  <p>
+    <i>k̇</i> = 1 / 𝜏 (<i>s</i><sub>vax</sub>(<i>t</i><sub>today</sub>) /
+    <i>s</i><sub>vax</sub>(<i>t</i><sub>yesterday</sub>) - 1)
+  </p>
+  <p>
+    where 𝜏 = 5 days is the approximate mean generation time of the virus, and
+    <i>s</i><sub>vax</sub>(<i>t</i><sub>today</sub>) and
+    <i>s</i><sub>vax</sub>(<i>t</i><sub>yesterday</sub>) are the fraction of the
+    population not protected by vaccination from infection today and yesterday. See <a
+    href="#vax-assumptions">vaccination assumptions</a> below for how
+    <i>s</i><sub>vax</sub>(<i>t</i>) is calculated from vaccination numbers.
+  </p>
+  <p>
+    After padding, daily case numbers are smoothed with 4-day Gaussian smoothing:
+  </p>
+  <p>
+    <i>n</i><sub>smoothed</sub>(<i>t</i>) = <i>n</i>(<i>t</i>) ∗
+    (2𝜋<i>T</i><sub>s</sub><sup>2</sup>)<sup>-1/2</sup> exp(-<i>t</i><sup>2</sup> /
+    2<i>T</i><sub>s</sub><sup>2</sup>)
+  </p>
+  <p>
+    where <i>T</i><sub>s</sub> = 4 days and ∗ is the convolution operation.
+  </p>
+  </p>
+  <p>
+    <i>R</i><sub>eff</sub> is then calculated for each day as:
+  </p>
+  <p>
+    <i>R</i><sub>eff</sub>(<i>t<sub>i</sub></i>) =
+    (<i>n</i><sub>smoothed</sub>(<i>t<sub>i</sub></i>) /
+    <i>n</i><sub>smoothed</sub>(<i>t</i><sub><i>i</i>-1</sub>))<sup>𝜏</sup>.
+  </p>
+  <p>
+    The uncertainty in <i>R</i><sub>eff</sub> has contributions from the uncertainty in
+    the above-mentioned fit, as well as uncertainty in daily case numbers. The latter is
+    considered to be Poisson noise scaled by a constant, chosen so as to make the reduced
+    chi squared between raw and smoothed daily case numbers equal to 1.0.
+  </p>
+
+  <h4>Trend based on <i>R</i><sub>eff</sub> only</h4>
+
+  <p>
+    The plot(s) with a simple extrapolation of daily case numbers, without taking into
+    account the expected effects of vaccines, is exponential growth/decay using the most
+    recent value of <i>R</i><sub>eff</sub> and its uncertainty range:
+  </p>
+  <p>
+    <i>n</i><sub>extrap</sub> (<i>t<sub>i</sub></i>) =
+    <i>n</i><sub>smoothed</sub>(<i>t</i><sub>today</sub>)
+    <i>R</i><sub>eff</sub>(<i>t</i><sub>today</sub>)
+    <sup>(<i>t<sub>i</sub></i> - <i>t</i><sub>today</sub>) / 𝜏</sup>
+  </p>
+
+  <h4>Projected effect of vaccines</h4>
+  <p>
+
+    To project the effect of vaccines on the progression of daily cases in the future, I use
+    a stochastic SIR model. The model is run 1000 times to project daily case numbers, and
+    the median result and 68% range of outcomes shown in the projection.
+  </p>
+  <p>
+    In each run of the model, a random value for each of
+    <i>R</i><sub>eff</sub>(<i>t</i><sub>today</sub>) and
+    <i>n</i><sub>smoothed</sub>(<i>t</i><sub>today</sub>) is drawn from a multivariate
+    normal distribution, using the mean values and covariance of the estimates of the two
+    parameters.
+  </p>
+  <p>
+    The initial infectious population is taken to be:
+  </p>
+  <p>
+    <i>i</i>(<i>t</i><sub>today</sub>) =
+    𝜏 <i>n</i><sub>smoothed</sub>(<i>t</i><sub>today</sub>)
+  </p>
+  <p>
+    The initial recovered population <i>r</i>(<i>t</i><sub>today</sub>) is taken to be the
+    cumulative number of cases so far in the outbreak, minus the currently infectious
+    population.
+  </p>
+  <p>
+    Each day, the fraction of the population susceptible to infection <i>s</i>(<i>t</i>) is
+    taken to be
+  </p>
+  <p>
+    <i>s</i>(<i>t</i>) = <i>s</i><sub>vax</sub>(<i>t</i>) [1 - (<i>r</i>(<i>t</i>) +
+    <i>i</i>(<i>t</i>)) / <i>N</i>]
+  </p>
+  <p>
+    where <i>s</i><sub>vax</sub>(<i>t</i>) is the fraction of the population not protected
+    from infection by vaccines (see See <a href="#vax-assumptions">below</a> for how this
+    is calculated), and <i>N</i> is the total population.
+  </p>
+  <p>
+    Assuming that <i>R</i><sub>eff</sub> is proportional to the susceptible fraction of
+    the population, we can estimate what the reproduction number of the virus would be in
+    the absence of any vaccines or immunity from infection:
+  </p>
+  <p>
+    <i>R</i><sub>naive</sub> = <i>R</i><sub>eff</sub>(<i>t</i><sub>today</sub>) /
+    <i>s</i>(<i>t</i><sub>today</sub>)
+  </p>
+  <p>
+    And compute an <i>R</i><sub>eff</sub> for each future day based on the susceptible
+    fraction of the population that day:
+  </p>
+  <p>
+    <i>R</i><sub>eff</sub>(<i>t</i>) = <i>s</i>(<i>t</i>) <i>R</i><sub>naive</sub>
+  </p>
+  <p>
+    Each day of the model, the infectious population is increased by the number of new
+    infections, and decreased by the number of new recoveries. The recovered population is
+    increased by the number of new recoveries.
+  </p>
+  <p>
+    The number of new infections each day is drawn from a Poission distribution with mean
+    equal to <i>i</i>(<i>t</i>) <i>R</i><sub>eff</sub>(<i>t</i>) / 𝜏.
+  </p>
+  <p>
+    The number of new recoveries each days is drawn from a binomial distribution with
+    number of trials equal to the infectious population <i>i</i>(<i>t</i>), and with
+    probability 1 / 𝜏.
+  </p>
+  <h4 id="vax-assumptions">Vaccination assumptions</h4>
+  <p>
+    To model vaccines taking effect after a delay, daily vaccine dose numbers
+    <i>v</i>(<i>t</i>) are convolved with a Gaussian function offset 1.5 weeks in the
+    future, with standard deviation 0.5 weeks:
+  </p>
+  <p>
+    <i>v</i><sub>effective</sub>(<i>t</i>) = <i>v</i>(<i>t</i>) ∗
+    (2𝜋<i>σ</i><sup>2</sup>)<sup>-1/2</sup> exp(-(<i>t</i> - <i>μ</i>)<sup>2</sup> /
+    2<i>σ</i><sup>2</sup>)
+  </p>
+  <p>
+    where <i>μ</i> = 10.5 days, <i>σ</i> = 3.5 days, and ∗ is the convolution
+    operation. This causes the effect of a vaccine dose to over the course of the
+    second week after it is adminsitered, reaching nearly full effectiveness
+    approximately two weeks after administration.
+  </p>
+  <p>
+    I assume that one dose of any vaccine reduces spread by 40%, and two doses reduce
+    spread by 80%. The proportion of the population not protected by the vaccine against
+    infection is then:
+  </p>
+  <p>
+    <i>s</i><sub>vax</sub>(<i>t<sub>i</sub></i>) = 1 - 0.4 × <i>d</i>(<i>t</i><sub><i>i</i></sub>)
+  </p>
+  <p>
+    where <i>d</i>(<i>t</i><sub><i>i</i></sub>) is the cumulative number of doses per
+    capita on each day.
+  </p>
+
+    <h3 id="details">Data sources and contact</h3>
+
+    <p>
+      Source for case numbers:
+      <a href="https://covidlive.com.au/report/daily-source-overseas/act">covidlive.com.au</a>
+    </p>
+    <p><!-- 
+      Source for isolating vs non-isolating case numbers: <a
+      href="https://covidlive.com.au/report/daily-wild-cases/vic">covidlive.com.au</a>
+    </p> -->
+    <p>
+      Plots/analysis by Chris Billington. Contact: chrisjbillington [at] gmail [dot] com
+    </p>
+    <p>
+      Python script for producing the plots can be found at <a href="https://github.com/chrisjbillington/chrisjbillington.github.io/blob/master/act.py">GitHub</a>.
+    </p>
+  </div>
+</body>
+</html>
