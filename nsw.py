@@ -683,7 +683,7 @@ else:
     elif NOT_SYDNEY:
         region = "New South Wales (excluding Greater Sydney)"
     elif HUNTER:
-        region = "Newcastle"
+        region = "the Hunter region"
     elif ILLAWARRA:
         region = "the Illawarra region"
     elif WESTERN_NSW:
