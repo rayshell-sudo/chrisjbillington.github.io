@@ -578,14 +578,14 @@ ax2.fill_between(
     alpha=0.3,
     linewidth=0,
     zorder=10,
-    label=f'Daily cases ({"SIR projection" if VAX else "exponential trend"})',
+    label=f'Smoothing/{"projection" if VAX else "trend"} uncertainty',
 )
 ax2.plot(
     dates[-1].astype(int) + 0.5 + t_projection,
     new_projection.clip(0, 1e6),  # seen SVG rendering issues when this is big
     color='magenta',
     linestyle='--',
-    label=f'Daily cases ({"projection" if VAX else "trend"})',
+    label=f'Daily cases ({"SIR projection" if VAX else "exponential trend"})',
 )
 ax2.fill_between(
     dates[-1].astype(int) + 0.5 + t_projection,
@@ -609,9 +609,9 @@ handles += handles2
 labels += labels2
 
 if VAX:
-    order = [5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4]
+    order = [5, 7, 6, 8, 9, 11, 10, 0, 1, 2, 3, 4]
 else:
-    order = [5, 6, 7, 8, 9, 10, 0, 1, 2, 3, 4]
+    order = [5, 6, 7, 8, 10, 9, 0, 1, 2, 3, 4]
 ax2.legend(
     # handles,
     # labels,
