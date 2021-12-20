@@ -1,0 +1,6 @@
+[Unit]
+Description=Update SA plots and post to reddit
+
+[Service]
+ExecStart=/home/bilbo/chrisbillington.net/chrisjbillington.github.io/timers/update-sa-and-post/update-sa-and-post.sh
+User=bilbo

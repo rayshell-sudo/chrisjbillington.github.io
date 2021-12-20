@@ -20,4 +20,4 @@ python nsw.py wnsw
 # python nsw.py illawarra vax
 # python nsw.py wnsw vax
 # python nsw.py bipartite
-python nsw_vax.py
+# python nsw_vax.py

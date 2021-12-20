@@ -21,7 +21,7 @@ def fmt(a):
 
 
 def stats():
-    stats = json.loads(Path("latest_act_stats.json").read_text())
+    stats = json.loads(Path("latest_sa_stats.json").read_text())
     today = stats['today']  # The date of the last update - should be today
     R_eff = stats['R_eff']
     u_R_eff = stats['u_R_eff']
@@ -33,31 +33,31 @@ def stats():
 def tweet_1_text():
     today, R_eff, u_R_eff = stats()
     COMMENT_TEXT = f"""\
-    ACT R_eff as of {today} with daily cases and restrictions. Latest estimate:
+    SA R_eff as of {today} with daily cases. Latest estimate:
     R_eff = {R_eff:.2f} ± {u_R_eff:.2f}
 
     Plus SIR model projection.
 
     Cases shown on a linear scale (log scale in next tweet).
 
-    More info https://chrisbillington.net/COVID_ACT.html"""
+    More info https://chrisbillington.net/COVID_SA.html"""
     return fmt(COMMENT_TEXT)
 
 def tweet_2_text():
     today, R_eff, u_R_eff = stats()
     COMMENT_TEXT = f"""\
-    ACT R_eff as of {today} with daily cases and restrictions. Latest estimate:
+    SA R_eff as of {today} with daily cases. Latest estimate:
     R_eff = {R_eff:.2f} ± {u_R_eff:.2f}
 
     Plus SIR model projection.
 
     (Cases shown on a log scale)
 
-    More info https://chrisbillington.net/COVID_ACT.html"""
+    More info https://chrisbillington.net/COVID_SA.html"""
     return fmt(COMMENT_TEXT)
 
 def tweet_3_text():
-    stats = json.loads(Path("latest_act_stats.json").read_text())
+    stats = json.loads(Path("latest_sa_stats.json").read_text())
 
     proj_lines = [
         "day  cases  68% range",
@@ -99,10 +99,10 @@ if __name__ == '__main__':
     api = tweepy.API(auth, wait_on_rate_limit=True, wait_on_rate_limit_notify=True)
 
     # Upload images
-    linear = api.media_upload("COVID_ACT_linear.png")
-    vax_linear = api.media_upload("COVID_ACT_vax_linear.png")
-    log = api.media_upload("COVID_ACT.png")
-    vax_log = api.media_upload("COVID_ACT_vax.png")
+    linear = api.media_upload("COVID_SA_linear.png")
+    vax_linear = api.media_upload("COVID_SA_vax_linear.png")
+    log = api.media_upload("COVID_SA.png")
+    vax_log = api.media_upload("COVID_SA_vax.png")
  
     # Post tweets with images
     tweet_1 = api.update_status(

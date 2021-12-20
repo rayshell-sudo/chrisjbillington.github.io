@@ -17,26 +17,22 @@ def th(n):
 
 def make_title():
     """Title of the reddit post"""
-    stats = json.loads(Path("latest_vic_stats.json").read_text())
+    stats = json.loads(Path("latest_qld_stats.json").read_text())
     today = stats['today']  # The date of the last update - should be today
     R_eff = stats['R_eff']
     u_R_eff = stats['u_R_eff']
-    # R_eff_noniso = stats['R_eff_noniso']
-    # u_R_eff_noniso = stats['u_R_eff_noniso']
 
     today = datetime.fromisoformat(today)
     today = f'{today.strftime("%B")} {th(today.day)}'
 
-    title=f"""VIC R_eff as of {today}, with daily cases and restrictions. Latest
+    title=f"""QLD R_eff as of {today}, with daily cases and restrictions. Latest
         estimate: R_eff = {R_eff:.02f} ± {u_R_eff:.02f}. Plus SIR model projection.
         (images with both linear and log scales)
     """
-    # More leading estimate from nonisolating cases only: R_eff = {R_eff_noniso:.02f} ±
-    # {u_R_eff_noniso:.02f}.
     return " ".join(title.split())
 
 def make_comment():
-    stats = json.loads(Path("latest_vic_stats.json").read_text())
+    stats = json.loads(Path("latest_qld_stats.json").read_text())
 
     proj_lines = [
         "day  cases  68% range",
@@ -59,11 +55,11 @@ def make_comment():
 
     this_script_url = (
         "https://github.com/chrisjbillington/chrisjbillington.github.io/"
-        + "blob/master/post-vic-to-reddit.py"
+        + "blob/master/post-qld-to-reddit.py"
     )
 
     COMMENT_TEXT = f"""\
-    More info/methodology: https://chrisbillington.net/COVID_VIC_2021.html
+    More info/methodology: https://chrisbillington.net/COVID_QLD.html
 
     First two plots have case numbers on a linear scale, next two plots are exactly the
     same but with case numbers on a log scale.
@@ -110,10 +106,10 @@ def get_flair_id(subreddit):
 
 
 IMAGES = [
-    "COVID_VIC_2021_linear.png",
-    "COVID_VIC_2021_vax_linear.png",
-    "COVID_VIC_2021.png",
-    "COVID_VIC_2021_vax.png",
+    "COVID_QLD_linear.png",
+    "COVID_QLD_vax_linear.png",
+    "COVID_QLD.png",
+    "COVID_QLD_vax.png",
 ]
 
 if __name__ == '__main__':

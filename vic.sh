@@ -7,4 +7,4 @@ for i in {0..9}
 do
    python vic-2021.py $i
 done
-python vic_vax.py
+# python vic_vax.py

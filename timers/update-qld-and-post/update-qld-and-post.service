@@ -1,0 +1,6 @@
+[Unit]
+Description=Update QLD plots and post to reddit
+
+[Service]
+ExecStart=/home/bilbo/chrisbillington.net/chrisjbillington.github.io/timers/update-qld-and-post/update-qld-and-post.sh
+User=bilbo

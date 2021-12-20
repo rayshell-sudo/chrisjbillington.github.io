@@ -26,8 +26,8 @@ def make_title():
     today = f'{today.strftime("%B")} {th(today.day)}'
 
     title=f"""NSW R_eff as of {today}, with daily cases and restrictions. Latest
-        estimate: R_eff = {R_eff:.02f} ± {u_R_eff:.02f}. (images with both linear and
-        log scales)
+        estimate: R_eff = {R_eff:.02f} ± {u_R_eff:.02f}. Plus SIR model projection.
+        (images with both linear and log scales)
     """
     return " ".join(title.split())
 
@@ -76,8 +76,11 @@ def make_comment():
     COMMENT_TEXT = f"""\
     More info/methodology: https://chrisbillington.net/COVID_NSW.html
 
-    First plot has case numbers on a linear scale, second plot is exactly the
+    First two plots have case numbers on a linear scale, next two plots are exactly the
     same but with case numbers on a log scale.
+
+    First (and third) plot show an exponential trendline, second (and fourth) are SIR
+    models that assume 20% of infections will be detected via testing.
 
     [Greater Sydney](https://chrisbillington.net/COVID_NSW_sydney.png): R_eff =
     {R_eff_sydney:.02f} ± {u_R_eff_sydney:.02f}
@@ -113,16 +116,23 @@ def make_comment():
 
     Usual disclaimer about trendlines:
 
-    >The plotted trend is a simple extrapolation of what will happen if R_eff remains at
-    >its current value. This does not take into account that things are in a state of
-    >flux. As restrictions take effect, the virus should have fewer opportunities for
-    >spread, and Reff will decrease. If restrictions are eased, it may increase. Contact
-    >tracing may suppress spread to a greater or lesser degree over time.
-
-    >Furthermore, when case numbers are small, the random chance of how many people each
-    >infected person subsequently infects can cause estimates of R_eff to vary randomly
-    >in time. As such the projection should be taken with a grain of salt—it is merely
-    >an indication of the trend as it is right now.
+    > The plotted exponential trendlines in the above plots are simple extrapolations of
+    > what will happen if Reff remains at its current value. the SIR model projection,
+    > although it accounts for the effect of increasing immunity, still assumes that
+    > Reff otherwise remains constant.
+    > 
+    > This does not take into account that things are in a state of flux. If
+    > restrictions are tightened, the virus should have may opportunities for spread,
+    > and Reff will decrease. If restrictions are eased, it may increase. Contact
+    > tracing may suppress spread to a greater or lesser degree over time. The above
+    > plots specifically showing the effect of population immunity do take into account
+    > a reduction in Reff as immunity due to infections increases, but ignores any other
+    > possible future changes in Reff.
+    > 
+    > Furthermore, when case numbers are small, the random chance of how many people
+    > each infected person subsequently infects can cause estimates of Reff to vary
+    > randomly in time. As such the projections should be taken with a grain of salt—it
+    > is merely an indication of the trend as it is right now.
 
     This post was made by a [bot]({this_script_url}) 🤖. Please let me know if something
     looks broken."""
@@ -137,7 +147,9 @@ def get_flair_id(subreddit):
 
 IMAGES = [
     "COVID_NSW_linear.png",
+    "COVID_NSW_vax_linear.png",
     "COVID_NSW.png",
+    "COVID_NSW_vax.png",
 ]
 
 if __name__ == '__main__':
