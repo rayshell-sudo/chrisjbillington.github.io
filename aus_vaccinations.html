@@ -101,7 +101,7 @@
     <br>
     <br>
     <div id="toc_container">
-      <p class="toc_title">Contents</p>
+      <div class="toc_title">Contents</div>
       <li><a href="#daily">Daily doses by administration channel</a></li>
       <li><a href="#weekday">Daily doses by weekday</a></li>
       <li><a href="#cumulative">Cumulative doses</a></li>
@@ -111,111 +111,111 @@
       <li><a href="#details">Data sources and contact</a></li>
     </div>
     <h2 id="daily">Daily doses by administration channel</h2>
-    <p>
+    <div>
       Below is a plot of 7-day average of daily vaccine doses administered in Australia
       by administration channel, showing the daily number of doses administered by state
       vaccination clinics, and by GPs and in federally operated aged and disability
       care. The 7-day average is further smoothed to remove day-to-day random
       fluctuations using Gaussian smoothing with σ=1 days.
-    </p>
-    <p>
+    </div>
+    <div>
       Projected doses are based on a fit to the last 4 weeks of first doses assuming
       exponential approach toward some maximum uptake level, the assumption that second
       doses will follow first-doses after the current average first-to-second dosing
       interval, and that third doses will follow after the current average
       second-to-third dosing interval.
-    </p>
-    <p>
+    </div>
+    <div>
      Data note 1: 80,560 GP-administered doses were reported on April 19th that were
      administered "prior to April 17". These have been incorporated into the data by
      spreading them over the period from March 22nd (start of phase 1b) to April 16th in
      proportion to the daily rate of GP-adminsitered doses on each day.
-   </p>
-   <p>
+   </div>
+   <div>
      Data note 2: A correction to of -9,260 doses to VIC's state-clinic numbers  was
      made on May 25th. These have been incorporated into the data by spreading them over
      the period from March 22nd (start of phase 1b) to April May 23rd in proportion to
      the daily rate of VIC state-clinic-adminsitered doses on each day.
-   </p>
+   </div>
    <img src="daily_doses_by_state_longproject.svg">
 
    <h2 id="weekday">Daily doses by weekday</h2>
-   <p>
+   <div>
     Below is a plot of national daily doses by weekday, for the past five weeks. No
     averaging or smoothing has been done.
-  </p>
+  </div>
   <img src="doses_by_weekday.svg">
   <h2 id="cumulative">Cumulative doses</h2>
-  <p>
+  <div>
     Below is a simple plot of cumulative doses in Australia over time by
     administration channel, showing the cumulative number of doses administered by
     state vaccination clinics, and by GPs and in federally operated aged and
     disability care. Australia aims to vaccinate all eligible people with at
     least one dose by the end of 2021.
-  </p>
-  <p>
+  </div>
+  <div>
     Following that is a plot of cumulative first, second, and third doses administered,
     with projections.
-  </p>
-  <p>
+  </div>
+  <div>
     Projected doses are based on a fit to the last 4 weeks of first doses assuming
     exponential approach toward some maximum uptake level, the assumption that second
     doses will follow first-doses after the current average first-to-second dosing
     interval, and that third doses will follow after the current average second-to-third
     dosing interval.
-  </p>
+  </div>
   <img src="cumulative_doses_longproject.svg">
 
   
   <img src="projection_cumulative_by_type.svg">
-  <p>
+  <div>
   Note: The percentage targets in the above plot show the dates when 70% and 80% of the
   eligible population (ages 12+) received/are projected to have received two doses.
   However, in the national plan, these targets are framed in terms of the 16+
   population. Thus these projected dates assume that vaccination coverage in the 12–15
   age group is similar at these points to that of the 16+ age group.
-  </p>
+  </div>
 
 
   <h2 id="agegroups">First and second dose coverage by age group</h2>
-  <p>
+  <div>
     Below are plots of the percentage of each 10-year age group that has had a first and
     second administered, as well as the weekly rate of uptake as a percentage of each
     age group. Note that first dose data by age group is only available from May 9th,
     and second dose data from June 30th. The 12–15 and 16–19 age groups are kept
     separate rather than as a single 12–19 group, due to the 12–15 age group becoming
     eligible much later, making it more interesting to show as a separate group.
-  </p>
+  </div>
   <img src="coverage_by_agegroup.svg">
   <img src="coverage_2nd_by_agegroup.svg">
   <img src="coverage_rate_by_agegroup.svg">
   <img src="coverage_2nd_rate_by_agegroup.svg">
   <h2 id="state">First and second dose coverage by state/territory</h2>
-  <p>
+  <div>
     Below are plots of the percentage of the resident population aged 12+ in each
     state/territory that has had a first and second dose administered, as well as the
     weekly rate of uptake, as a percentage of each state/territory's age 12+ population.
     For a more detailed age breakdown, including 16+ coverage by state, see the next section.
-  </p>
+  </div>
   <img src="coverage_by_state.svg">
   <img src="coverage_2nd_by_state.svg">
   <img src="coverage_rate_by_state.svg">
   <img src="coverage_2nd_rate_by_state.svg">
 
   <h2 id="state-age">First and second dose coverage by state/territory and age group</h2>
-  <p>
+  <div>
     Below are plots of the percentage of the resident population in each state and
     territory that has had a first and second dose administered, by age group.
-  </p>
-  <p>
+  </div>
+  <div>
     Included are also projections of when various targets would be met, assuming the
     current seven-day average rate of first-doses, and the current average dosing
     interval in each state. These should be taken with a grain of salt, as the rate of first-doses, as well as the dosing intervals, may change.
-  </p>
+  </div>
 
   <h3>National</h3>
   <img src="AUS_coverage_by_age.svg">
-   <p>
+   <div>
     <table>
       <tr>
       <td>
@@ -260,11 +260,11 @@
   </td>
   </tr>
   </table>
-  </p>
+  </div>
 
   <h3>New South Wales</h3>
   <img src="NSW_coverage_by_age.svg">
-   <p>
+   <div>
     <table>
       <tr>
       <td>
@@ -309,13 +309,13 @@
   </td>
   </tr>
   </table>
-  </p>
+  </div>
 
   <h3>Victoria</h3>
 
   <img src="VIC_coverage_by_age.svg">
 
-  <p>
+  <div>
     <table>
       <tr>
       <td>
@@ -360,11 +360,11 @@
   </td>
   </tr>
   </table>
-  </p>
+  </div>
 
   <h3>Queensland</h3>
   <img src="QLD_coverage_by_age.svg">
-    <p>
+    <div>
     <table>
       <tr>
       <td>
@@ -409,11 +409,11 @@
   </td>
   </tr>
   </table>
-  </p>
+  </div>
 
   <h3>Western Australia</h3>
   <img src="WA_coverage_by_age.svg">
-    <p>
+    <div>
     <table>
       <tr>
       <td>
@@ -458,11 +458,11 @@
   </td>
   </tr>
   </table>
-  </p>
+  </div>
 
   <h3>South Australia</h3>
   <img src="SA_coverage_by_age.svg">
-    <p>
+    <div>
     <table>
       <tr>
       <td>
@@ -507,11 +507,11 @@
   </td>
   </tr>
   </table>
-  </p>
+  </div>
 
   <h3>Tasmania</h3>
   <img src="TAS_coverage_by_age.svg">
-    <p>
+    <div>
     <table>
       <tr>
       <td>
@@ -556,11 +556,11 @@
   </td>
   </tr>
   </table>
-  </p>
+  </div>
 
   <h3>Australian Capital Territory</h3>
   <img src="ACT_coverage_by_age.svg">
-    <p>
+    <div>
     <table>
       <tr>
       <td>
@@ -605,12 +605,12 @@
   </td>
   </tr>
   </table>
-  </p>
+  </div>
 
   <h3>Northern Territory</h3>
 
   <img src="NT_coverage_by_age.svg">
-    <p>
+    <div>
     <table>
       <tr>
       <td>
@@ -655,20 +655,20 @@
   </td>
   </tr>
   </table>
-  </p>
+  </div>
 
 
 <!--   <h2 id="longproject">Longer-term projections</h2>
-  <p>
+  <div>
     Below is a possible scenario for the vaccination program over the rest of the
     year.
-  </p>
-  <p>
+  </div>
+  <div>
       Projected doses are based on a fit to the last 3 weeks of first doses, assuming
       exponential decay toward some maximum uptake level, and the assumption that second
       doses will follow first-doses after the current average dosing interval.
-  </p>
-  <p>
+  </div>
+  <div>
   <img src="daily_doses_by_state_longproject.svg"> -->
 <!--   <br>
   <img src="projection_by_type.svg"> -->
@@ -676,7 +676,7 @@
   <img src="cumulative_doses_longproject.svg">
   <br> -->
   <!-- <h2 id="utilisation">Estimated utilisation</h2>
-  <p>
+  <div>
     Below is a plot of the estimated status of each vaccine dose in Australia. How many
     doses are in people's arms, in reserve, or available? This helps show whether
     administration of doses is keeping up with supply. Since the government has not
@@ -713,47 +713,47 @@
         That 12.5% of of AZ and 5% of Pfizer/Moderna doses are wasted (these are not shown in the utilisation plots).
       </li>
     </ul>
-  </p>
+  </div>
   <img src="utilisation.svg">
   <h2 id="utilisation_by_type">Estimated utilisation by vaccine type</h2>
-  <p>
+  <div>
     Below is the same utilisation estimates as in the above plot, but separated by
     vaccine type: AstraZeneca vs Pfizer/Moderna (which are lumped together).
-  </p>
+  </div>
   <img src="pfizer-moderna_utilisation.svg"> -->
   <!-- <br> -->
   <!-- <img src="az_utilisation.svg"> -->
   <h3 id="details">Data sources and contact</h3>
-  <!-- <p>
+  <!-- <div>
     Source for vaccine supply and expected supply: <a href="https://www.covid19data.com.au/vaccines">covid19data.com.au</a>
-  </p> -->
-  <p>
+  </div> -->
+  <div>
     Source for daily/cumulative dose numbers: <a href="https://covidlive.com.au">covidlive.com.au</a>.
-  </p>
-  <p>
+  </div>
+  <div>
     Source for first doses by age group prior to June 30th: <a
     href="https://www.health.gov.au/using-our-websites/copyright">Department of
   Health</a>, data extracted from government materials by <a
   href="https://covidbaseau.com/vaccinations/download">covidbaseau.com</a>.
-</p>
-<p>
+</div>
+<div>
   Source for first and second doses by age group from June 30th: <a
   href="https://www.health.gov.au/using-our-websites/copyright">Department of
 Health</a>, data extracted from government materials by <a
 href="https://github.com/jxeeno/aust-govt-covid19-vaccine-pdf">Ken Tsang</a>
-</p>
-<p>
+</div>
+<div>
   Population data from the <a
   href="https://www.abs.gov.au/statistics/people/population/national-state-and-territory-population/jun-2020">Australian
 Bureau of Statistics Estimated Resident Population, June 2020</a>
-</p>
-<p>
+</div>
+<div>
   Plots and analysis by Chris Billington. Contact: chrisjbillington [at] gmail [dot] com
-</p>
-<p>
+</div>
+<div>
   Python script for producing the plots is available <a
   href="https://github.com/chrisjbillington/chrisjbillington.github.io/blob/master/aus_vax.py">on GitHub</a>.
-</p>
+</div>
 </div>
 </body>
 </html>
