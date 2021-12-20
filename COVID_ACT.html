@@ -44,41 +44,64 @@
     list-style: outside none none !important;
   }
 
+  #nav {
+    background: #f9f9f9 none repeat scroll 0 0;
+    border: 1px solid #aaa;
+    margin-bottom: 1em;
+    padding: 15px;
+    width: auto;
+  }
+
+  #nav li, #nav ul, #nav ul li{
+    list-style: outside none none !important;
+  }
+
+  #nav td, #nav td * {
+    vertical-align: top;
+    text-align: center;
+  }
+
 </style>
 
 </head>
 <body>
   <div class="content">
+
+    <div id="nav">
+      <table style="width: 100%; margin: 0; padding: 0" >
+        <tr>
+          <th>Australia and New Zealand COVID outbreaks</th>
+          <th>Other pages</th>
+        </tr>
+        <tr>
+          <td>
+            <li><a href="aus_vaccinations.html">Australian vaccination rollout</a></li>
+            <li><a href="COVID_NSW.html">New South Wales</a></li>
+            <li><a href="COVID_VIC_2021.html">Victoria</a></li>
+            <li><a href="COVID_QLD.html">Queensland</a></li>
+            <li><a href="COVID_SA.html">South Australia</a></li>
+            <li><a href="COVID_ACT.html">Australian Capital Territory</a></li>
+            <li><a href="COVID_NZ.html">New Zealand</a></li>
+            <li><a href="COVID_VIC.html">Victoria 2020 (old 2nd wave plots)</a></li>
+          </td>
+          <td>
+            <li><a href="COVID.html">Per-country COVID plots</a></li>
+            <li><a href="COVID_US.html">USA per-state COVID plots</a></li>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <h1>
+      Progression of the COVID outbreak in the Australian Capital Territory
+    </h1>
     Last updated: 2021-12-20 11:17 Melbourne time
     <br>
     <small>
       Updates daily near 12pm Canberra time
     </small>
-    <h1>
-      Progression of the COVID outbreak in the Australian Capital Territory
-    </h1>
-    <p>
-      <mark><b><a href="COVID.html">←Back to per-country plots</a></b></mark>
-    </p>
-    <p>
-      <span style="background-color: #FF0000" ><b><a href="COVID_NZ.html">Progression of the COVID outbreak in New Zealand</a></b></span>
-    </p>
-    <p>
-      <span style="background-color: #FFA000"><b><a href="COVID_VIC_2021.html">Progression of the COVID outbreak in Victoria</a></b></span>
-    </p>
-<!--     <p>
-      <span style="background-color: #A386D9"><b><a href="COVID_ACT.html">Progression of the COVID outbreak in the Australian Capital Territory</a></b></span>
-    </p> -->
-    <p>
-      <span style="background-color: #00FF00"><b><a href="COVID_NSW.html">Progression of the COVID outbreak in New South Wales</a></b></span>
-    </p>
-    <p>
-      <span style="background-color: #00FFFF"><b><a href="aus_vaccinations.html">Australian vaccination rollout</a></b></span>
-    </p>
-    <p>
-      <span style="background-color: #FF00FF"><b><a href="COVID_VIC.html">The road to a COVID-free Victoria (old 2020 second wave plots)</a></b></span>
-    </p>
-
+    <br>
+    <br>
     <div id="toc_container">
       <p class="toc_title">Contents</p>
       <li><a href="#all"><i>R</i><sub>eff</sub> estimate from all cases</a></li>
