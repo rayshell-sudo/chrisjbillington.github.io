@@ -109,7 +109,9 @@ def get_todays_cases():
 
     df = pd.read_html(page)[6]
     MIQ = "Managed Isolation & Quarantine"
-    NET = "Change in last 24 hours"
+    # Sometimes has an asterisk after it:
+    NET = [k for k in df.columns if k.startswith("Change in last 24 hours")][0]
+
     miq_net = df[df["Location"] == MIQ][NET].sum()
     all_net = df[df["Location"] == "Total"][NET].sum()
 
