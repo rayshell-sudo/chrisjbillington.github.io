@@ -49,7 +49,7 @@
 </head>
 <body>
   <div class="content">
-    Last updated: 2021-12-20 09:27 AEST
+    Last updated: 2021-12-20 14:14 Melbourne time
     <br>
     <small>
       Updates daily around 9:20AM Sydney time
@@ -82,13 +82,11 @@
     <div id="toc_container">
       <p class="toc_title">Contents</p>
       <li><a href="#all"><i>R</i><sub>eff</sub> estimate from all cases</a></li>
-      <!-- <li><a href="#noniso"><i>R</i><sub>eff</sub> estimate from non-isolating cases only</a></li> -->
       <li><a href="#sir">SIR model projection</a></li>
       <li><a href="#animated">Animated projections over time</a></li>
       <li><a href="#sydney-vs-others"><i>R</i><sub>eff</sub> in Greater Sydney vs rest of NSW</a></li>
       <li><a href="#regions"><i>R</i><sub>eff</sub> in the Hunter, Illawarra, and Western NSW regions</a></li>
       <li><a href="#concern-vs-others"><i>R</i><sub>eff</sub> in LGAs of concern vs rest of NSW</a></li>
-      <!-- <li><a href="#bipartite">Projected effect of vaccines with LGAs of concern treated separately</a></li> -->
       <li><a href="#lga"><i>R</i><sub>eff</sub> in individual LGAs of concern</a></li>
       <li><a href="#disclaimer">Disclaimer on trends</a></li>
       <li><a href="#methodology">Methodology</a></li>
@@ -108,9 +106,9 @@
       How have New South Wales' restrictions affected the spread of the virus? The below
       plot shows how the effective reproduction number of the virus,
       <i>R</i><sub>eff</sub> has changed over time in New South Wales, as well as how
-      the daily cases have changed over time. A trendline shows the approximate
-      trajectory daily case numbers would follow, were the reproduction number of the
-      virus to remain at its current level.
+      the daily cases have changed over time. An exponential trendline shows the
+      approximate trajectory daily case numbers would follow, were the reproduction
+      number of the virus to remain at its current level.
     </p>
     <p>
       The same plot is shown twice, the first with cases on a linear scale, and the
@@ -120,19 +118,9 @@
     <img src="COVID_NSW_linear.svg">
     <img src="COVID_NSW.svg">
 
-<!--     <h3 id="noniso"><i>R</i><sub>eff</sub> estimate from non-isolating cases only</h3>
-    <p>
-      Cases isolating during their infectious period represent a much lower risk of spread.
-      The growth rate of non-isolating cases represents a more leading indicator of whether
-      NSW is successfully suppressing the outbreak. The below plot is identical to the above
-      one, except it excludes cases that were known to be isolating for their full infectious
-      period.
-    </p>
-    <img src="COVID_NSW_noniso.svg"> -->
-
     <h3 id="sir">SIR model projection</h3>
     <p>
-      The trendline in the above plot simply projects forward case numbers assuming that
+      The trendlines in the above plots simply projects forward case numbers assuming that
       <i>R</i><sub>eff</sub> remains at its current estimated value. What about the
       effect of built-up immunity? Below is a plot with the projected trend taking into
       account an estimated reduction of spread due to increasing immunity from
@@ -143,14 +131,14 @@
     </p>
     <p>
       This projection shows what might be possible if all other factors affecting
-      <i>R</i><sub>eff</sub>—such as restrictions—are held constant. If New South Wales
-      introduces restrictions, then <i>R</i><sub>eff</sub> will likely decrease and
+      <i>R</i><sub>eff</sub>—such as restrictions—are held constant. If restrictions
+      are tightened, then <i>R</i><sub>eff</sub> will likely decrease and
       growth will slow, resulting in a later and lower peak in cases than the current
       projection.
     </p>
     <p>
-      Even if no restrictions are introduced, people may modify their behaviour once
-      caseloads become higher, which also may reduce <i>R</i><sub>eff</sub>.    
+      Even if restrictions do not change, people may modify their behaviour once
+      caseloads become higher, which also may reduce <i>R</i><sub>eff</sub>.
     </p>
     <p>
       This type of model is very simplistic, and should be taken with a grain of salt.
@@ -166,19 +154,12 @@
       projection's uncertainty range, which is solely due uncertainty in the current
       <i>R</i><sub>eff</sub> estimate and average caseload.
     </p>
-
     <p>
       The same plot is shown twice, the first with cases on a linear scale, and the
       second on a log scale.
     </p>
     <img src="COVID_NSW_vax_linear.svg">
     <img src="COVID_NSW_vax.svg">
-    <!-- <p>
-      Below are plots of the vaccination rollout in New South Wales to date, in terms of
-      daily and cumulative doses per 100 population, with the assumed future rate used
-      for the above projections also shown.
-    </p>
-    <img src="COVID_NSW_projected_doses.svg"> -->
 
     <h3 id="animated">Animated projections over time</h3>
 
@@ -187,17 +168,17 @@
     previous projections, one with cases on a linear scale, and one with cases on a log
     scale, run on old data to show how the projections have changed over time. Note that
     these are not 100% identical to the projections actually made on previous days, as
-    there have been some slight methodology changes - but they should be very close.
+    there have been some slight methodology changes—but they should be very close.
     </p>
     <p>
-    Note that previously, projections were based on an estimated reduction in the rate
-    of spread due to vaccines. The model is still the same, but there is no longer any
-    expected future effect from increasing vaccines, as the 1st and 2nd dose rollout is
-    mostly complete. 3rd doses are being rolled out, and this would affect spread, but
-    is not taken into account in the model. At the current rate of spread, the increase
-    in 3rd doses is likely to be too insignificant to make much of a difference to the
-    omicron wave before it peaks in any case. If the wave is prolonged, I'll look into
-    introducing 3rd doses to the model.
+    Note that previously, the main factor affecting these projections was an estimated
+    reduction in the rate of spread due to vaccines. The model is still the same, but
+    there is no longer any expected future effect from increasing vaccines, as the 1st
+    and 2nd dose rollout is mostly complete. 3rd doses are being rolled out, and this
+    would affect spread, but is not taken into account in the model. At the current rate
+    of spread, the increase in 3rd doses is likely to be too insignificant to make much
+    of a difference to the omicron wave before it peaks in any case. If the wave is
+    prolonged, I'll look into introducing 3rd doses to the model.
     </p>
 
     <video width=900 controls loop><source src="nsw_animated_linear.webm" type="video/webm"></video>
@@ -206,8 +187,8 @@
     <h3 id="sydney-vs-others"><i>R</i><sub>eff</sub> in Greater Sydney vs rest of NSW</h3>
     <p>
       Below are two plots showing case numbers and an estimated <i>R</i><sub>eff</sub>
-      value in Greater Sydney (including Central Coast, Shellharbour and Wollongong), and the rest of
-      New South Wales <i>excluding</i> Greater Sydney.
+      value in Greater Sydney (including Central Coast, Shellharbour and Wollongong),
+      and the rest of New South Wales <i>excluding</i> Greater Sydney.
     </p>
     <p>
       The data in this plot may be several days out of date due to the delay in New
@@ -222,11 +203,9 @@
     <h3 id="regions"><i>R</i><sub>eff</sub> in the Hunter, Illawarra, and Western NSW regions</h3>
 
     <p>
-
-      Below are plots showing an estimate of <i>R</i><sub>eff</sub> in
-      the Hunter region, Illawarra region, and Western New South
-      Wales, as well as case numbers and a trendine on a log scale.
-
+      Below are plots showing an estimate of <i>R</i><sub>eff</sub> in the Hunter
+      region, Illawarra region, and Western New South Wales, as well as case numbers and
+      an exponential trendine on a log scale.
     </p>
 
     <img src="COVID_NSW_hunter.svg">
@@ -238,10 +217,10 @@
     <h3 id="concern-vs-others"><i>R</i><sub>eff</sub> in LGAs of concern vs rest of NSW</h3>
     <p>
       Below are two plots showing case numbers and an estimated <i>R</i><sub>eff</sub>
-      value in the eleven (former) local government areas designated "of concern", and the rest of
-      New South Wales <i>excluding</i> these eleven LGAs. Penrith as a whole is included
-      as an LGA of concern, even though only some suburbs of Penrith are designated as
-      such.
+      value in the eleven (former) local government areas designated "of concern", and
+      the rest of New South Wales <i>excluding</i> these eleven LGAs. Penrith as a whole
+      is included as an LGA of concern, even though only some suburbs of Penrith were
+      designated as such.
     </p>
     <p>
       The data in this plot may be several days out of date due to the delay in New
@@ -253,48 +232,14 @@
     <img src="COVID_NSW_LGA_concern.svg">
     <img src="COVID_NSW_LGA_others.svg">
 
-<!--     <h3 id="bipartite">Projected effect of vaccines with LGAs of concern treated separately</h3>
-
-    <p>
-    The above projection of the effect of the vaccine rollout in New South Wales is very
-    simplistic. Because it treats the entire state as a single outbreak with a single
-    <i>R</i><sub>eff</sub>, it can't accurately describe the substantially different
-    rate of spread within the LGAs of concern, compared to the rest of New South Wales.
-    In reality, the outbreaks in these two different settings have different
-    <i>R</i><sub>eff</sub> values and may peak at different times. Below is a projection
-    that treats the two outbreaks separately, projecting each forward based in its
-    current <i>R</i><sub>eff</sub> and the same vaccination model, and then adds the
-    results together to show a projection of statewide case numbers. The result should
-    be more realistic than treating the entire state as a single outbreak. This
-    projection does, however, still use statewide vaccination numbers, and would be
-    improved if that were further broken down by LGA (It's on my todo list!).
-    </p>
-    <p>
-      Note that the data used for this projection lags the statewide numbers by up to
-      several days due to the delay in New South Wales Health publishing LGA breakdowns.
-    </p>
-    <p>
-      The same plot is shown twice, first with cases on a linear scale, then with cases
-      on a log scale. Below that, the two individual projections for the outbreak within
-      the LGAs of concern, and in the rest of NSW are shown, also on a linear and log
-      scale each.
-    </p>
-
-    <img src="COVID_NSW_bipartite_linear.svg">
-    <img src="COVID_NSW_bipartite.svg">
-    <img src="COVID_NSW_concern_vax_linear.svg">
-    <img src="COVID_NSW_concern_vax.svg">
-    <img src="COVID_NSW_others_vax_linear.svg">
-    <img src="COVID_NSW_others_vax.svg"> -->
-
     <h3 id="lga"><i>R</i><sub>eff</sub> in individual LGAs of concern</h3>
     <p>
       Below are plots of daily case numbers and estimated <i>R</i><sub>eff</sub> values
-      in the eleven New South Wales local government areas that have been designated
-      "LGAs of concern" by the New South Wales government, and are subject to additional
-      restrictions. They are sorted by number of cases in the last fourteen days.
-      Penrith as a whole is included, even though only some suburbs of Penrith are
-      designated "of concern".
+      in the eleven New South Wales local government areas that were designated "LGAs of
+      concern" by the New South Wales government during the delta wave, and wer subject
+      to additional restrictions. They are sorted by number of cases in the last
+      fourteen days. Penrith as a whole is included, even though only some suburbs of
+      Penrith were designated "of concern".
     </p>
     <p>
       The data in these plots may be several days out of date due to the delay in New
@@ -318,21 +263,27 @@
 
     <h3 id="disclaimer">Disclaimer on trends</h3>
     <p>
-      The plotted trendlines are simple extrapolations of what will happen if
-      <i>R</i><sub>eff</sub> remains at its current value. This does not take into account
-      that things are in a state of flux. As restrictions take effect, the virus should
-      have fewer opportunities for spread, and <i>R</i><sub>eff</sub> will decrease. If
-      restrictions are eased, it may increase. Contact tracing may suppress spread to a
-      greater or lesser degree over time. The above plots specifically showing the effect
-      of vaccines do take into account a reduction in <i>R</i><sub>eff</sub> as
-      vaccination coverage increases, but ignore any other possible future changes in
+      The plotted exponential trendlines in the above plots are simple extrapolations of
+      what will happen if <i>R</i><sub>eff</sub> remains at its current value. the SIR
+      model projection, although it accounts for the effect of increasing immunity,
+      still assumes that <i>R</i><sub>eff</sub> otherwise remains constant.
+    </p>  
+    <p> 
+      This does not take into account that things are in a state of flux. If
+      restrictions are tightened, the virus should have may opportunities for spread,
+      and <i>R</i><sub>eff</sub> will decrease. If restrictions are eased, it may
+      increase. Contact tracing may suppress spread to a greater or lesser degree over
+      time. The above plots specifically showing the effect of population immunity do
+      take into account a reduction in <i>R</i><sub>eff</sub> as immunity due to
+      infections increases, but ignores any other possible future changes in
       <i>R</i><sub>eff</sub>.
     </p>
     <p>
-      Furthermore, when case numbers are small, the random chance of how many people each
-      infected person subsequently infects can cause estimates of <i>R</i><sub>eff</sub>
-      to vary randomly in time. As such the projection should be taken with a grain of
-      salt—it is merely an indication of the trend as it is right now.
+      Furthermore, when case numbers are small, the random chance of how many people
+      each infected person subsequently infects can cause estimates of
+      <i>R</i><sub>eff</sub> to vary randomly in time. As such the projections should be
+      taken with a grain of salt—it is merely an indication of the trend as it is right
+      now.
     </p> 
 
   <h3 id="methodology">Methodology</h3>
@@ -345,23 +296,21 @@
     right is necessary before smoothing.
   </p>
   <p>
-    The padding is an extrapolation based on a fit to the most recent 14 days of daily case numbers <i>n</i>(<i>t</i>), with the following
-    fit function:
+    The padding is an extrapolation based on a fit to the most recent 14 days of daily
+    case numbers <i>n</i>(<i>t</i>), with the following fit function:
   </p>
   <p>
-
     <i>n</i>(<i>t</i>) = <i>A</i> exp[
     <i>k</i>(
     <i>t</i>-<i>t</i><sub>today</sub>)
     + 1/2 <i>k̇</i> (<i>t</i>-<i>t</i><sub>today</sub>
     )<sup>2</sup>
     ]
-
   </p>
   <p>
-    where <i>A</i> and <i>k</i> are the fit parameters for the current daily caseload and
-    exponential growth rate, and <i>k̇</i> is the current expected rate of change of the
-    exponential growth rate due to vaccines:
+    where <i>A</i> and <i>k</i> are the fit parameters for the current daily caseload
+    and exponential growth rate, and <i>k̇</i> is the current expected rate of change of
+    the exponential growth rate due to vaccines:
   </p>
   <p>
     <i>k̇</i> = 1 / 𝜏 (<i>s</i><sub>vax</sub>(<i>t</i><sub>today</sub>) /
@@ -376,11 +325,14 @@
     <i>s</i><sub>vax</sub>(<i>t</i>) is calculated from vaccination numbers.
   </p>
   <p>
-    After padding, the log of daily case numbers is smoothed with 4-day Gaussian
-    smoothing, then the result exponentiated to obtain smoothed daily case numbers:
+    After padding, the daily case numbers—after adding an offset and taking their log—
+    are smoothed with 4-day Gaussian smoothing. The result is then exponentiated and the
+    offset subtracted off again to obtain smoothed daily case numbers. This is a
+    compromise between ordinary Gaussian smoothing for small case numbers, and Gaussian
+    smoothing in log space for larger case numbers.
   </p>
   <p>
-    log(<i>n</i><sub>smoothed</sub>(<i>t</i>)) = log(<i>n</i>(<i>t</i>)) ∗
+    log(<i>n</i><sub>smoothed</sub>(<i>t</i>)+10) = log(<i>n</i>(<i>t</i>)+10) ∗
     (2𝜋<i>T</i><sub>s</sub><sup>2</sup>)<sup>-1/2</sup> exp(-<i>t</i><sup>2</sup> /
     2<i>T</i><sub>s</sub><sup>2</sup>)
   </p>
@@ -399,16 +351,17 @@
   <p>
     The uncertainty in <i>R</i><sub>eff</sub> has contributions from the uncertainty in
     the above-mentioned fit, as well as uncertainty in daily case numbers. The latter is
-    considered to be Poisson noise scaled by a constant, chosen so as to make the reduced
-    chi squared between raw and smoothed daily case numbers equal to 1.0.
+    considered to be Poisson noise scaled by a constant, chosen so as to make the
+    reduced chi squared between raw and smoothed daily case numbers equal to 1.0.
   </p>
 
   <h4>Trend based on <i>R</i><sub>eff</sub> only</h4>
 
   <p>
-    The plot(s) with a simple extrapolation of daily case numbers, without taking into
-    account the expected effects of vaccines, is exponential growth/decay using the most
-    recent value of <i>R</i><sub>eff</sub> and its uncertainty range:
+    The plot(s) with a simple exponential extrapolation of daily case numbers, without
+    taking into account the expected effects of vaccines or population immunity, is
+    exponential growth/decay using the most recent value of <i>R</i><sub>eff</sub> and
+    its uncertainty range:
   </p>
   <p>
     <i>n</i><sub>extrap</sub> (<i>t<sub>i</sub></i>) =
@@ -452,7 +405,6 @@
     <i>i</i>(<i>t</i>)) / <i>N</i>]
   </p>
   <p>
-
     where <i>s</i><sub>vax</sub>(<i>t</i>) is the fraction of the population not
     protected from infection by vaccines (see See <a href="#vax-assumptions">below</a>
     for how this is calculated), and <i>N</i> is the total population multiplied by the
@@ -460,8 +412,8 @@
   </p>
   <p>
     Assuming that <i>R</i><sub>eff</sub> is proportional to the susceptible fraction of
-    the population, we can estimate what the reproduction number of the virus would be in
-    the absence of any vaccines or immunity from infection:
+    the population, we can estimate what the reproduction number of the virus would be
+    in the absence of any vaccines or immunity from infection:
   </p>
   <p>
     <i>R</i><sub>naive</sub> = <i>R</i><sub>eff</sub>(<i>t</i><sub>today</sub>) /
@@ -517,9 +469,14 @@
     where <i>d</i>(<i>t</i><sub><i>i</i></sub>) is the cumulative number of doses per
     capita on each day.
   </p>
-
-
-
+  <p>
+    As of Dec 2021, these vaccine assumptions are not particularly relevant to the
+    projections, as the 1st and 2nd dose rollouts are mostly complete, and omicron
+    likely escapes most vaccine-induced immunity against infection in any case. I am not
+    yet including a modelled effect of 3rd doses, but may do so if the omicron waves
+    last long enough for it to plausibly make a difference to spread, or if 3rd doses
+    are brought forward in time.
+  </p>
 
     <h3 id="details">Data sources and contact</h3>
 

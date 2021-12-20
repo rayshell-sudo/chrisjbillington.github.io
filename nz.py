@@ -576,7 +576,7 @@ ax2.fill_between(
     alpha=0.3,
     linewidth=0,
     zorder=10,
-    label=f'Smoothing/{"projection" if VAX else "trend"} uncertainty',
+    label=f'Daily cases ({"SIR projection" if VAX else "exponential trend"})',
 )
 ax2.plot(
     dates[-1].astype(int) + 0.5 + t_projection,

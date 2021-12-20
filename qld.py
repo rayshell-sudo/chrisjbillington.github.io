@@ -316,7 +316,7 @@ ax2.plot(
     new_projection.clip(0, 1e6),  # seen SVG rendering issues when this is big
     color='magenta',
     linestyle='--',
-    label=f'Daily cases ({"projection" if VAX else "trend"})',
+    label=f'Daily cases ({"SIR projection" if VAX else "exponential trend"})',
 )
 ax2.fill_between(
     dates[-1].astype(int) + 0.5 + t_projection,
@@ -380,7 +380,7 @@ text.set_bbox(dict(facecolor='white', alpha=0.8, linewidth=0))
 if VAX:
     total_cases_range = f"{total_cases_lower/1000:.1f}k—{total_cases_upper/1000:.1f}k"
     text = fig1.text(
-        0.63,
+        0.62,
         0.83,
         "\n".join(
             [
@@ -404,28 +404,10 @@ else:
 if True: # Just to keep the diff with nsw.py sensible here
     ax2.set_yscale('linear')
     maxproj = new_projection[t_projection < (END_PLOT - dates[-1]).astype(int)].max()
-    # if maxproj < 30:
-    #     ymax=40
-    if OLD:
-        ymax = 80
-    elif maxproj < 60:
-        ymax=80
-    elif maxproj < 120:
-        ymax=160
-    elif maxproj < 150:
-        ymax=200
-    elif maxproj < 300:
-        ymax=400
-    elif maxproj < 600:
-        ymax=800
-    elif maxproj < 1200:
-        ymax=1600
-    elif maxproj < 1800:
-        ymax=2400
-    elif maxproj < 2400:
-        ymax=3200
+    if VAX:
+        ymax = 75000
     else:
-        ymax=75000
+        ymax = 200
     # if VAX:
     #     ymax = 40
     # else:

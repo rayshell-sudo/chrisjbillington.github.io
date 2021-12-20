@@ -82,8 +82,7 @@
     <div id="toc_container">
       <p class="toc_title">Contents</p>
       <li><a href="#all"><i>R</i><sub>eff</sub> estimate from all cases</a></li>
-      <!-- <li><a href="#noniso"><i>R</i><sub>eff</sub> estimate from non-isolating cases only</a></li> -->
-      <li><a href="#vax">Projected effect of vaccine rollout</a></li>
+      <li><a href="#sir">SIR model projection</a></li>
       <li><a href="#animated">Animated projections over time</a></li>
       <li><a href="#lga"><i>R</i><sub>eff</sub> in individual LGAs</a></li>
       <li><a href="#disclaimer">Disclaimer on trends</a></li>
@@ -98,12 +97,12 @@
       variant.
     </p>
     <p>
-      How have Victoria's restrictions affected the spread of the virus? The below
-      plot shows how the effective reproduction number of the virus,
-      <i>R</i><sub>eff</sub> has changed over time in Victoria, as well as how
-      the daily cases have changed over time. A trendline shows the approximate
-      trajectory daily case numbers would follow, were the reproduction number of the
-      virus to remain at its current level.
+      How have Victoria's restrictions affected the spread of the virus? The below plot
+      shows how the effective reproduction number of the virus, <i>R</i><sub>eff</sub>
+      has changed over time in Victoria, as well as how the daily cases have changed
+      over time. An exponential trendline shows the approximate trajectory daily case
+      numbers would follow, were the reproduction number of the virus to remain at its
+      current level.
     </p>
     <p>
       The same plot is shown twice, the first with cases on a linear scale, and the
@@ -113,53 +112,41 @@
     <img src="COVID_VIC_2021_linear.svg">
     <img src="COVID_VIC_2021.svg">
 
-    <!-- <h3 id="noniso"><i>R</i><sub>eff</sub> estimate from non-isolating cases only</h3>
+    <h3 id="sir">SIR model projection</h3>
     <p>
-      Cases isolating during their infectious period represent a much lower risk of spread.
-      The growth rate of non-isolating cases is a more leading indicator of whether
-      Victoria is successfully suppressing the outbreak. The below plot is identical to the above
-      one, except it excludes cases that were known to be isolating for their full infectious
-      period.
-    </p>
-    <p>
-      The same plot is shown twice, the first with cases on a linear scale, and the
-      second on a log scale—the latter showing how consistently the caseload has
-      followed exponential growth (which forms a straight line on a log scale).
-    </p>
-
-    <img src="COVID_VIC_2021_noniso_linear.svg">
-    <img src="COVID_VIC_2021_noniso.svg"> -->
-
-    <h3 id="vax">Projected effect of vaccine rollout</h3>
-    <p>
-      The trendlines in the above plots simply project forward case numbers assuming that
-      <i>R</i><sub>eff</sub> remains at its current estimated value. What about the effect
-      of vaccines? Below is a plot with the projected trend taking into account an
-      estimated reduction of spread due to vaccination levels increasing in Victoria
-      through the remainder of the year. This projection is a stochastic SIR model,
-      and thus also takes into account immunity due to infections, which would decrease
-      transmission once a non-neglibible fraction of the population has been infected.
-    </p>
-    <p>
-      The rate of vaccination assumed in the model is 0.2 doses per 100 population per
-      day, up to a maximum of 80% of the population.
-
-      Note that the projected rollout rate has been adjusted over time to approximately
-      match the speed of the rollout as it has changed over time.
-
-      See below for plots of how these assumed rates compare to the vaccination rollout
-      in Victoria so far. The vaccines are assumed to reduce <i>R</i><sub>eff</sub> by
-      40% per dose per capita—that is, overall spread is reduced by 40% for a
-      partly-vaccinated individual and 80% for a fully vaccinated individual.
-
+      The trendlines in the above plots simply projects forward case numbers assuming that
+      <i>R</i><sub>eff</sub> remains at its current estimated value. What about the
+      effect of built-up immunity? Below is a plot with the projected trend taking into
+      account an estimated reduction of spread due to increasing immunity from
+      infections, which slows transmission once a non-negligible fraction of the
+      population has been infected. The projection assumes that only 20% of infections
+      are captured by testing, as such, for every projected case there are an additional
+      four infections implied that are not detected through testing.
     </p>
     <p>
       This projection shows what might be possible if all other factors affecting
-      <i>R</i><sub>eff</sub>—such as restrictions—are held constant. If Victoria
-      eases restrictions, however, then <i>R</i><sub>eff</sub> will likely increase and
-      the effect of vaccines in reducing spread will be delayed compared to this
-      projection. On the other hand, if contact tracing is successful in decreasing
-      <i>R</i><sub>eff</sub>, case numbers may decline faster than this projection.
+      <i>R</i><sub>eff</sub>—such as restrictions—are held constant. If restrictions
+      are tightened, then <i>R</i><sub>eff</sub> will likely decrease and
+      growth will slow, resulting in a later and lower peak in cases than the current
+      projection.
+    </p>
+    <p>
+      Even if restrictions do not change, people may modify their behaviour once
+      caseloads become higher, which also may reduce <i>R</i><sub>eff</sub>.
+    </p>
+    <p>
+      This type of model is very simplistic, and should be taken with a grain of salt.
+      The number of actual cases detected will depend strongly on what fraction of
+      infections come forward for testing, which may change over time. Furthermore, this
+      model treats the entire state as homogenous, whereas in reality some
+      geographic areas or social networks will develop high immunity and thus slower
+      growth before others. This can significantly affect the overall rate of spread,
+      but is not captured in a simple model such as this.
+    </p>
+    <p>
+      The various effects not included in the model are also not included in the
+      projection's uncertainty range, which is solely due uncertainty in the current
+      <i>R</i><sub>eff</sub> estimate and average caseload.
     </p>
     <p>
       The same plot is shown twice, the first with cases on a linear scale, and the
@@ -167,20 +154,26 @@
     </p>
     <img src="COVID_VIC_2021_vax_linear.svg">
     <img src="COVID_VIC_2021_vax.svg">
-    <p>
-      Below are plots of the vaccination rollout in Victoria to date, in terms of
-      daily and cumulative doses per 100 population, with the assumed future rate used
-      for the above projections also shown.
-    </p>
-    <img src="COVID_VIC_projected_doses.svg">
 
     <h3 id="animated">Animated projections over time</h3>
 
-    How have the above projections changed over time? Below are animated versions of the
-    above projection, one with cases on a linear scale, and one with cases on a log
+    <p>
+    How have the above projections changed over time? Below are animated versions of
+    previous projections, one with cases on a linear scale, and one with cases on a log
     scale, run on old data to show how the projections have changed over time. Note that
     these are not 100% identical to the projections actually made on previous days, as
-    there have been some slight methodology changes - but they should be very close.
+    there have been some slight methodology changes—but they should be very close.
+    </p>
+    <p>
+    Note that previously, the main factor affecting these projections was an estimated
+    reduction in the rate of spread due to vaccines. The model is still the same, but
+    there is no longer any expected future effect from increasing vaccines, as the 1st
+    and 2nd dose rollout is mostly complete. 3rd doses are being rolled out, and this
+    would affect spread, but is not taken into account in the model. Given omicron's
+    expected rapid spread, the increase in 3rd doses is likely to be too insignificant
+    to make much of a difference to the omicron wave before it peaks in any case. If the
+    wave is prolonged, I'll look into introducing 3rd doses to the model.
+    </p>
 
     <video width=900 controls loop><source src="vic_animated_linear.webm" type="video/webm"></video>
     <video width=900 controls loop><source src="vic_animated.webm" type="video/webm"></video>
@@ -211,21 +204,27 @@
 
     <h3 id="disclaimer">Disclaimer on trends</h3>
     <p>
-      The plotted trendlines are simple extrapolations of what will happen if
-      <i>R</i><sub>eff</sub> remains at its current value. This does not take into account
-      that things are in a state of flux. As restrictions take effect, the virus should
-      have fewer opportunities for spread, and <i>R</i><sub>eff</sub> will decrease. If
-      restrictions are eased, it may increase. Contact tracing may suppress spread to a
-      greater or lesser degree over time. The above plots specifically showing the effect
-      of vaccines do take into account a reduction in <i>R</i><sub>eff</sub> as
-      vaccination coverage increases, but ignore any other possible future changes in
+      The plotted exponential trendlines in the above plots are simple extrapolations of
+      what will happen if <i>R</i><sub>eff</sub> remains at its current value. the SIR
+      model projection, although it accounts for the effect of increasing immunity,
+      still assumes that <i>R</i><sub>eff</sub> otherwise remains constant.
+    </p>  
+    <p> 
+      This does not take into account that things are in a state of flux. If
+      restrictions are tightened, the virus should have may opportunities for spread,
+      and <i>R</i><sub>eff</sub> will decrease. If restrictions are eased, it may
+      increase. Contact tracing may suppress spread to a greater or lesser degree over
+      time. The above plots specifically showing the effect of population immunity do
+      take into account a reduction in <i>R</i><sub>eff</sub> as immunity due to
+      infections increases, but ignores any other possible future changes in
       <i>R</i><sub>eff</sub>.
     </p>
     <p>
-      Furthermore, when case numbers are small, the random chance of how many people each
-      infected person subsequently infects can cause estimates of <i>R</i><sub>eff</sub>
-      to vary randomly in time. As such the projection should be taken with a grain of
-      salt—it is merely an indication of the trend as it is right now.
+      Furthermore, when case numbers are small, the random chance of how many people
+      each infected person subsequently infects can cause estimates of
+      <i>R</i><sub>eff</sub> to vary randomly in time. As such the projections should be
+      taken with a grain of salt—it is merely an indication of the trend as it is right
+      now.
     </p> 
 
   <h3 id="methodology">Methodology</h3>
@@ -238,23 +237,21 @@
     right is necessary before smoothing.
   </p>
   <p>
-    The padding is an extrapolation based on a fit to the most recent 14 days of daily case numbers <i>n</i>(<i>t</i>), with the following
-    fit function:
+    The padding is an extrapolation based on a fit to the most recent 14 days of daily
+    case numbers <i>n</i>(<i>t</i>), with the following fit function:
   </p>
   <p>
-
     <i>n</i>(<i>t</i>) = <i>A</i> exp[
     <i>k</i>(
     <i>t</i>-<i>t</i><sub>today</sub>)
     + 1/2 <i>k̇</i> (<i>t</i>-<i>t</i><sub>today</sub>
     )<sup>2</sup>
     ]
-
   </p>
   <p>
-    where <i>A</i> and <i>k</i> are the fit parameters for the current daily caseload and
-    exponential growth rate, and <i>k̇</i> is the current expected rate of change of the
-    exponential growth rate due to vaccines:
+    where <i>A</i> and <i>k</i> are the fit parameters for the current daily caseload
+    and exponential growth rate, and <i>k̇</i> is the current expected rate of change of
+    the exponential growth rate due to vaccines:
   </p>
   <p>
     <i>k̇</i> = 1 / 𝜏 (<i>s</i><sub>vax</sub>(<i>t</i><sub>today</sub>) /
@@ -269,10 +266,14 @@
     <i>s</i><sub>vax</sub>(<i>t</i>) is calculated from vaccination numbers.
   </p>
   <p>
-    After padding, daily case numbers are smoothed with 4-day Gaussian smoothing:
+    After padding, the daily case numbers—after adding an offset and taking their log—
+    are smoothed with 4-day Gaussian smoothing. The result is then exponentiated and the
+    offset subtracted off again to obtain smoothed daily case numbers. This is a
+    compromise between ordinary Gaussian smoothing for small case numbers, and Gaussian
+    smoothing in log space for larger case numbers.
   </p>
   <p>
-    <i>n</i><sub>smoothed</sub>(<i>t</i>) = <i>n</i>(<i>t</i>) ∗
+    log(<i>n</i><sub>smoothed</sub>(<i>t</i>)+10) = log(<i>n</i>(<i>t</i>)+10) ∗
     (2𝜋<i>T</i><sub>s</sub><sup>2</sup>)<sup>-1/2</sup> exp(-<i>t</i><sup>2</sup> /
     2<i>T</i><sub>s</sub><sup>2</sup>)
   </p>
@@ -291,16 +292,17 @@
   <p>
     The uncertainty in <i>R</i><sub>eff</sub> has contributions from the uncertainty in
     the above-mentioned fit, as well as uncertainty in daily case numbers. The latter is
-    considered to be Poisson noise scaled by a constant, chosen so as to make the reduced
-    chi squared between raw and smoothed daily case numbers equal to 1.0.
+    considered to be Poisson noise scaled by a constant, chosen so as to make the
+    reduced chi squared between raw and smoothed daily case numbers equal to 1.0.
   </p>
 
   <h4>Trend based on <i>R</i><sub>eff</sub> only</h4>
 
   <p>
-    The plot(s) with a simple extrapolation of daily case numbers, without taking into
-    account the expected effects of vaccines, is exponential growth/decay using the most
-    recent value of <i>R</i><sub>eff</sub> and its uncertainty range:
+    The plot(s) with a simple exponential extrapolation of daily case numbers, without
+    taking into account the expected effects of vaccines or population immunity, is
+    exponential growth/decay using the most recent value of <i>R</i><sub>eff</sub> and
+    its uncertainty range:
   </p>
   <p>
     <i>n</i><sub>extrap</sub> (<i>t<sub>i</sub></i>) =
@@ -309,12 +311,12 @@
     <sup>(<i>t<sub>i</sub></i> - <i>t</i><sub>today</sub>) / 𝜏</sup>
   </p>
 
-  <h4>Projected effect of vaccines</h4>
+  <h4>SIR model with projected effect of vaccines</h4>
   <p>
-
-    To project the effect of vaccines on the progression of daily cases in the future, I use
-    a stochastic SIR model. The model is run 1000 times to project daily case numbers, and
-    the median result and 68% range of outcomes shown in the projection.
+    To project the effect of vaccines and community immunity on the progression of daily
+    cases in the future, I use a stochastic SIR model. The model is run 1000 times to
+    project daily case numbers, and the median result and 68% range of outcomes shown in
+    the projection.
   </p>
   <p>
     In each run of the model, a random value for each of
@@ -344,14 +346,15 @@
     <i>i</i>(<i>t</i>)) / <i>N</i>]
   </p>
   <p>
-    where <i>s</i><sub>vax</sub>(<i>t</i>) is the fraction of the population not protected
-    from infection by vaccines (see See <a href="#vax-assumptions">below</a> for how this
-    is calculated), and <i>N</i> is the total population.
+    where <i>s</i><sub>vax</sub>(<i>t</i>) is the fraction of the population not
+    protected from infection by vaccines (see See <a href="#vax-assumptions">below</a>
+    for how this is calculated), and <i>N</i> is the total population multiplied by the
+    fraction of infections assumed to come forward for testing (20%).
   </p>
   <p>
     Assuming that <i>R</i><sub>eff</sub> is proportional to the susceptible fraction of
-    the population, we can estimate what the reproduction number of the virus would be in
-    the absence of any vaccines or immunity from infection:
+    the population, we can estimate what the reproduction number of the virus would be
+    in the absence of any vaccines or immunity from infection:
   </p>
   <p>
     <i>R</i><sub>naive</sub> = <i>R</i><sub>eff</sub>(<i>t</i><sub>today</sub>) /
@@ -406,6 +409,14 @@
   <p>
     where <i>d</i>(<i>t</i><sub><i>i</i></sub>) is the cumulative number of doses per
     capita on each day.
+  </p>
+  <p>
+    As of Dec 2021, these vaccine assumptions are not particularly relevant to the
+    projections, as the 1st and 2nd dose rollouts are mostly complete, and omicron
+    likely escapes most vaccine-induced immunity against infection in any case. I am not
+    yet including a modelled effect of 3rd doses, but may do so if the omicron waves
+    last long enough for it to plausibly make a difference to spread, or if 3rd doses
+    are brought forward in time.
   </p>
 
     <h3 id="details">Data sources and contact</h3>

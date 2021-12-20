@@ -570,7 +570,7 @@ ax2.plot(
     new_projection.clip(0, 1e6),  # seen SVG rendering issues when this is big
     color='magenta',
     linestyle='--',
-    label=f'Daily cases ({"projection" if VAX else "trend"})',
+    label=f'Daily cases ({"SIR projection" if VAX else "exponential trend"})',
 )
 ax2.fill_between(
     dates[-1].astype(int) + 0.5 + t_projection,
