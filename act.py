@@ -361,7 +361,7 @@ else:
 
 
 ax1.axhline(1.0, color='k', linewidth=1)
-ax1.axis(xmin=START_PLOT, xmax=END_PLOT, ymin=0, ymax=4)
+ax1.axis(xmin=START_PLOT, xmax=END_PLOT, ymin=0, ymax=5)
 ax1.grid(True, linestyle=":", color='k', alpha=0.5)
 
 ax1.set_ylabel(R"$R_\mathrm{eff}$")
@@ -428,7 +428,7 @@ ax2.fill_between(
 ax2.set_ylabel("Daily cases (log scale)")
 
 ax2.set_yscale('log')
-ax2.axis(ymin=1, ymax=10_000)
+ax2.axis(ymin=1, ymax=100_000)
 fig1.tight_layout(pad=1.8)
 
 handles, labels = ax1.get_legend_handles_labels()
@@ -501,35 +501,14 @@ else:
     fig1.savefig(f'COVID_ACT{suffix}.png', dpi=133)
 if True: # Just to keep the diff with nsw.py sensible here
     ax2.set_yscale('linear')
-    maxproj = new_projection[t_projection < (END_PLOT - dates[-1]).astype(int)].max()
-    # if maxproj < 30:
-    #     ymax=40
-    if OLD:
-        ymax = 80
-    elif maxproj < 60:
-        ymax=80
-    elif maxproj < 120:
-        ymax=160
-    elif maxproj < 150:
-        ymax=200
-    elif maxproj < 300:
-        ymax=400
-    elif maxproj < 600:
-        ymax=800
-    elif maxproj < 1200:
-        ymax=1600
-    elif maxproj < 1800:
-        ymax=2400
-    elif maxproj < 2400:
-        ymax=3200
+    if OLD and dates[-1] < np.datetime64('2021-12-15'):
+        ymax = 100
+    elif OLD or VAX:
+        ymax = 4000
     else:
-        ymax=4000
-    # if VAX:
-    #     ymax = 40
-    # else:
-    #     ymax = 40
+        ymax = 100
     ax2.axis(ymin=0, ymax=ymax)
-    ax2.yaxis.set_major_locator(mticker.MultipleLocator(ymax / 8))
+    ax2.yaxis.set_major_locator(mticker.MultipleLocator(ymax / 10))
     ax2.set_ylabel("Daily confirmed cases (linear scale)")
     if OLD:
         fig1.savefig(f'act_animated_linear/{OLD_END_IX:04d}.png', dpi=133)

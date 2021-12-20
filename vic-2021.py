@@ -514,7 +514,7 @@ else:
 
 
 ax1.axhline(1.0, color='k', linewidth=1)
-ax1.axis(xmin=START_PLOT, xmax=END_PLOT, ymin=0, ymax=4)
+ax1.axis(xmin=START_PLOT, xmax=END_PLOT, ymin=0, ymax=5)
 ax1.grid(True, linestyle=":", color='k', alpha=0.5)
 
 ax1.set_ylabel(R"$R_\mathrm{eff}$")
@@ -584,7 +584,7 @@ ax2.fill_between(
 ax2.set_ylabel("Daily cases (log scale)")
 
 ax2.set_yscale('log')
-ax2.axis(ymin=1, ymax=10_000)
+ax2.axis(ymin=1, ymax=100_000)
 fig1.tight_layout(pad=1.8)
 
 handles, labels = ax1.get_legend_handles_labels()
@@ -662,25 +662,13 @@ if not LGA:
     maxproj = new_projection[t_projection < (END_PLOT - dates[-1]).astype(int)].max()
     if OLD:
         ymax = 4000
-    elif maxproj < 1800:
-        ymax = 2400
-    elif maxproj < 2400:
-        ymax = 3200
-    elif maxproj < 3000:
-        ymax = 4000
-    elif maxproj < 6000:
-        ymax = 8000
-    elif maxproj < 12000:
-        ymax = 16000
-    elif maxproj < 18000:
-        ymax = 24000
-    elif maxproj < 24000:
-        ymax = 32000
+    elif VAX:
+        ymax = 4000 # increase this once we see omicron-like growth!
     else:
-        ymax = 80000
+        ymax = 4000
 
     ax2.axis(ymin=0, ymax=ymax)
-    ax2.yaxis.set_major_locator(mticker.MultipleLocator(ymax / 8))
+    ax2.yaxis.set_major_locator(mticker.MultipleLocator(ymax / 10))
     ax2.set_ylabel("Daily confirmed cases (linear scale)")
     if OLD:
         fig1.savefig(f'vic_animated_linear/{OLD_END_IX:04d}.png', dpi=133)

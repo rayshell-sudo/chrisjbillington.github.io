@@ -755,7 +755,7 @@ ax2.legend(
     [handles[idx] for idx in order],
     [labels[idx] for idx in order],
     loc='upper left',
-    ncol=2,
+    ncol=1,
     prop={'size': 8}
 )
 
@@ -840,16 +840,12 @@ else:
 
 if VAX or not (LGA or OTHERS or CONCERN or SYDNEY or NOT_SYDNEY or HUNTER or ILLAWARRA or WESTERN_NSW):
     ax2.set_yscale('linear')
-    if OLD:
-        ymax = 5000
-    elif HUNTER:
-        ymax = 500
-    elif ILLAWARRA:
-        ymax = 500
-    elif WESTERN_NSW:
-        ymax = 500
+    if OLD and dates[-1] < np.datetime64('2021-12-10'):
+        ymax = 5_000
+    elif OLD or VAX:
+        ymax = 75_000
     else:
-        ymax = 75000
+        ymax = 10_000
     ax2.axis(ymin=0, ymax=ymax)
     ax2.yaxis.set_major_locator(mticker.MultipleLocator(ymax / 10))
     ax2.set_ylabel("Daily confirmed cases (linear scale)")
@@ -951,6 +947,6 @@ if not OLD:
     now = datetime.now(timezone('Australia/Melbourne')).strftime('%Y-%m-%d %H:%M')
     for i, line in enumerate(html_lines):
         if 'Last updated' in line:
-            html_lines[i] = f'    Last updated: {now} AEST'
+            html_lines[i] = f'    Last updated: {now} Melbourne time'
     Path(html_file).write_text('\n'.join(html_lines) + '\n')
     plt.show()
