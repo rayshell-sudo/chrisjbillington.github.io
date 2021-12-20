@@ -452,14 +452,24 @@ ax2.legend(
 )
 
 
-ax2.yaxis.set_major_formatter(mticker.ScalarFormatter())
-ax2.yaxis.set_minor_formatter(mticker.ScalarFormatter())
+ax2.yaxis.set_major_formatter(mticker.EngFormatter())
+ax2.yaxis.set_minor_formatter(mticker.EngFormatter())
 ax2.tick_params(axis='y', which='minor', labelsize='x-small')
 plt.setp(ax2.get_yminorticklabels()[1::2], visible=False)
 locator = mdates.DayLocator([1, 15] if VAX else [1, 5, 10, 15, 20, 25])
 ax1.xaxis.set_major_locator(locator)
 formatter = mdates.ConciseDateFormatter(locator, show_offset=False)
 ax1.xaxis.set_major_formatter(formatter)
+
+ax2.tick_params(axis='y', colors='purple', which='both')
+ax1.spines['right'].set_color('purple')
+ax2.spines['right'].set_color('purple')
+ax2.yaxis.label.set_color('purple')
+
+ax1.tick_params(axis='y', colors='C0', which='both')
+ax1.spines['left'].set_color('C0')
+ax2.spines['left'].set_color('C0')
+ax1.yaxis.label.set_color('C0')
 
 axpos = ax1.get_position()
 
@@ -509,6 +519,7 @@ if True: # Just to keep the diff with nsw.py sensible here
         ymax = 100
     ax2.axis(ymin=0, ymax=ymax)
     ax2.yaxis.set_major_locator(mticker.MultipleLocator(ymax / 10))
+    ax2.yaxis.set_major_formatter(mticker.EngFormatter())
     ax2.set_ylabel("Daily confirmed cases (linear scale)")
     if OLD:
         fig1.savefig(f'act_animated_linear/{OLD_END_IX:04d}.png', dpi=133)

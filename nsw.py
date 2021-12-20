@@ -746,9 +746,9 @@ handles += handles2
 labels += labels2
 
 if VAX:
-    order = [9, 11, 10, 12, 13, 14, 15, 8, 7, 0, 1, 2, 3, 4, 5, 6]
+    order = [9, 11, 10, 12, 13, 15, 14, 8, 7, 0, 1, 2, 3, 4, 5, 6]
 else:
-    order = [9, 10, 11, 12, 13, 14, 8, 7, 0, 1, 2, 3, 4, 5, 6]
+    order = [9, 10, 11, 12, 14, 13, 8, 7, 0, 1, 2, 3, 4, 5, 6]
 ax2.legend(
     # handles,
     # labels,
@@ -760,14 +760,24 @@ ax2.legend(
 )
 
 
-ax2.yaxis.set_major_formatter(mticker.ScalarFormatter())
-ax2.yaxis.set_minor_formatter(mticker.ScalarFormatter())
+ax2.yaxis.set_major_formatter(mticker.EngFormatter())
+ax2.yaxis.set_minor_formatter(mticker.EngFormatter())
 ax2.tick_params(axis='y', which='minor', labelsize='x-small')
 plt.setp(ax2.get_yminorticklabels()[1::2], visible=False)
 locator = mdates.DayLocator([1, 15])
 ax1.xaxis.set_major_locator(locator)
 formatter = mdates.ConciseDateFormatter(locator, show_offset=False)
 ax1.xaxis.set_major_formatter(formatter)
+
+ax2.tick_params(axis='y', colors='purple', which='both')
+ax1.spines['right'].set_color('purple')
+ax2.spines['right'].set_color('purple')
+ax2.yaxis.label.set_color('purple')
+
+ax1.tick_params(axis='y', colors='C0', which='both')
+ax1.spines['left'].set_color('C0')
+ax2.spines['left'].set_color('C0')
+ax1.yaxis.label.set_color('C0')
 
 axpos = ax1.get_position()
 
@@ -848,6 +858,7 @@ if VAX or not (LGA or OTHERS or CONCERN or SYDNEY or NOT_SYDNEY or HUNTER or ILL
         ymax = 10_000
     ax2.axis(ymin=0, ymax=ymax)
     ax2.yaxis.set_major_locator(mticker.MultipleLocator(ymax / 10))
+    ax2.yaxis.set_major_formatter(mticker.EngFormatter())
     ax2.set_ylabel("Daily confirmed cases (linear scale)")
     if OLD:
         fig1.savefig(f'nsw_animated_linear/{OLD_END_IX:04d}.png', dpi=133)
