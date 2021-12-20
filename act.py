@@ -565,9 +565,9 @@ if not OLD:
     # Update the date in the HTML
     html_file = 'COVID_ACT.html'
     html_lines = Path(html_file).read_text().splitlines()
-    now = datetime.now(timezone('Australia/Melbourne')).strftime('%Y-%m-%d %H:%M')
+    now = datetime.now(timezone('Australia/Canberra')).strftime('%Y-%m-%d %H:%M')
     for i, line in enumerate(html_lines):
         if 'Last updated' in line:
-            html_lines[i] = f'    Last updated: {now} Melbourne time'
+            html_lines[i] = f'    Last updated: {now} Canberra time'
     Path(html_file).write_text('\n'.join(html_lines) + '\n')
     plt.show()
