@@ -330,8 +330,8 @@ for state in STATES:
 
         today = np.datetime64(datetime.now().strftime('%Y-%m-%d'))
 
-        print("    1st dose targets 💉 (@ current 1st dose rate)")
-        html_lines.append("  <b>1st dose targets</b> 💉 (@ current 1st dose rate)")
+        print("    1st dose targets 💉")
+        html_lines.append("  <b>1st dose targets</b> 💉")
         for level in levels:
             if coverage > level:
                 date = d[first > level][0]
@@ -345,8 +345,8 @@ for state in STATES:
             print(f"      {level}%: {datestr}")
             html_lines.append(f"    {level}%: {datestr}")
 
-        print("    2nd dose targets 💉💉 (@ current 1st dose rate + dosing interval):")
-        html_lines.append("  <b>2nd dose targets</b> 💉💉 (@ current 1st dose rate + interval)")
+        print("    2nd dose targets 💉💉:")
+        html_lines.append("  <b>2nd dose targets</b> 💉💉")
 
         for level in levels:
             if second_coverage > level:

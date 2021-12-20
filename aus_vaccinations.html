@@ -18,56 +18,13 @@
   <meta property="og:description" content="Plots of daily and cumulative COVID-19 vaccinations in Australia, by administration channel, with projections and utilisation estimates."/>
   <meta property="og:url" content="http://chrisbillington.net/aus_vaccinations.html">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style type="text/css">
-  html * {
-    font-family: verdana, arial, sans-serif;
-    line-height: 150%;
-  }
-  div.content { width: 960px; margin:0 auto; }
-
-  #toc_container {
-    background: #f9f9f9 none repeat scroll 0 0;
-    border: 1px solid #aaa;
-    display: table;
-    font-size: 14px;
-    margin-bottom: 1em;
-    padding: 15px;
-    width: auto;
-  }
-
-  .toc_title {
-    font-weight: 700;
-  }
-
-  #toc_container li, #toc_container ul, #toc_container ul li{
-    list-style: outside none none !important;
-  }
-
-  #nav {
-    background: #f9f9f9 none repeat scroll 0 0;
-    border: 1px solid #aaa;
-    margin-bottom: 1em;
-    padding: 15px;
-    width: auto;
-  }
-
-  #nav li, #nav ul, #nav ul li{
-    list-style: outside none none !important;
-  }
-
-  #nav td, #nav td * {
-    vertical-align: top;
-    text-align: center;
-  }
-
-</style>
-
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="content">
 
     <div id="nav">
-      <table style="width: 100%; margin: 0; padding: 0" >
+      <table>
         <tr>
           <th>Australia and New Zealand COVID outbreaks</th>
           <th>Other pages</th>
@@ -101,7 +58,7 @@
     <br>
     <br>
     <div id="toc_container">
-      <div class="toc_title">Contents</div>
+      <p class="toc_title">Contents</p>
       <li><a href="#daily">Daily doses by administration channel</a></li>
       <li><a href="#weekday">Daily doses by weekday</a></li>
       <li><a href="#cumulative">Cumulative doses</a></li>
@@ -111,111 +68,111 @@
       <li><a href="#details">Data sources and contact</a></li>
     </div>
     <h2 id="daily">Daily doses by administration channel</h2>
-    <div>
+    <p>
       Below is a plot of 7-day average of daily vaccine doses administered in Australia
       by administration channel, showing the daily number of doses administered by state
       vaccination clinics, and by GPs and in federally operated aged and disability
       care. The 7-day average is further smoothed to remove day-to-day random
       fluctuations using Gaussian smoothing with σ=1 days.
-    </div>
-    <div>
+    </p>
+    <p>
       Projected doses are based on a fit to the last 4 weeks of first doses assuming
       exponential approach toward some maximum uptake level, the assumption that second
       doses will follow first-doses after the current average first-to-second dosing
       interval, and that third doses will follow after the current average
       second-to-third dosing interval.
-    </div>
-    <div>
+    </p>
+    <p>
      Data note 1: 80,560 GP-administered doses were reported on April 19th that were
      administered "prior to April 17". These have been incorporated into the data by
      spreading them over the period from March 22nd (start of phase 1b) to April 16th in
      proportion to the daily rate of GP-adminsitered doses on each day.
-   </div>
-   <div>
+   </p>
+   <p>
      Data note 2: A correction to of -9,260 doses to VIC's state-clinic numbers  was
      made on May 25th. These have been incorporated into the data by spreading them over
      the period from March 22nd (start of phase 1b) to April May 23rd in proportion to
      the daily rate of VIC state-clinic-adminsitered doses on each day.
-   </div>
-   <img src="daily_doses_by_state_longproject.svg">
+   </p>
+   <img class="content" src="daily_doses_by_state_longproject.svg">
 
    <h2 id="weekday">Daily doses by weekday</h2>
-   <div>
+   <p>
     Below is a plot of national daily doses by weekday, for the past five weeks. No
     averaging or smoothing has been done.
-  </div>
+  </p>
   <img src="doses_by_weekday.svg">
   <h2 id="cumulative">Cumulative doses</h2>
-  <div>
+  <p>
     Below is a simple plot of cumulative doses in Australia over time by
     administration channel, showing the cumulative number of doses administered by
     state vaccination clinics, and by GPs and in federally operated aged and
     disability care. Australia aims to vaccinate all eligible people with at
     least one dose by the end of 2021.
-  </div>
-  <div>
+  </p>
+  <p>
     Following that is a plot of cumulative first, second, and third doses administered,
     with projections.
-  </div>
-  <div>
+  </p>
+  <p>
     Projected doses are based on a fit to the last 4 weeks of first doses assuming
     exponential approach toward some maximum uptake level, the assumption that second
     doses will follow first-doses after the current average first-to-second dosing
     interval, and that third doses will follow after the current average second-to-third
     dosing interval.
-  </div>
+  </p>
   <img src="cumulative_doses_longproject.svg">
 
   
   <img src="projection_cumulative_by_type.svg">
-  <div>
+  <p>
   Note: The percentage targets in the above plot show the dates when 70% and 80% of the
   eligible population (ages 12+) received/are projected to have received two doses.
   However, in the national plan, these targets are framed in terms of the 16+
   population. Thus these projected dates assume that vaccination coverage in the 12–15
   age group is similar at these points to that of the 16+ age group.
-  </div>
+  </p>
 
 
   <h2 id="agegroups">First and second dose coverage by age group</h2>
-  <div>
+  <p>
     Below are plots of the percentage of each 10-year age group that has had a first and
     second administered, as well as the weekly rate of uptake as a percentage of each
     age group. Note that first dose data by age group is only available from May 9th,
     and second dose data from June 30th. The 12–15 and 16–19 age groups are kept
     separate rather than as a single 12–19 group, due to the 12–15 age group becoming
     eligible much later, making it more interesting to show as a separate group.
-  </div>
+  </p>
   <img src="coverage_by_agegroup.svg">
   <img src="coverage_2nd_by_agegroup.svg">
   <img src="coverage_rate_by_agegroup.svg">
   <img src="coverage_2nd_rate_by_agegroup.svg">
   <h2 id="state">First and second dose coverage by state/territory</h2>
-  <div>
+  <p>
     Below are plots of the percentage of the resident population aged 12+ in each
     state/territory that has had a first and second dose administered, as well as the
     weekly rate of uptake, as a percentage of each state/territory's age 12+ population.
     For a more detailed age breakdown, including 16+ coverage by state, see the next section.
-  </div>
+  </p>
   <img src="coverage_by_state.svg">
   <img src="coverage_2nd_by_state.svg">
   <img src="coverage_rate_by_state.svg">
   <img src="coverage_2nd_rate_by_state.svg">
 
   <h2 id="state-age">First and second dose coverage by state/territory and age group</h2>
-  <div>
+  <p>
     Below are plots of the percentage of the resident population in each state and
     territory that has had a first and second dose administered, by age group.
-  </div>
-  <div>
+  </p>
+  <p>
     Included are also projections of when various targets would be met, assuming the
     current seven-day average rate of first-doses, and the current average dosing
     interval in each state. These should be taken with a grain of salt, as the rate of first-doses, as well as the dosing intervals, may change.
-  </div>
+  </p>
 
   <h3>National</h3>
   <img src="AUS_coverage_by_age.svg">
-   <div>
+   <p>
     <table>
       <tr>
       <td>
@@ -226,12 +183,12 @@
   0.07%/day first-dose rate
   0.18%/day second-dose rate
   36 days average dosing interval
-  <b>1st dose targets</b> 💉 (@ current 1st dose rate)
+  <b>1st dose targets</b> 💉
     60%: ✅  September  1st (110 days ago)
     70%: ✅  September 16th (95 days ago)
     80%: ✅   October  5th (76 days ago)
     90%: ✅  November 11th (39 days ago)
-  <b>2nd dose targets</b> 💉💉 (@ current 1st dose rate + interval)
+  <b>2nd dose targets</b> 💉💉
     60%: ✅   October  7th (74 days ago)
     70%: ✅   October 19th (62 days ago)
     80%: ✅  November  5th (45 days ago)
@@ -246,12 +203,12 @@
   0.08%/day first-dose rate
   0.18%/day second-dose rate
   36 days average dosing interval
-  <b>1st dose targets</b> 💉 (@ current 1st dose rate)
+  <b>1st dose targets</b> 💉
     60%: ✅  September  6th (105 days ago)
     70%: ✅  September 21st (90 days ago)
     80%: ✅   October  8th (73 days ago)
     90%: ✅  November 16th (34 days ago)
-  <b>2nd dose targets</b> 💉💉 (@ current 1st dose rate + interval)
+  <b>2nd dose targets</b> 💉💉
     60%: ✅   October 11th (70 days ago)
     70%: ✅   October 22nd (59 days ago)
     80%: ✅  November  9th (41 days ago)
@@ -260,11 +217,11 @@
   </td>
   </tr>
   </table>
-  </div>
+  </p>
 
   <h3>New South Wales</h3>
   <img src="NSW_coverage_by_age.svg">
-   <div>
+   <p>
     <table>
       <tr>
       <td>
@@ -275,12 +232,12 @@
   0.02%/day first-dose rate
   0.04%/day second-dose rate
   53 days average dosing interval
-  <b>1st dose targets</b> 💉 (@ current 1st dose rate)
+  <b>1st dose targets</b> 💉
     60%: ✅    August 23rd (119 days ago)
     70%: ✅  September  1st (110 days ago)
     80%: ✅  September 14th (97 days ago)
     90%: ✅   October  8th (73 days ago)
-  <b>2nd dose targets</b> 💉💉 (@ current 1st dose rate + interval)
+  <b>2nd dose targets</b> 💉💉
     60%: ✅  September 25th (86 days ago)
     70%: ✅   October  6th (75 days ago)
     80%: ✅   October 16th (65 days ago)
@@ -295,12 +252,12 @@
   0.02%/day first-dose rate
   0.04%/day second-dose rate
   54 days average dosing interval
-  <b>1st dose targets</b> 💉 (@ current 1st dose rate)
+  <b>1st dose targets</b> 💉
     60%: ✅    August 26th (116 days ago)
     70%: ✅  September  6th (105 days ago)
     80%: ✅  September 21st (90 days ago)
     90%: ✅   October 13th (68 days ago)
-  <b>2nd dose targets</b> 💉💉 (@ current 1st dose rate + interval)
+  <b>2nd dose targets</b> 💉💉
     60%: ✅  September 29th (82 days ago)
     70%: ✅   October  9th (72 days ago)
     80%: ✅   October 19th (62 days ago)
@@ -309,13 +266,13 @@
   </td>
   </tr>
   </table>
-  </div>
+  </p>
 
   <h3>Victoria</h3>
 
   <img src="VIC_coverage_by_age.svg">
 
-  <div>
+  <p>
     <table>
       <tr>
       <td>
@@ -326,12 +283,12 @@
   0.02%/day first-dose rate
   0.05%/day second-dose rate
   46 days average dosing interval
-  <b>1st dose targets</b> 💉 (@ current 1st dose rate)
+  <b>1st dose targets</b> 💉
     60%: ✅  September  4th (107 days ago)
     70%: ✅  September 16th (95 days ago)
     80%: ✅  September 29th (82 days ago)
     90%: ✅   October 22nd (59 days ago)
-  <b>2nd dose targets</b> 💉💉 (@ current 1st dose rate + interval)
+  <b>2nd dose targets</b> 💉💉
     60%: ✅   October 11th (70 days ago)
     70%: ✅   October 20th (61 days ago)
     80%: ✅   October 30th (51 days ago)
@@ -346,12 +303,12 @@
   0.02%/day first-dose rate
   0.06%/day second-dose rate
   45 days average dosing interval
-  <b>1st dose targets</b> 💉 (@ current 1st dose rate)
+  <b>1st dose targets</b> 💉
     60%: ✅  September  8th (103 days ago)
     70%: ✅  September 20th (91 days ago)
     80%: ✅   October  2nd (79 days ago)
     90%: ✅   October 25th (56 days ago)
-  <b>2nd dose targets</b> 💉💉 (@ current 1st dose rate + interval)
+  <b>2nd dose targets</b> 💉💉
     60%: ✅   October 13th (68 days ago)
     70%: ✅   October 22nd (59 days ago)
     80%: ✅  November  1st (49 days ago)
@@ -360,11 +317,11 @@
   </td>
   </tr>
   </table>
-  </div>
+  </p>
 
   <h3>Queensland</h3>
   <img src="QLD_coverage_by_age.svg">
-    <div>
+    <p>
     <table>
       <tr>
       <td>
@@ -375,12 +332,12 @@
   0.20%/day first-dose rate
   0.49%/day second-dose rate
   28 days average dosing interval
-  <b>1st dose targets</b> 💉 (@ current 1st dose rate)
+  <b>1st dose targets</b> 💉
     60%: ✅  September 19th (92 days ago)
     70%: ✅   October 10th (71 days ago)
     80%: ✅  November  9th (41 days ago)
     90%: December 21st (1 days)
-  <b>2nd dose targets</b> 💉💉 (@ current 1st dose rate + interval)
+  <b>2nd dose targets</b> 💉💉
     60%: ✅   October 22nd (59 days ago)
     70%: ✅  November 13th (37 days ago)
     80%: ✅  December  8th (12 days ago)
@@ -395,12 +352,12 @@
   0.21%/day first-dose rate
   0.49%/day second-dose rate
   28 days average dosing interval
-  <b>1st dose targets</b> 💉 (@ current 1st dose rate)
+  <b>1st dose targets</b> 💉
     60%: ✅  September 24th (87 days ago)
     70%: ✅   October 16th (65 days ago)
     80%: ✅  November 12th (38 days ago)
     90%: December 27th (7 days)
-  <b>2nd dose targets</b> 💉💉 (@ current 1st dose rate + interval)
+  <b>2nd dose targets</b> 💉💉
     60%: ✅   October 27th (54 days ago)
     70%: ✅  November 17th (33 days ago)
     80%: ✅  December 13th (7 days ago)
@@ -409,11 +366,11 @@
   </td>
   </tr>
   </table>
-  </div>
+  </p>
 
   <h3>Western Australia</h3>
   <img src="WA_coverage_by_age.svg">
-    <div>
+    <p>
     <table>
       <tr>
       <td>
@@ -424,12 +381,12 @@
   0.17%/day first-dose rate
   0.28%/day second-dose rate
   39 days average dosing interval
-  <b>1st dose targets</b> 💉 (@ current 1st dose rate)
+  <b>1st dose targets</b> 💉
     60%: ✅  September 19th (92 days ago)
     70%: ✅   October 10th (71 days ago)
     80%: ✅  November  5th (45 days ago)
     90%: December 21st (1 days)
-  <b>2nd dose targets</b> 💉💉 (@ current 1st dose rate + interval)
+  <b>2nd dose targets</b> 💉💉
     60%: ✅   October 25th (56 days ago)
     70%: ✅  November 15th (35 days ago)
     80%: ✅  December 13th (7 days ago)
@@ -444,12 +401,12 @@
   0.18%/day first-dose rate
   0.29%/day second-dose rate
   39 days average dosing interval
-  <b>1st dose targets</b> 💉 (@ current 1st dose rate)
+  <b>1st dose targets</b> 💉
     60%: ✅  September 25th (86 days ago)
     70%: ✅   October 15th (66 days ago)
     80%: ✅  November 11th (39 days ago)
     90%: December 30th (10 days)
-  <b>2nd dose targets</b> 💉💉 (@ current 1st dose rate + interval)
+  <b>2nd dose targets</b> 💉💉
     60%: ✅   October 30th (51 days ago)
     70%: ✅  November 19th (31 days ago)
     80%: ✅  December 19th (1 days ago)
@@ -458,11 +415,11 @@
   </td>
   </tr>
   </table>
-  </div>
+  </p>
 
   <h3>South Australia</h3>
   <img src="SA_coverage_by_age.svg">
-    <div>
+    <p>
     <table>
       <tr>
       <td>
@@ -473,12 +430,12 @@
   0.08%/day first-dose rate
   0.28%/day second-dose rate
   31 days average dosing interval
-  <b>1st dose targets</b> 💉 (@ current 1st dose rate)
+  <b>1st dose targets</b> 💉
     60%: ✅  September 14th (97 days ago)
     70%: ✅   October  5th (76 days ago)
     80%: ✅   October 26th (55 days ago)
     90%: ✅  December  3rd (17 days ago)
-  <b>2nd dose targets</b> 💉💉 (@ current 1st dose rate + interval)
+  <b>2nd dose targets</b> 💉💉
     60%: ✅   October 19th (62 days ago)
     70%: ✅  November  6th (44 days ago)
     80%: ✅  November 27th (23 days ago)
@@ -493,12 +450,12 @@
   0.09%/day first-dose rate
   0.30%/day second-dose rate
   31 days average dosing interval
-  <b>1st dose targets</b> 💉 (@ current 1st dose rate)
+  <b>1st dose targets</b> 💉
     60%: ✅  September 20th (91 days ago)
     70%: ✅   October  9th (72 days ago)
     80%: ✅  November  1st (49 days ago)
     90%: ✅  December 11th (9 days ago)
-  <b>2nd dose targets</b> 💉💉 (@ current 1st dose rate + interval)
+  <b>2nd dose targets</b> 💉💉
     60%: ✅   October 25th (56 days ago)
     70%: ✅  November 10th (40 days ago)
     80%: ✅  December  1st (19 days ago)
@@ -507,11 +464,11 @@
   </td>
   </tr>
   </table>
-  </div>
+  </p>
 
   <h3>Tasmania</h3>
   <img src="TAS_coverage_by_age.svg">
-    <div>
+    <p>
     <table>
       <tr>
       <td>
@@ -522,12 +479,12 @@
   0.14%/day first-dose rate
   0.22%/day second-dose rate
   34 days average dosing interval
-  <b>1st dose targets</b> 💉 (@ current 1st dose rate)
+  <b>1st dose targets</b> 💉
     60%: ✅    August 31st (111 days ago)
     70%: ✅  September 17th (94 days ago)
     80%: ✅   October 10th (71 days ago)
     90%: ✅  November  4th (46 days ago)
-  <b>2nd dose targets</b> 💉💉 (@ current 1st dose rate + interval)
+  <b>2nd dose targets</b> 💉💉
     60%: ✅   October  3rd (78 days ago)
     70%: ✅   October 20th (61 days ago)
     80%: ✅  November 10th (40 days ago)
@@ -542,12 +499,12 @@
   0.15%/day first-dose rate
   0.23%/day second-dose rate
   34 days average dosing interval
-  <b>1st dose targets</b> 💉 (@ current 1st dose rate)
+  <b>1st dose targets</b> 💉
     60%: ✅  September  7th (104 days ago)
     70%: ✅  September 23rd (88 days ago)
     80%: ✅   October 15th (66 days ago)
     90%: ✅  November 14th (36 days ago)
-  <b>2nd dose targets</b> 💉💉 (@ current 1st dose rate + interval)
+  <b>2nd dose targets</b> 💉💉
     60%: ✅   October  7th (74 days ago)
     70%: ✅   October 27th (54 days ago)
     80%: ✅  November 14th (36 days ago)
@@ -556,11 +513,11 @@
   </td>
   </tr>
   </table>
-  </div>
+  </p>
 
   <h3>Australian Capital Territory</h3>
   <img src="ACT_coverage_by_age.svg">
-    <div>
+    <p>
     <table>
       <tr>
       <td>
@@ -571,12 +528,12 @@
   0.02%/day first-dose rate
   0.04%/day second-dose rate
   51 days average dosing interval
-  <b>1st dose targets</b> 💉 (@ current 1st dose rate)
+  <b>1st dose targets</b> 💉
     60%: ✅    August 23rd (119 days ago)
     70%: ✅  September  6th (105 days ago)
     80%: ✅  September 18th (93 days ago)
     90%: ✅  September 29th (82 days ago)
-  <b>2nd dose targets</b> 💉💉 (@ current 1st dose rate + interval)
+  <b>2nd dose targets</b> 💉💉
     60%: ✅  September 24th (87 days ago)
     70%: ✅   October  7th (74 days ago)
     80%: ✅   October 17th (64 days ago)
@@ -591,12 +548,12 @@
   0.02%/day first-dose rate
   0.04%/day second-dose rate
   52 days average dosing interval
-  <b>1st dose targets</b> 💉 (@ current 1st dose rate)
+  <b>1st dose targets</b> 💉
     60%: ✅    August 27th (115 days ago)
     70%: ✅  September 11th (100 days ago)
     80%: ✅  September 22nd (89 days ago)
     90%: ✅   October  1st (80 days ago)
-  <b>2nd dose targets</b> 💉💉 (@ current 1st dose rate + interval)
+  <b>2nd dose targets</b> 💉💉
     60%: ✅  September 29th (82 days ago)
     70%: ✅   October 10th (71 days ago)
     80%: ✅   October 19th (62 days ago)
@@ -605,12 +562,12 @@
   </td>
   </tr>
   </table>
-  </div>
+  </p>
 
   <h3>Northern Territory</h3>
 
   <img src="NT_coverage_by_age.svg">
-    <div>
+    <p>
     <table>
       <tr>
       <td>
@@ -621,12 +578,12 @@
   0.06%/day first-dose rate
   0.25%/day second-dose rate
   39 days average dosing interval
-  <b>1st dose targets</b> 💉 (@ current 1st dose rate)
+  <b>1st dose targets</b> 💉
     60%: ✅  September 11th (100 days ago)
     70%: ✅   October 15th (66 days ago)
     80%: ✅  November  7th (43 days ago)
     90%:  January  9th (20 days)
-  <b>2nd dose targets</b> 💉💉 (@ current 1st dose rate + interval)
+  <b>2nd dose targets</b> 💉💉
     60%: ✅   October 20th (61 days ago)
     70%: ✅  November 12th (38 days ago)
     80%: ✅  December  8th (12 days ago)
@@ -641,12 +598,12 @@
   0.07%/day first-dose rate
   0.27%/day second-dose rate
   39 days average dosing interval
-  <b>1st dose targets</b> 💉 (@ current 1st dose rate)
+  <b>1st dose targets</b> 💉
     60%: ✅  September 18th (93 days ago)
     70%: ✅   October 20th (61 days ago)
     80%: ✅  November  9th (41 days ago)
     90%:  January 19th (30 days)
-  <b>2nd dose targets</b> 💉💉 (@ current 1st dose rate + interval)
+  <b>2nd dose targets</b> 💉💉
     60%: ✅   October 27th (54 days ago)
     70%: ✅  November 17th (33 days ago)
     80%: ✅  December 13th (7 days ago)
@@ -655,20 +612,20 @@
   </td>
   </tr>
   </table>
-  </div>
+  </p>
 
 
 <!--   <h2 id="longproject">Longer-term projections</h2>
-  <div>
+  <p>
     Below is a possible scenario for the vaccination program over the rest of the
     year.
-  </div>
-  <div>
+  </p>
+  <p>
       Projected doses are based on a fit to the last 3 weeks of first doses, assuming
       exponential decay toward some maximum uptake level, and the assumption that second
       doses will follow first-doses after the current average dosing interval.
-  </div>
-  <div>
+  </p>
+  <p>
   <img src="daily_doses_by_state_longproject.svg"> -->
 <!--   <br>
   <img src="projection_by_type.svg"> -->
@@ -676,7 +633,7 @@
   <img src="cumulative_doses_longproject.svg">
   <br> -->
   <!-- <h2 id="utilisation">Estimated utilisation</h2>
-  <div>
+  <p>
     Below is a plot of the estimated status of each vaccine dose in Australia. How many
     doses are in people's arms, in reserve, or available? This helps show whether
     administration of doses is keeping up with supply. Since the government has not
@@ -713,47 +670,47 @@
         That 12.5% of of AZ and 5% of Pfizer/Moderna doses are wasted (these are not shown in the utilisation plots).
       </li>
     </ul>
-  </div>
+  </p>
   <img src="utilisation.svg">
   <h2 id="utilisation_by_type">Estimated utilisation by vaccine type</h2>
-  <div>
+  <p>
     Below is the same utilisation estimates as in the above plot, but separated by
     vaccine type: AstraZeneca vs Pfizer/Moderna (which are lumped together).
-  </div>
+  </p>
   <img src="pfizer-moderna_utilisation.svg"> -->
   <!-- <br> -->
   <!-- <img src="az_utilisation.svg"> -->
   <h3 id="details">Data sources and contact</h3>
-  <!-- <div>
+  <!-- <p>
     Source for vaccine supply and expected supply: <a href="https://www.covid19data.com.au/vaccines">covid19data.com.au</a>
-  </div> -->
-  <div>
+  </p> -->
+  <p>
     Source for daily/cumulative dose numbers: <a href="https://covidlive.com.au">covidlive.com.au</a>.
-  </div>
-  <div>
+  </p>
+  <p>
     Source for first doses by age group prior to June 30th: <a
     href="https://www.health.gov.au/using-our-websites/copyright">Department of
   Health</a>, data extracted from government materials by <a
   href="https://covidbaseau.com/vaccinations/download">covidbaseau.com</a>.
-</div>
-<div>
+</p>
+<p>
   Source for first and second doses by age group from June 30th: <a
   href="https://www.health.gov.au/using-our-websites/copyright">Department of
 Health</a>, data extracted from government materials by <a
 href="https://github.com/jxeeno/aust-govt-covid19-vaccine-pdf">Ken Tsang</a>
-</div>
-<div>
+</p>
+<p>
   Population data from the <a
   href="https://www.abs.gov.au/statistics/people/population/national-state-and-territory-population/jun-2020">Australian
 Bureau of Statistics Estimated Resident Population, June 2020</a>
-</div>
-<div>
+</p>
+<p>
   Plots and analysis by Chris Billington. Contact: chrisjbillington [at] gmail [dot] com
-</div>
-<div>
+</p>
+<p>
   Python script for producing the plots is available <a
   href="https://github.com/chrisjbillington/chrisjbillington.github.io/blob/master/aus_vax.py">on GitHub</a>.
-</div>
+</p>
 </div>
 </body>
 </html>
