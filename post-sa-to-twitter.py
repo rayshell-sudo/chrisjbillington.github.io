@@ -79,7 +79,7 @@ def tweet_3_text():
     doubling_or_halving = "Doubling" if doubling_time > 0 else "Halving"
 
     COMMENT_TEXT = f"""\
-    Expected numbers if the current trend continues:
+    Cases in SA if the current trend continues:
     
     {proj_lines}
     
