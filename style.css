@@ -7,15 +7,15 @@ html * {
 
   @media only screen and (max-width: 960px) {
     img {
-      width: 100%;
+      max-width: 100%;
       height: auto;
     }
     video {
-      width: 100%;
+      max-width: 100%;
       height: auto;
     }
     table {
-      width: 100%;
+      max-width: 100%;
       height: auto;
     }
   }
