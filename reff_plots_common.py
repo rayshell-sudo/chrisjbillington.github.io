@@ -374,7 +374,7 @@ def determine_smoothed_cases_and_Reff(
         )
     else:
         shot_noise_factor = 1.0
-    u_new = shot_noise_factor * np.sqrt(new)
+    u_new = shot_noise_factor * np.sqrt(new.clip(1))
 
     # Monte-carlo of the above with noise to compute variance in R, new_smoothed,
     # and their covariance:
