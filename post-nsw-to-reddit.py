@@ -47,7 +47,7 @@ def make_comment():
     u_R_eff_sydney = stats['u_R_eff_sydney']
     R_eff_not_sydney = stats['R_eff_not_sydney']
     u_R_eff_not_sydney = stats['u_R_eff_not_sydney']
-
+    today = stats['today']
 
     proj_lines = [
         "day  cases  68% range",
@@ -82,26 +82,30 @@ def make_comment():
     First (and third) plot show an exponential trendline, second (and fourth) are SIR
     models that assume 20% of infections will be detected via testing.
 
-    [Greater Sydney](https://chrisbillington.net/COVID_NSW_sydney.png): R_eff =
+    [Greater
+    Sydney](https://chrisbillington.net/COVID_NSW_sydney.png?dontcache={today}): R_eff =
     {R_eff_sydney:.02f} ± {u_R_eff_sydney:.02f}
 
-    [NSW excluding Greater Sydney](https://chrisbillington.net/COVID_NSW_not_sydney.png): R_eff =
-    {R_eff_not_sydney:.02f} ± {u_R_eff_not_sydney:.02f}
+    [NSW excluding Greater
+    Sydney](https://chrisbillington.net/COVID_NSW_not_sydney.png?dontcache={today}):
+    R_eff = {R_eff_not_sydney:.02f} ± {u_R_eff_not_sydney:.02f}
     
-    [former LGAs of concern](https://chrisbillington.net/COVID_NSW_LGA_concern.png): R_eff =
+    [former LGAs of concern](https://chrisbillington.net/COVID_NSW_LGA_concern.png?dontcache={today}): R_eff =
     {R_eff_concern:.02f} ± {u_R_eff_concern:.02f}
 
     [NSW excluding former LGAs of
-    concern](https://chrisbillington.net/COVID_NSW_LGA_others.png): R_eff =
-    {R_eff_others:.02f} ± {u_R_eff_others:.02f}
+    concern](https://chrisbillington.net/COVID_NSW_LGA_others.png?dontcache={today}):
+    R_eff = {R_eff_others:.02f} ± {u_R_eff_others:.02f}
 
-    [Hunter region](https://chrisbillington.net/COVID_NSW_hunter.png): R_eff =
-    {R_eff_hunter:.02f} ± {u_R_eff_hunter:.02f}
+    [Hunter region](https://chrisbillington.net/COVID_NSW_hunter.png?dontcache={today}):
+    R_eff = {R_eff_hunter:.02f} ± {u_R_eff_hunter:.02f}
 
-    [Illawarra region](https://chrisbillington.net/COVID_NSW_illawarra.png): R_eff =
-    {R_eff_illawarra:.02f} ± {u_R_eff_illawarra:.02f}
+    [Illawarra
+    region](https://chrisbillington.net/COVID_NSW_illawarra.png?dontcache={today}):
+    R_eff = {R_eff_illawarra:.02f} ± {u_R_eff_illawarra:.02f}
 
-    [Western New South Wales](https://chrisbillington.net/COVID_NSW_wnsw.png): R_eff =
+    [Western New South
+    Wales](https://chrisbillington.net/COVID_NSW_wnsw.png?dontcache={today}): R_eff =
     {R_eff_wnsw:.02f} ± {u_R_eff_wnsw:.02f}
 
     Note: LGA/region-specific data is several days out of date compared to total

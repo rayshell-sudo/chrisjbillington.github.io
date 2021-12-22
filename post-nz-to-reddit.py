@@ -37,7 +37,8 @@ def make_comment():
     u_R_eff_auckland = stats['u_R_eff_auckland']
     R_eff_notauckland = stats['R_eff_notauckland']
     u_R_eff_notauckland = stats['u_R_eff_notauckland']
-
+    today = stats['today']
+    
     proj_lines = [
         "day  cases  68% range",
         "---------------------",
@@ -68,11 +69,12 @@ def make_comment():
     First plot has case numbers on a linear scale, second plot is exactly the
     the same but with case numbers on a log scale.
 
-    [Auckland](https://chrisbillington.net/COVID_NZ_auckland.png): R_eff =
-    {R_eff_auckland:.02f} ± {u_R_eff_auckland:.02f}
+    [Auckland](https://chrisbillington.net/COVID_NZ_auckland.png?dontcache={today}):
+    R_eff = {R_eff_auckland:.02f} ± {u_R_eff_auckland:.02f}
 
-    [NZ excluding Auckland](https://chrisbillington.net/COVID_NZ_notauckland.png): R_eff =
-    {R_eff_notauckland:.02f} ± {u_R_eff_notauckland:.02f}
+    [NZ excluding
+    Auckland](https://chrisbillington.net/COVID_NZ_notauckland.png?dontcache={today}):
+    R_eff = {R_eff_notauckland:.02f} ± {u_R_eff_notauckland:.02f}
 
     Expected case numbers if the current  trend continues:
 
