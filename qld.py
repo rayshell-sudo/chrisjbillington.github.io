@@ -204,6 +204,7 @@ else:
 
 
 MASKS = np.datetime64('2021-12-18')
+MORE_MASKS = np.datetime64('2021-12-23')
 
 fig1 = plt.figure(figsize=(10, 6))
 ax1 = plt.axes()
@@ -211,10 +212,19 @@ ax1 = plt.axes()
 ax1.fill_betweenx(
     [-10, 10],
     [MASKS, MASKS],
+    [MORE_MASKS, MORE_MASKS],
+    color=whiten("green", 0.5),
+    linewidth=0,
+    label="Masks in high-risk settings",
+)
+
+ax1.fill_betweenx(
+    [-10, 10],
+    [MORE_MASKS, MORE_MASKS],
     [END_PLOT, END_PLOT],
     color=whiten("yellow", 0.5),
     linewidth=0,
-    label="Mandatory masks",
+    label="Masks in cinemas and hospitality",
 )
 
 ax1.fill_between(
@@ -340,9 +350,9 @@ handles += handles2
 labels += labels2
 
 if VAX:
-    order = [1, 3, 2, 4, 5, 7, 6, 0]
+    order = [2, 4, 3, 5, 6, 8, 7, 0, 1]
 else:
-    order = [1, 2, 3, 4, 6, 5, 0]
+    order = [2, 3, 4, 5, 7, 6, 0, 1]
 ax2.legend(
     # handles,
     # labels,
