@@ -86,7 +86,7 @@ def make_comment():
     > Reff otherwise remains constant.
     > 
     > This does not take into account that things are in a state of flux. If
-    > restrictions are tightened, the virus should have may opportunities for spread,
+    > restrictions are tightened, the virus should have fewer opportunities for spread,
     > and Reff will decrease. If restrictions are eased, it may increase. Contact
     > tracing may suppress spread to a greater or lesser degree over time. The above
     > plots specifically showing the effect of population immunity do take into account
