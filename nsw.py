@@ -855,7 +855,7 @@ if VAX or not (LGA or OTHERS or CONCERN or SYDNEY or NOT_SYDNEY or HUNTER or ILL
     elif OLD or VAX:
         ymax = 75_000
     else:
-        ymax = 10_000
+        ymax = 20_000
     ax2.axis(ymin=0, ymax=ymax)
     ax2.yaxis.set_major_locator(mticker.MultipleLocator(ymax / 10))
     ax2.yaxis.set_major_formatter(mticker.EngFormatter())
