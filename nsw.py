@@ -467,7 +467,7 @@ else:
     )
 
 
-MASKS = np.datetime64('2021-06-21')
+MASKS = np.datetime64('2021-06-23')
 LGA_LOCKDOWN = np.datetime64('2021-06-26')
 LOCKDOWN = np.datetime64('2021-06-27')
 TIGHTER_LOCKDOWN = np.datetime64('2021-07-10')
@@ -479,6 +479,8 @@ END_LOCKDOWN = np.datetime64('2021-10-11')
 EASING_80 = np.datetime64('2021-10-18')
 END_MASKS = np.datetime64('2021-12-15')
 MASKS_AGAIN = np.datetime64('2021-12-24')
+DENSITY_LIMITS = np.datetime64('2021-12-27')
+
 
 fig1 = plt.figure(figsize=(10, 6))
 ax1 = plt.axes()
@@ -489,7 +491,7 @@ ax1.fill_betweenx(
     [LGA_LOCKDOWN, LGA_LOCKDOWN],
     color=whiten("yellow", 0.5),
     linewidth=0,
-    label="Mask mandate+density limits/70% easing",
+    label="Density limits/70% easing",
 )
 
 ax1.fill_betweenx(
@@ -577,7 +579,7 @@ ax1.fill_betweenx(
     [END_MASKS, END_MASKS],
     color=whiten("green", 0.5),
     linewidth=0,
-    label="80% easing",
+    label="80% easing/mask mandate",
 )
 
 ax1.fill_betweenx(
@@ -592,6 +594,13 @@ ax1.fill_betweenx(
 ax1.fill_betweenx(
     [-10, 10],
     [MASKS_AGAIN, MASKS_AGAIN],
+    [DENSITY_LIMITS, DENSITY_LIMITS],
+    color=whiten("green", 0.5),
+    linewidth=0,
+)
+ax1.fill_betweenx(
+    [-10, 10],
+    [DENSITY_LIMITS, DENSITY_LIMITS],
     [END_PLOT, END_PLOT],
     color=whiten("yellow", 0.5),
     linewidth=0,
