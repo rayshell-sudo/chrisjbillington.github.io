@@ -478,7 +478,7 @@ END_CURFEW = np.datetime64('2021-09-16')
 END_LOCKDOWN = np.datetime64('2021-10-11')
 EASING_80 = np.datetime64('2021-10-18')
 END_MASKS = np.datetime64('2021-12-15')
-
+MASKS_AGAIN = np.datetime64('2021-12-24')
 
 fig1 = plt.figure(figsize=(10, 6))
 ax1 = plt.axes()
@@ -489,7 +489,7 @@ ax1.fill_betweenx(
     [LGA_LOCKDOWN, LGA_LOCKDOWN],
     color=whiten("yellow", 0.5),
     linewidth=0,
-    label="Initial restrictions/70% easing",
+    label="Mask mandate+density limits/70% easing",
 )
 
 ax1.fill_betweenx(
@@ -583,12 +583,19 @@ ax1.fill_betweenx(
 ax1.fill_betweenx(
     [-10, 10],
     [END_MASKS, END_MASKS],
-    [END_PLOT, END_PLOT],
+    [MASKS_AGAIN, MASKS_AGAIN],
     color=whiten("green", 0.25),
     linewidth=0,
     label="End mandatory masks",
 )
 
+ax1.fill_betweenx(
+    [-10, 10],
+    [MASKS_AGAIN, MASKS_AGAIN],
+    [END_PLOT, END_PLOT],
+    color=whiten("yellow", 0.5),
+    linewidth=0,
+)
 
 ax1.fill_between(
     dates[1:] + 1,
