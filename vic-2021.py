@@ -678,10 +678,10 @@ else:
 if not LGA:
     ax2.set_yscale('linear')
     maxproj = new_projection[t_projection < (END_PLOT - dates[-1]).astype(int)].max()
-    if OLD:
+    if OLD and dates[-1] < np.datetime64('2021-12-24'):
         ymax = 4000
     elif VAX:
-        ymax = 4000 # increase this once we see omicron-like growth!
+        ymax = 20_000
     else:
         ymax = 4000
 
