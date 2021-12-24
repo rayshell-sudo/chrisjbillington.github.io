@@ -15,10 +15,10 @@ python post-vax-to-reddit.py \
   "${REDDIT_PASSWORD}"
 
 # Post per-state vax plots to reddit
-python post-state-vax-to-reddit.py \
-  "${REDDIT_CLIENT_ID}" \
-  "${REDDIT_CLIENT_SECRET}" \
-  "${REDDIT_PASSWORD}"
+# python post-state-vax-to-reddit.py \
+#   "${REDDIT_CLIENT_ID}" \
+#   "${REDDIT_CLIENT_SECRET}" \
+#   "${REDDIT_PASSWORD}"
 
 # Commit and push
 git commit --all -m "state vax stats update"
