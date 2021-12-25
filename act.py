@@ -438,9 +438,9 @@ handles += handles2
 labels += labels2
 
 if VAX:
-    order = [4, 5, 6, 7, 8, 9, 10, 0, 1, 2, 3]
+    order = [4, 6, 5, 7, 8, 10, 9, 0, 1, 2, 3]
 else:
-    order = [4, 5, 6, 7, 8, 9, 0, 1, 2, 3]
+    order = [4, 5, 6, 7, 9, 8, 0, 1, 2, 3]
 ax2.legend(
     # handles,
     # labels,
@@ -516,7 +516,7 @@ if True: # Just to keep the diff with nsw.py sensible here
     elif OLD or VAX:
         ymax = 4000
     else:
-        ymax = 200
+        ymax = 500
     ax2.axis(ymin=0, ymax=ymax)
     ax2.yaxis.set_major_locator(mticker.MultipleLocator(ymax / 10))
     ax2.yaxis.set_major_formatter(mticker.EngFormatter())
