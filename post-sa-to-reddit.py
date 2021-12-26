@@ -25,7 +25,7 @@ def make_title():
     today = datetime.fromisoformat(today)
     today = f'{today.strftime("%B")} {th(today.day)}'
 
-    title=f"""SA R_eff as of {today}, with daily cases. Latest
+    title=f"""SA R_eff as of {today}, with daily cases and restrictions. Latest
         estimate: R_eff = {R_eff:.02f} ± {u_R_eff:.02f}. Plus SIR model projection.
         (images with both linear and log scales)
     """

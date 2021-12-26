@@ -203,19 +203,29 @@ else:
     )
 
 
-# MASKS = np.datetime64('2021-12-18')
+LEVEL_1 = np.datetime64('2021-11-23')
+TIGHTENING = np.datetime64('2021-12-27')
 
 fig1 = plt.figure(figsize=(10, 6))
 ax1 = plt.axes()
 
-# ax1.fill_betweenx(
-#     [-10, 10],
-#     [MASKS, MASKS],
-#     [END_PLOT, END_PLOT],
-#     color=whiten("yellow", 0.5),
-#     linewidth=0,
-#     label="Mandatory masks",
-# )
+ax1.fill_betweenx(
+    [-10, 10],
+    [LEVEL_1, LEVEL_1],
+    [TIGHTENING, TIGHTENING],
+    color=whiten("green", 0.5),
+    linewidth=0,
+    label="Level 1 restrictions",
+)
+
+ax1.fill_betweenx(
+    [-10, 10],
+    [TIGHTENING, TIGHTENING],
+    [END_PLOT, END_PLOT],
+    color=whiten("yellow", 0.5),
+    linewidth=0,
+    label="Stricter density+gathering limits",
+)
 
 ax1.fill_between(
     dates[1:] + 1,
@@ -283,7 +293,7 @@ if VAX:
 else:
     region = "South Australia"
     title_lines = [
-        f"$R_\\mathrm{{eff}}$ in {region} as of {latest_update_day}, with daily cases",
+        f"$R_\\mathrm{{eff}}$ in {region} as of {latest_update_day}, with restriction levels and daily cases",
         f"Latest estimate: {R_eff_string}",
     ]
     
@@ -340,9 +350,9 @@ handles += handles2
 labels += labels2
 
 if VAX:
-    order = [0, 2, 1, 3, 4, 6, 5]
+    order = [2, 4, 3, 5, 6, 5, 7, 0, 1]
 else:
-    order = [0, 1, 2, 3, 5, 4]
+    order = [2, 3, 4, 5, 7, 6, 0, 1]
 ax2.legend(
     # handles,
     # labels,
