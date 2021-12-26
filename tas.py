@@ -277,11 +277,11 @@ latest_update_day = f'{latest_update_day.strftime("%B")} {th(latest_update_day.d
 
 if VAX:
     title_lines = [
-        f"SIR model of South Australia as of {latest_update_day}",
+        f"SIR model of Tasmania as of {latest_update_day}",
         f"Starting from currently estimated {R_eff_string}",
     ]
 else:
-    region = "South Australia"
+    region = "Tasmania"
     title_lines = [
         f"$R_\\mathrm{{eff}}$ in {region} as of {latest_update_day}, with daily cases",
         f"Latest estimate: {R_eff_string}",
