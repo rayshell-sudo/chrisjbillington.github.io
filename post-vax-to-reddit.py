@@ -18,20 +18,16 @@ def make_title():
     vax_stats = json.loads(Path("latest_vax_stats.json").read_text())
     latest_cumulative_doses = vax_stats['latest_cumulative_doses']
     latest_daily_doses = vax_stats['latest_daily_doses']
-    phase_D_date = vax_stats['phase_D_date']
     today = vax_stats['today']  # The date of the last update - likely yesterday by now
 
     today = datetime.fromisoformat(today)
     today = f'{today.strftime("%B")} {th(today.day)}'
 
-    phase_D_date = datetime.fromisoformat(phase_D_date)
-    phase_D_date = f'{phase_D_date.strftime("%B")} {th(phase_D_date.day)}'
-
     title = f"""
         AUS vaccination rollout as of {today}. {latest_daily_doses / 1000:.1f}k doses
         per day 7d average, {latest_cumulative_doses / 1e6:.2f}M total doses. With first
         and second dose coverage by age group and state/territory, and projections based
-        on uptake rate. Projected 90% 12+ coverage: {phase_D_date}.
+        on uptake rate.
     """
     return " ".join(title.split())
 
