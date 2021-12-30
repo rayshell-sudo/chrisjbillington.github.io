@@ -3,4 +3,4 @@ set -e
 export MPLBACKEND=Agg
 python aus_vax.py
 python aus_vax.py project
-python vax-by-state.py
+# python vax-by-state.py

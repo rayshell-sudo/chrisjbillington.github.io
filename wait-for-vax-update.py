@@ -41,7 +41,7 @@ def latest_site_update():
     return np.datetime64(json.loads(Path('latest_vax_stats.json').read_text())['today'])
 
 def updates():
-    return [latest_covidlive_date(), latest_AIR_date(), latest_air_residence_date()]
+    return [latest_covidlive_date(), latest_AIR_date()]#, latest_air_residence_date()]
 
 if __name__ == '__main__':
     # Check every 10 minutes if we're out of date:
