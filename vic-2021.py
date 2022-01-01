@@ -681,9 +681,9 @@ if not LGA:
     if OLD and dates[-1] < np.datetime64('2021-12-24'):
         ymax = 4000
     elif VAX:
-        ymax = 50_000
+        ymax = 75_000
     else:
-        ymax = 10_000
+        ymax = 20_000
 
     ax2.axis(ymin=0, ymax=ymax)
     ax2.yaxis.set_major_locator(mticker.MultipleLocator(ymax / 10))
