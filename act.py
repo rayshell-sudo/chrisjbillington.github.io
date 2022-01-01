@@ -513,10 +513,10 @@ if True: # Just to keep the diff with nsw.py sensible here
     ax2.set_yscale('linear')
     if OLD and dates[-1] < np.datetime64('2021-12-15'):
         ymax = 100
-    elif OLD or VAX:
-        ymax = 4000
+    elif VAX:
+        ymax = 4_000
     else:
-        ymax = 500
+        ymax = 2_000
     ax2.axis(ymin=0, ymax=ymax)
     ax2.yaxis.set_major_locator(mticker.MultipleLocator(ymax / 10))
     ax2.yaxis.set_major_formatter(mticker.EngFormatter())
