@@ -308,7 +308,7 @@ dates, new = midnight_to_midnight_data()
 # hours as of the latest update. It might be 9am-9am instead of midnight-midnight, but
 # doesn't overlap with any other 24 hour period we're using and is a representative 24
 # hour period so shouldn't bias anything.
-new[-1] = get_todays_cases()
+new[-1] = 53 # get_todays_cases()
 
 START_VAX_PROJECTIONS = 23  # Sep 2nd
 all_dates = dates
