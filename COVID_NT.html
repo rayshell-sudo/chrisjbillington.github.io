@@ -13,10 +13,10 @@
 
   <meta charset="UTF-8">
   <meta property="og:type" content="website" />
-  <meta property="og:image" content="http://chrisbillington.net/COVID_TAS.png">
-  <meta property="og:title" content="Progression of the COVID outbreak in Tasmania"/>
-  <meta property="og:description" content="Plot of cases and estimated R_eff for the COVID outbreak in Tasmania"/>
-  <meta property="og:url" content="http://chrisbillington.net/COVID_TAS.html">
+  <meta property="og:image" content="http://chrisbillington.net/COVID_NT.png">
+  <meta property="og:title" content="Progression of the COVID outbreak in the Northern Territory"/>
+  <meta property="og:description" content="Plot of cases and estimated R_eff for the COVID outbreak in the Northern Territory"/>
+  <meta property="og:url" content="http://chrisbillington.net/COVID_NT.html">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
 </head>
@@ -50,15 +50,15 @@
     </div>
 
     <h1>
-      Progression of the COVID outbreak in Tasmania
+      Progression of the COVID outbreak in the Northern Territory
     </h1>
-    Last updated: 2022-01-02 10:07 Hobart time
+    Last updated: 2022-01-02 17:28 Darwin time
     <br>
     <small>
       Updates daily
     </small>
     <br>
-    <br>    
+    <br>
     <div id="toc_container">
       <p class="toc_title">Contents</p>
       <li><a href="#all"><i>R</i><sub>eff</sub> estimate from all cases</a></li>
@@ -72,15 +72,14 @@
     <h3 id="all"><i>R</i><sub>eff</sub> estimate from all cases</h3>
 
     <p>
-      Tasmania is currently experiencing an outbreak of COVID, due to the omicron
-      variant. The virus has been spreading in Tasmania since it opened its
-      borders on December 15th to the states and territories with active COVID
-      outbreaks.
+      The Northern Territory is currently experiencing an outbreak of COVID, due to the
+      omicron variant. The virus has been spreading in the Northern Territory since
+      December.
     </p>
     <p>
       The below plot shows how the effective reproduction number of the virus,
-      <i>R</i><sub>eff</sub> has changed over time in Tasmania, as well as how
-      the daily cases have changed over time. An exponential trendline shows the
+      <i>R</i><sub>eff</sub> has changed over time in the Northern Territory, as well as
+      how the daily cases have changed over time. An exponential trendline shows the
       approximate trajectory daily case numbers would follow, were the reproduction
       number of the virus to remain at its current level.
     </p>
@@ -89,8 +88,8 @@
       second on a log scale—the latter showing how consistently the caseload has
       followed exponential growth (which forms a straight line on a log scale).
     </p>
-    <img src="COVID_TAS_linear.svg">
-    <img src="COVID_TAS.svg">
+    <img src="COVID_NT_linear.svg">
+    <img src="COVID_NT.svg">
 
     <h3 id="sir">SIR model projection</h3>
     <p>
@@ -118,7 +117,7 @@
       This type of model is very simplistic, and should be taken with a grain of salt.
       The number of actual cases detected will depend strongly on what fraction of
       infections come forward for testing, which may change over time. Furthermore, this
-      model treats the entire state as homogenous, whereas in reality some
+      model treats the entire territory as homogenous, whereas in reality some
       geographic areas or social networks will develop high immunity and thus slower
       growth before others. This can significantly affect the overall rate of spread,
       but is not captured in a simple model such as this.
@@ -132,8 +131,8 @@
       The same plot is shown twice, the first with cases on a linear scale, and the
       second on a log scale.
     </p>
-    <img src="COVID_TAS_vax_linear.svg">
-    <img src="COVID_TAS_vax.svg">
+    <img src="COVID_NT_vax_linear.svg">
+    <img src="COVID_NT_vax.svg">
 
     <h3 id="animated">Animated projections over time</h3>
 
@@ -143,8 +142,8 @@
     these are not 100% identical to the projections actually made on previous days, as
     there have been some slight methodology changes - but they should be very close.
 
-    <video width=900 controls loop><source src="tas_animated_linear.webm" type="video/webm"></video>
-    <video width=900 controls loop><source src="tas_animated.webm" type="video/webm"></video>
+    <video width=900 controls loop><source src="nt_animated_linear.webm" type="video/webm"></video>
+    <video width=900 controls loop><source src="nt_animated.webm" type="video/webm"></video>
 
     <h3 id="disclaimer">Disclaimer on trends</h3>
     <p>
@@ -367,13 +366,13 @@
 
     <p>
       Source for case numbers:
-      <a href="https://covidlive.com.au/report/daily-source-overseas/tas">covidlive.com.au</a>
+      <a href="https://covidlive.com.au/report/daily-source-overseas/nt">covidlive.com.au</a>
     </p>
     <p>
       Plots/analysis by Chris Billington. Contact: chrisjbillington [at] gmail [dot] com
     </p>
     <p>
-      Python script for producing the plots can be found at <a href="https://github.com/chrisjbillington/chrisjbillington.github.io/blob/master/tas.py">GitHub</a>.
+      Python script for producing the plots can be found at <a href="https://github.com/chrisjbillington/chrisjbillington.github.io/blob/master/nt.py">GitHub</a>.
     </p>
   </div>
 </body>

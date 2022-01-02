@@ -1,0 +1,6 @@
+[Unit]
+Description=Update NT plots and post to reddit
+
+[Service]
+ExecStart=/home/bilbo/chrisbillington.net/chrisjbillington.github.io/timers/update-nt-and-post/update-nt-and-post.sh
+User=bilbo
