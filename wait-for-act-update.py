@@ -11,7 +11,7 @@ def covidlive_updated_today():
     except Exception as e:
         print(str(e))
         return False
-    return df['NET2'][0] != '-'
+    return df['LOCAL'][0] not in  ['-', df['LOCAL'][1]]
 
 if __name__ == '__main__':
     # Hit covidlive once every 5 minutes checking if it's updated:

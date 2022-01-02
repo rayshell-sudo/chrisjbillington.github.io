@@ -26,7 +26,7 @@ def covidlive_case_data(state, start_date=np.datetime64('2021-06-10')):
     url = f'https://covidlive.com.au/report/daily-source-overseas/{state.lower()}'
     df = pd.read_html(url)[1]
 
-    df = df[df['NET2'] != '-']
+    df = df[df['LOCAL'] != '-']
 
     dates = np.array(
         [
@@ -34,12 +34,14 @@ def covidlive_case_data(state, start_date=np.datetime64('2021-06-10')):
             for date in df['DATE']
         ]
     )
-    cases = np.array(df['NET2'].astype(int))
-    cases = cases[dates >= start_date][::-1]
-    dates = dates[dates >= start_date][::-1]
+
+    cases = np.array(df['LOCAL'].astype(int))[::-1]
+    dates = dates[::-1]
+
+    cases = np.diff(cases, prepend=0)[dates >= start_date]
+    dates = dates[dates >= start_date]    
 
     return dates, cases
-
 
 def covidlive_doses_per_100(n, state, population):
     """return cumulative 1st + 2nd doses per 100 population for the last n days"""

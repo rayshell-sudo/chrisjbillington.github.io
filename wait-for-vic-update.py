@@ -7,12 +7,11 @@ def covidlive_updated_today():
     """Check covidlive for VIC net and ~~wild~~ numbers for today, and return bool for
     whether they're there."""
     try:
-        df1 = pd.read_html('https://covidlive.com.au/report/daily-source-overseas/vic')[1]
-        # df2 = pd.read_html('https://covidlive.com.au/report/daily-wild-cases/vic')[1]
+        df = pd.read_html('https://covidlive.com.au/report/daily-source-overseas/vic')[1]
     except Exception as e:
         print(str(e))
         return False
-    return df1['NET2'][0] != '-'# and df2['TOTAL'][0] != '-'
+    return df['LOCAL'][0] not in  ['-', df['LOCAL'][1]]
 
 if __name__ == '__main__':
     # Hit covidlive once every 5 minutes checking if it's updated:
