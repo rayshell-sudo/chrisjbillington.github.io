@@ -203,28 +203,28 @@ else:
     )
 
 
-MASKS = np.datetime64('2021-12-18')
-MORE_MASKS = np.datetime64('2021-12-23')
+MASKS_SOME_PLACES = np.datetime64('2021-12-23')
+MASKS_ALL_PLACES = np.datetime64('2022-01-02')
 
 fig1 = plt.figure(figsize=(10, 6))
 ax1 = plt.axes()
 
 ax1.fill_betweenx(
     [-10, 10],
-    [MASKS, MASKS],
-    [MORE_MASKS, MORE_MASKS],
-    color=whiten("green", 0.5),
+    [MASKS_SOME_PLACES, MASKS_SOME_PLACES],
+    [MASKS_ALL_PLACES, MASKS_ALL_PLACES],
+    color=whiten("green", 0.25),
     linewidth=0,
-    label="Masks in high-risk settings",
+    label="Masks in cinemas and hospitality",
 )
 
 ax1.fill_betweenx(
     [-10, 10],
-    [MORE_MASKS, MORE_MASKS],
+    [MASKS_ALL_PLACES, MASKS_ALL_PLACES],
     [END_PLOT, END_PLOT],
-    color=whiten("yellow", 0.5),
+    color=whiten("green", 0.5),
     linewidth=0,
-    label="Masks in cinemas and hospitality",
+    label="Indoor masks",
 )
 
 ax1.fill_between(
