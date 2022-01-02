@@ -110,7 +110,7 @@ def get_todays_cases():
     df = pd.read_html(page)[6]
     MIQ = "Managed Isolation & Quarantine"
     # Sometimes has an asterisk after it:
-    NET = [k for k in df.columns if k.startswith("Change in last 48 hours")][0]
+    NET = [k for k in df.columns if k.startswith("Change in last 24 hours")][0]
 
     miq_net = df[df["Location"] == MIQ][NET].sum()
     all_net = df[df["Location"] == "Total"][NET].sum()
@@ -308,7 +308,7 @@ dates, new = midnight_to_midnight_data()
 # hours as of the latest update. It might be 9am-9am instead of midnight-midnight, but
 # doesn't overlap with any other 24 hour period we're using and is a representative 24
 # hour period so shouldn't bias anything.
-new[-1] = get_todays_cases() - new[-2]
+new[-1] = get_todays_cases()
 
 START_VAX_PROJECTIONS = 23  # Sep 2nd
 all_dates = dates
