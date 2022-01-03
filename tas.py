@@ -415,7 +415,7 @@ if True:  # Just to keep the diff with nsw.py sensible here
     ax2.set_yscale('linear')
     maxproj = new_projection[t_projection < (END_PLOT - dates[-1]).astype(int)].max()
     if VAX:
-        ymax = 5_000
+        ymax = 10_000
     else:
         ymax = 2000
     # if VAX:
