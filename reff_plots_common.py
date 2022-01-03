@@ -381,7 +381,9 @@ def determine_smoothed_cases_and_Reff(
     # Monte-carlo of the above with noise to compute variance in R, new_smoothed,
     # and their covariance:
 
-    for _ in range(N_monte_carlo):
+    all_Reffs = np.zeros(N_monte_carlo)
+
+    for i in range(N_monte_carlo):
         new_with_noise = np.random.normal(new, u_new).clip(0.1, None)
 
         trial_params, trial_cov = curve_fit(
@@ -426,7 +428,9 @@ def determine_smoothed_cases_and_Reff(
         cov_R_new_smoothed += (
             (new_smoothed_noisy[1:] - new_smoothed[1:]) * (R_noisy - R) / N_monte_carlo
         )
+        all_Reffs[i] = R_noisy[-1]
 
+    print("R_eff:", get_confidence_interval(all_Reffs))
     # Construct a covariance matrix for the latest estimate in new_smoothed and R:
     cov = np.array(
         [
