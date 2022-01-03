@@ -138,7 +138,7 @@ def make_comment():
     > randomly in time. As such the projections should be taken with a grain of salt—it
     > is merely an indication of the trend as it is right now.
 
-    This post was made by a [bot]({this_script_url}) 🤖. Please let me know if something
+    This post was made [by a bot]({this_script_url}) 🤖. Please let me know if something
     looks broken."""
 
     return dedent(COMMENT_TEXT)

@@ -59,7 +59,7 @@ more readable form.
 
 (split over two comments due to reddit comment length limit)
 
-This post was made by a [bot]({this_script_url}) 🤖. Please let me know if something
+This post was made [by a bot]({this_script_url}) 🤖. Please let me know if something
 looks broken.
 
 {stats.split('    SA')[0]}
