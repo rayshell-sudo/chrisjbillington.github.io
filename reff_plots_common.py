@@ -22,7 +22,7 @@ def th(n):
 
 
 def covidlive_case_data(state, start_date=np.datetime64('2021-06-10')):
-    """Daily local cases from covidlive"""
+    """Daily net local cases from covidlive"""
     url = f'https://covidlive.com.au/report/daily-source-overseas/{state.lower()}'
     df = pd.read_html(url)[1]
 
@@ -42,6 +42,30 @@ def covidlive_case_data(state, start_date=np.datetime64('2021-06-10')):
     dates = dates[dates >= start_date]    
 
     return dates, cases
+
+
+def covidlive_new_cases(state, start_date=np.datetime64('2021-06-10')):
+    """Daily new cases from covidlive"""
+    url = f'https://covidlive.com.au/report/daily-cases/{state.lower()}'
+    df = pd.read_html(url)[1][:-1]
+
+    df = df[df['NEW'] != '-']
+
+    dates = np.array(
+        [
+            np.datetime64(datetime.strptime(date, "%d %b %y"), 'D') - 1
+            for date in df['DATE']
+        ]
+    )
+
+    cases = np.array(df['NEW'].astype(int))[::-1]
+    dates = dates[::-1]
+
+    cases = cases[dates >= start_date]
+    dates = dates[dates >= start_date]    
+
+    return dates, cases
+
 
 def covidlive_doses_per_100(n, state, population):
     """return cumulative 1st + 2nd doses per 100 population for the last n days"""
