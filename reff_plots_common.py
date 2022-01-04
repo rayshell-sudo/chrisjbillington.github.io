@@ -251,6 +251,23 @@ def exponential_with_vax(x, A, k, dk_dt):
     return A * np.exp(k * x + 1 / 2 * dk_dt * x ** 2)
 
 
+# Exponential growth, but with the expected rate of decline in k due to immunity.
+def exponential_with_infection_immunity(
+    x,
+    A,
+    k,
+    cumulative_cases,
+    tau,
+    effective_population,
+):
+    # Susceptible population half a day in the future and half a day in the past:
+    s_2 = (1 - (cumulative_cases + A / 2)/ effective_population)
+    s_1 = (1 - (cumulative_cases - A / 2) / effective_population)
+
+    dk_dt = 1 / tau * (s_2 / s_1 - 1)
+    return A * np.exp(k * x + 1 / 2 * dk_dt * x ** 2)
+
+
 def clip_params(params, R_max, caseload_max, tau):
     """Clip exponential fit params to be within a reasonable range to suppress when
     unlucky points lead us to an unrealistic exponential blowup. Modifies array

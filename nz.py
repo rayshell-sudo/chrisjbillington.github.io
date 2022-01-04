@@ -20,6 +20,7 @@ from reff_plots_common import (
     exponential,
     determine_smoothed_cases_and_Reff,
     exponential_with_vax,
+    exponential_with_infection_immunity,
     get_SIR_projection,
     get_exp_projection,
     whiten,
@@ -39,6 +40,7 @@ munits.registry[datetime.date] = converter
 munits.registry[datetime] = converter
 
 POP_OF_NZ = 4.917e6
+TEST_DETECTION_RATE = 0.2
 
 VAX = 'vax' in sys.argv
 OLD = 'old' in sys.argv
@@ -333,7 +335,17 @@ s = 1 - immune
 dk_dt = 1 / tau * (s[1] / s[0] - 1)
 
 # Keep the old methodology for old plots:
-if dates[-1] >= np.datetime64('2021-10-27'):
+# Keep the old methodology for old plots:
+if dates[-1] >= np.datetime64('2022-01-04'):
+    padding_model = lambda x, A, k: exponential_with_infection_immunity(
+        x,
+        A,
+        k,
+        cumulative_cases=new.sum(),
+        tau=tau,
+        effective_population=TEST_DETECTION_RATE * POP_OF_NZ,
+    )
+elif dates[-1] >= np.datetime64('2021-10-27'):
     padding_model = lambda x, A, k: exponential_with_vax(x, A, k, dk_dt)
 else:
     padding_model = exponential
@@ -402,7 +414,7 @@ if VAX:
         R_eff=R[-1],
         tau=tau,
         population=POP_OF_NZ,
-        test_detection_rate=0.2,
+        test_detection_rate=TEST_DETECTION_RATE,
         vaccine_immunity=projected_vaccine_immune_population(
             t_projection, doses_per_100
         ),
