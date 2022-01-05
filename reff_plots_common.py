@@ -26,7 +26,7 @@ def covidlive_case_data(state, start_date=np.datetime64('2021-06-10')):
     url = f'https://covidlive.com.au/report/daily-source-overseas/{state.lower()}'
     df = pd.read_html(url)[1]
 
-    df = df[(df['NET'] != '-') & (df['LOCAL'] != '-')]
+    df = df[df['LOCAL'] != '-']
 
     dates = np.array(
         [
