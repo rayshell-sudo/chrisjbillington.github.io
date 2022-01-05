@@ -196,20 +196,22 @@ def moh_latest_cumulative_doses():
 
 def moh_doses_per_100(n):
     """Cumulative doses per 100 population for the past n days"""
-    for i in range(1, 8):
-        datestring = (datetime.now() - timedelta(days=i)).strftime("%d_%m_%Y")
-        url = (
-            "https://www.health.govt.nz/system/files/documents/pages/"
-            f"covid_vaccinations_{datestring}.xlsx"
-        )
-        try:
-            print(f"trying to get vax data for {datestring}")
-            response = requests.get(url, headers=curl_headers)
-            if response.ok:
-                break
-        except urllib.error.HTTPError:
-            continue
+
+    url = (
+        "https://www.health.govt.nz/our-work/diseases-and-conditions/"
+        "covid-19-novel-coronavirus/covid-19-data-and-statistics/covid-19-vaccine-data"
+    )
+    page = requests.get(url, headers=curl_headers).content.decode('utf8')
+    for line in page.splitlines():
+        if 'xlsx' in line and 'covid_vaccination' in line:
+            url = line.split('href="')[1].split('">')[0]
+            break
     else:
+        raise RuntimeError("No vax excel spreadsheet found")
+
+    url = f"https://www.health.govt.nz{url}"
+    response = requests.get(url, headers=curl_headers)
+    if not response.ok:
         raise RuntimeError("No vax excel spreadsheet found")
 
     df = pd.read_excel(io.BytesIO(response.content), sheet_name="Date")
