@@ -693,7 +693,7 @@ if not LGA:
     elif VAX:
         ymax = 75_000
     else:
-        ymax = 30_000
+        ymax = 40_000
 
     ax2.axis(ymin=0, ymax=ymax)
     ax2.yaxis.set_major_locator(mticker.MultipleLocator(ymax / 10))
