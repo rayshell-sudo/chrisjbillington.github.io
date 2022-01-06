@@ -216,6 +216,7 @@ else:
 
 
 MASKS = np.datetime64('2021-12-31')
+LOCKOUT = np.datetime64('2022-01-06')
 
 fig1 = plt.figure(figsize=(10, 6))
 ax1 = plt.axes()
@@ -223,10 +224,19 @@ ax1 = plt.axes()
 ax1.fill_betweenx(
     [-10, 10],
     [MASKS, MASKS],
-    [END_PLOT],
+    [LOCKOUT, LOCKOUT],
     color=whiten("green", 0.5),
     linewidth=0,
     label="Indoor mask mandate",
+)
+
+ax1.fill_betweenx(
+    [-10, 10],
+    [LOCKOUT, LOCKOUT],
+    [END_PLOT, END_PLOT],
+    color=whiten("yellow", 0.5),
+    linewidth=0,
+    label="Unvaccinated lockout",
 )
 
 ax1.fill_between(
@@ -352,9 +362,9 @@ handles += handles2
 labels += labels2
 
 if VAX:
-    order = [1, 3, 2, 4, 5, 7, 6, 0]
+    order = [2, 4, 3, 5, 6, 8, 7, 0, 1]
 else:
-    order = [1, 2, 3, 4, 6, 5, 0]
+    order = [2, 3, 4, 5, 7, 6, 0, 1]
 ax2.legend(
     # handles,
     # labels,
