@@ -362,7 +362,7 @@ PHASE_B = np.datetime64('2021-10-22')
 PHASE_C = np.datetime64('2021-10-30')
 PHASE_D = np.datetime64('2021-11-19')
 MASKS_AGAIN = np.datetime64('2021-12-24')
-
+DENSITY_LIMITS = np.datetime64('2022-01-07')
 
 fig1 = plt.figure(figsize=(10, 6))
 ax1 = plt.axes()
@@ -391,7 +391,7 @@ ax1.fill_betweenx(
     [LOCKDOWN, LOCKDOWN],
     color=whiten("yellow", 0.5),
     linewidth=0,
-    label="Eased gathering restrictions/Phase B",
+    label="Phase B/Density limits",
 )
 
 ax1.fill_betweenx(
@@ -482,8 +482,16 @@ ax1.fill_betweenx(
 ax1.fill_betweenx(
     [-10, 10],
     [MASKS_AGAIN, MASKS_AGAIN],
-    [END_PLOT, END_PLOT],
+    [DENSITY_LIMITS, DENSITY_LIMITS],
     color=whiten("green", 0.5),
+    linewidth=0,
+)
+
+ax1.fill_betweenx(
+    [-10, 10],
+    [DENSITY_LIMITS, DENSITY_LIMITS],
+    [END_PLOT, END_PLOT],
+    color=whiten("yellow", 0.5),
     linewidth=0,
 )
 ax1.fill_between(
