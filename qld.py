@@ -440,7 +440,7 @@ if True: # Just to keep the diff with nsw.py sensible here
     if VAX:
         ymax = 75_000
     else:
-        ymax = 10_000
+        ymax = 20_000
     # if VAX:
     #     ymax = 40
     # else:
