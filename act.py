@@ -527,7 +527,7 @@ if True: # Just to keep the diff with nsw.py sensible here
     elif VAX:
         ymax = 4_000
     else:
-        ymax = 2_000
+        ymax = 4_000
     ax2.axis(ymin=0, ymax=ymax)
     ax2.yaxis.set_major_locator(mticker.MultipleLocator(ymax / 10))
     ax2.yaxis.set_major_formatter(mticker.EngFormatter())
