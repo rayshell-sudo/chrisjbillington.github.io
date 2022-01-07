@@ -210,6 +210,7 @@ if LGA_IX is not None:
     new = cases_by_lga[LGA]
 else:
     dates, new = statewide_data()
+    new[-1] = 24928
 
 START_VAX_PROJECTIONS = 111  # August 29, when I started making vaccine projections
 all_dates = dates
