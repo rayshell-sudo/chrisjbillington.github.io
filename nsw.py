@@ -37,7 +37,6 @@ munits.registry[datetime] = converter
 
 
 POP_OF_NSW = 8.166e6
-TEST_DETECTION_RATE = 0.2
 
 VAX = 'vax' in sys.argv
 OTHERS = 'others' in sys.argv
@@ -353,6 +352,11 @@ elif WESTERN_NSW:
     new = sum(cases_by_lga[lga] for lga in cases_by_lga if lga in WESTERN_NSW_LGAS) 
 else:
     dates, new = covidlive_case_data('NSW', start_date=np.datetime64('2021-06-10'))
+
+if dates[-1] >= np.datetime64('2022-01-09'):
+    TEST_DETECTION_RATE = 0.27
+else:
+    TEST_DETECTION_RATE = 0.2
 
 START_VAX_PROJECTIONS = 42  # July 22nd, when I started making vaccine projections
 all_dates = dates

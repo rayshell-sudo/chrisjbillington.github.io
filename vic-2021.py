@@ -36,7 +36,6 @@ munits.registry[datetime] = converter
 
 
 POP_OF_VIC = 6.681e6
-TEST_DETECTION_RATE = 0.2
 
 VAX = 'vax' in sys.argv
 LGA_IX = None
@@ -209,9 +208,36 @@ if LGA_IX is not None:
     LGA = sorted_lgas[LGA_IX]
     new = cases_by_lga[LGA]
 else:
-    dates, new = statewide_data()
-    # new[-2] = 24928
-    new[-1] = 22104
+    # dates, new = statewide_data()
+    dates, new = covidlive_case_data('VIC', start_date=np.datetime64('2021-05-10'))
+
+# Data corrections as of Jan 9th:
+if dates[-1] >= np.datetime64('2022-01-09'):
+    new[dates==np.datetime64('2021-12-31')] += 71
+    new[dates==np.datetime64('2022-01-01')] += 624
+    new[dates==np.datetime64('2022-01-02')] += 2149
+    new[dates==np.datetime64('2022-01-03')] += 4706
+    new[dates==np.datetime64('2022-01-04')] += 6011
+    new[dates==np.datetime64('2022-01-05')] += 7242
+    new[dates==np.datetime64('2022-01-06')] += 8963
+    new[dates==np.datetime64('2022-01-07')] += 9892
+    new[dates==np.datetime64('2022-01-08')] += 8821
+
+    new[dates==np.datetime64('2022-01-07')] -= (26428 - 5923)
+    new[dates==np.datetime64('2022-01-08')] -= (22051 - 8821)
+elif dates[-1] == np.datetime64('2022-01-08'):
+    # no RATs on this date:
+    new[dates==np.datetime64('2022-01-07')] -= (26428 + 5923)
+    new[dates==np.datetime64('2022-01-08')] -= (22051 + 8821)
+elif dates[-1] == np.datetime64('2022-01-07'):
+    # no RATs on this date:
+    new[dates==np.datetime64('2022-01-07')] -= (26428 + 5923)
+    new[dates==np.datetime64('2022-01-08')] -= (22051 + 8821)
+
+if dates[-1] >= np.datetime64('2022-01-09'):
+    TEST_DETECTION_RATE = 0.27
+else:
+    TEST_DETECTION_RATE = 0.2
 
 START_VAX_PROJECTIONS = 111  # August 29, when I started making vaccine projections
 all_dates = dates
@@ -701,9 +727,9 @@ if not LGA:
     if OLD and dates[-1] < np.datetime64('2021-12-24'):
         ymax = 4000
     elif VAX:
-        ymax = 75_000
+        ymax = 120_000
     else:
-        ymax = 40_000
+        ymax = 60_000
 
     ax2.axis(ymin=0, ymax=ymax)
     ax2.yaxis.set_major_locator(mticker.MultipleLocator(ymax / 10))

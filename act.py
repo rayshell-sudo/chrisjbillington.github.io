@@ -35,7 +35,6 @@ munits.registry[datetime] = converter
 
 
 POP_OF_ACT = 431215 
-TEST_DETECTION_RATE = 0.2
 
 VAX = 'vax' in sys.argv
 OLD = 'old' in sys.argv
@@ -157,6 +156,11 @@ def projected_vaccine_immune_population(t, historical_doses_per_100):
 
 
 dates, new = covidlive_case_data('ACT', start_date=np.datetime64('2021-05-10'))
+
+if dates[-1] >= np.datetime64('2022-01-09'):
+    TEST_DETECTION_RATE = 0.27
+else:
+    TEST_DETECTION_RATE = 0.2
 
 START_VAX_PROJECTIONS = 111  # Aug 29
 all_dates = dates
