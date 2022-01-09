@@ -100,7 +100,6 @@ def projected_vaccine_immune_population(t, historical_doses_per_100):
 
 
 dates, new = covidlive_new_cases('TAS', start_date=np.datetime64('2021-11-20'))
-new[-1] = 1053
 
 START_VAX_PROJECTIONS = np.argwhere(dates==np.datetime64('2021-12-25'))[0][0]
 all_dates = dates
