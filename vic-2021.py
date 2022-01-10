@@ -211,28 +211,45 @@ else:
     # dates, new = statewide_data()
     dates, new = covidlive_case_data('VIC', start_date=np.datetime64('2021-05-10'))
 
-# Data corrections as of Jan 9th:
-if dates[-1] >= np.datetime64('2022-01-09'):
+
+
+if dates[-1] >= np.datetime64('2022-01-10'):
+    # Data corrections as of the afternoon of Jan 10th:
     new[dates==np.datetime64('2021-12-31')] += 71
     new[dates==np.datetime64('2022-01-01')] += 624
-    new[dates==np.datetime64('2022-01-02')] += 2149
-    new[dates==np.datetime64('2022-01-03')] += 4706
-    new[dates==np.datetime64('2022-01-04')] += 6011
-    new[dates==np.datetime64('2022-01-05')] += 7242
-    new[dates==np.datetime64('2022-01-06')] += 8963
-    new[dates==np.datetime64('2022-01-07')] += 9892
-    new[dates==np.datetime64('2022-01-08')] += 8821
+    new[dates==np.datetime64('2022-01-02')] += 2_149
+    new[dates==np.datetime64('2022-01-03')] += 5_784
+    new[dates==np.datetime64('2022-01-04')] += 7_089
+    new[dates==np.datetime64('2022-01-05')] += 8_320
+    new[dates==np.datetime64('2022-01-06')] += 10_041
+    new[dates==np.datetime64('2022-01-07')] += 10_970
+    new[dates==np.datetime64('2022-01-08')] += 11_821
+    new[dates==np.datetime64('2022-01-09')] += 8_800
 
-    new[dates==np.datetime64('2022-01-07')] -= (26428 - 5923)
-    new[dates==np.datetime64('2022-01-08')] -= (22051 - 8821)
+    new[dates==np.datetime64('2022-01-07')] -= 26_428
+    new[dates==np.datetime64('2022-01-08')] -= 22_051
+    new[dates==np.datetime64('2022-01-09')] -= 17_190
+elif dates[-1] == np.datetime64('2022-01-09'):
+    # Data corrections as of the afternoon of Jan 9th:
+    new[dates==np.datetime64('2021-12-31')] += 71
+    new[dates==np.datetime64('2022-01-01')] += 624
+    new[dates==np.datetime64('2022-01-02')] += 2_149
+    new[dates==np.datetime64('2022-01-03')] += 4_706
+    new[dates==np.datetime64('2022-01-04')] += 6_011
+    new[dates==np.datetime64('2022-01-05')] += 7_242
+    new[dates==np.datetime64('2022-01-06')] += 8_963
+    new[dates==np.datetime64('2022-01-07')] += 9_892
+    new[dates==np.datetime64('2022-01-08')] += 8_821
+
+    new[dates==np.datetime64('2022-01-07')] -= 26_428
+    new[dates==np.datetime64('2022-01-08')] -= 22_051
 elif dates[-1] == np.datetime64('2022-01-08'):
     # no RATs on this date:
-    new[dates==np.datetime64('2022-01-07')] -= (26428 + 5923)
-    new[dates==np.datetime64('2022-01-08')] -= (22051 + 8821)
+    new[dates==np.datetime64('2022-01-07')] -= 26_428
+    new[dates==np.datetime64('2022-01-08')] -= 22_051
 elif dates[-1] == np.datetime64('2022-01-07'):
     # no RATs on this date:
-    new[dates==np.datetime64('2022-01-07')] -= (26428 + 5923)
-    new[dates==np.datetime64('2022-01-08')] -= (22051 + 8821)
+    new[dates==np.datetime64('2022-01-07')] -= 26_428
 
 if dates[-1] >= np.datetime64('2022-01-09'):
     TEST_DETECTION_RATE = 0.27
