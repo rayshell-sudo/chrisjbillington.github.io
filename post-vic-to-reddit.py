@@ -69,7 +69,7 @@ def make_comment():
     same but with case numbers on a log scale.
 
     First (and third) plot show an exponential trendline, second (and fourth) are SIR
-    models that assume 20% of infections will be detected via testing.
+    models that assume 27% of infections will be detected via testing.
 
     Expected case numbers if the current  trend continues:
 
