@@ -212,7 +212,28 @@ else:
     dates, new = covidlive_case_data('VIC', start_date=np.datetime64('2021-05-10'))
 
 
-if dates[-1] >= np.datetime64('2022-01-10'):
+if dates[-1] >= np.datetime64('2022-01-12'):
+    # Data corrections as of the afternoon of Jan 12th:
+    new[dates==np.datetime64('2021-12-31')] += 71
+    new[dates==np.datetime64('2022-01-01')] += 624
+    new[dates==np.datetime64('2022-01-02')] += 2_149
+    new[dates==np.datetime64('2022-01-03')] += 5_784
+    new[dates==np.datetime64('2022-01-04')] += 8_289
+    new[dates==np.datetime64('2022-01-05')] += 10_626
+    new[dates==np.datetime64('2022-01-06')] += 12_348
+    new[dates==np.datetime64('2022-01-07')] += 13_277
+    new[dates==np.datetime64('2022-01-08')] += 14_128
+    new[dates==np.datetime64('2022-01-09')] += 12_906
+    new[dates==np.datetime64('2022-01-10')] += 13_187
+    new[dates==np.datetime64('2022-01-11')] += 9_217
+
+    new[dates==np.datetime64('2022-01-07')] -= 26_428
+    new[dates==np.datetime64('2022-01-08')] -= 22_051
+    new[dates==np.datetime64('2022-01-09')] -= 17_190
+    new[dates==np.datetime64('2022-01-10')] -= 18_503
+    new[dates==np.datetime64('2022-01-11')] -= 18_434
+
+elif dates[-1] == np.datetime64('2022-01-11'):
     # Data corrections as of the afternoon of Jan 11th:
     new[dates==np.datetime64('2021-12-31')] += 71
     new[dates==np.datetime64('2022-01-01')] += 624
