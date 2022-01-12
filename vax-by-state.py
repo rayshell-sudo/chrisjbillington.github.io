@@ -38,6 +38,7 @@ TOTAL_POPS = {
 # ABS Estimated Resident Population, June 2020
 # https://www.abs.gov.au/statistics/people/population/national-state-and-territory-population/jun-2020
 POP_DATA = {
+    '5_11': 2258250,
     '12_15': 1206862,
     '16_19': 1195636,
     '20_24': 1712736,
@@ -75,7 +76,10 @@ def add_national_data(data):
     age_12_15_start_date = min(
         row['DATE_AS_AT'] for row in AIR_data if 'AIR_12_15_FIRST_DOSE_COUNT' in row
     )
-    pop_16_plus = sum(POP_DATA.values()) - POP_DATA['12_15']
+    age_5_11_start_date = min(
+        row['DATE_AS_AT'] for row in AIR_data if 'AIR_AUS_5_11_FIRST_DOSE_COUNT' in row
+    )
+    pop_16_plus = sum(POP_DATA.values()) - POP_DATA['12_15'] - POP_DATA['5_11']
     for row in AIR_data:
         if row['DATE_AS_AT'] < start_date:
             continue
@@ -85,12 +89,18 @@ def add_national_data(data):
         for agegroup in POP_DATA:
             if agegroup == '12_15' and row['DATE_AS_AT'] < age_12_15_start_date:
                 continue
+            if agegroup == '5_11' and row['DATE_AS_AT'] < age_5_11_start_date:
+                continue
             age_lower, age_upper = agegroup.split('_')
             age_lower = int(age_lower)
             age_upper = 999 if age_upper == 'PLUS' else int(age_upper)
-            first_doses = row[f'AIR_{agegroup}_FIRST_DOSE_COUNT']
-            second_doses = row[f'AIR_{agegroup}_SECOND_DOSE_COUNT']
-            if agegroup != '12_15':
+            if age_lower == 5:
+                first_doses = row[f'AIR_AUS_{agegroup}_FIRST_DOSE_COUNT']
+                second_doses = row.get(f'AIR_AUS_{agegroup}_SECOND_DOSE_COUNT', 0)
+            else:
+                first_doses = row[f'AIR_{agegroup}_FIRST_DOSE_COUNT']
+                second_doses = row[f'AIR_{agegroup}_SECOND_DOSE_COUNT']
+            if agegroup not in ('12_15', '5_11'):
                 first_doses_16_plus += first_doses
                 second_doses_16_plus += second_doses
             new_row = {
@@ -129,14 +139,15 @@ data.sort(key=lambda row: row['DATE_AS_AT'])
 
 # First date when data for ages 12-15 became available:
 AGES_12_15_FROM = np.datetime64('2021-09-13')
-
+AGES_5_11_FROM = np.datetime64('2022-01-10')
 data_dates = set([row['DATE_AS_AT'] for row in data])
 # dates = np.array(sorted(set([row['DATE_AS_AT'] for row in data])))
 dates = np.arange(min(data_dates), max(data_dates) + 1)
 dates_12_15 = dates[dates >= AGES_12_15_FROM]
+dates_5_11 = dates[dates >= AGES_5_11_FROM]
 
 STATES = ['AUS', 'NSW', 'VIC', 'QLD', 'WA', 'SA', 'TAS', 'ACT', 'NT']
-AGE_GROUPS = ['0+', '12+', '16+', 12, 16, 20, 30, 40, 50, 60, 70, 80, 90][::-1]
+AGE_GROUPS = ['0+', '12+', '16+', 5, 12, 16, 20, 30, 40, 50, 60, 70, 80, 90][::-1]
 
 html_table_content = {}
 
@@ -154,6 +165,8 @@ for state in STATES:
             ranges = [(12, 15), (16, 999)]
         elif group_start == '16+':
             ranges = [(16, 999)]
+        elif group_start == 5:
+            ranges = [(5, 11)]
         elif group_start == 12:
             ranges = [(12, 15)]
         elif group_start == 16:
@@ -169,7 +182,13 @@ for state in STATES:
         second_dose_coverage = []
 
         pop = 0
-        dates_by_age.append(dates_12_15 if group_start == 12 else dates)
+        if group_start == 5:
+            dates_by_age.append(dates_5_11)
+        elif group_start == 12:
+            dates_by_age.append(dates_12_15)
+        else:
+            dates_by_age.append(dates)
+
         first_doses = np.zeros(len(dates_by_age[-1]))
         second_doses = np.zeros(len(dates_by_age[-1]))
 
@@ -207,7 +226,7 @@ for state in STATES:
             # the 12+ population
             for i, row in enumerate(rows[::-1]):
                 first_doses[i] += row[FIRST_KEY]
-                second_doses[i] += row[SECOND_KEY]
+                second_doses[i] += row.get(SECOND_KEY, 0)
 
         first_doses = first_doses[::-1]
         second_doses = second_doses[::-1]
@@ -258,7 +277,7 @@ for state in STATES:
     plt.gca().yaxis.set_major_locator(ticker.MultipleLocator(10))
     plt.axis(
         xmin=np.datetime64('2021-07-28'),
-        xmax=np.datetime64('2022-02-01'),
+        xmax=np.datetime64('2022-06-01'),
         ymin=0,
         ymax=100,
     )
@@ -292,7 +311,7 @@ for state in STATES:
     plt.gca().yaxis.set_major_locator(ticker.MultipleLocator(10))
     plt.axis(
         xmin=np.datetime64('2021-07-28'),
-        xmax=np.datetime64('2022-02-01'),
+        xmax=np.datetime64('2022-06-01'),
         ymin=0,
         ymax=100,
     )

@@ -170,6 +170,21 @@ def first_and_second_by_state(state):
     return dates - 1, first, second
 
 
+def third_by_state(state):
+    AIR_JSON = "https://vaccinedata.covid19nearme.com.au/data/air.json"
+    AIR_data = json.loads(requests.get(AIR_JSON).content)
+    key = f'AIR_{state.upper()}_18_PLUS_THIRD_DOSE_COUNT'
+
+    THIRD_START_DATE = np.datetime64(
+        min(row['DATE_AS_AT'] for row in AIR_data if key in row)
+    )
+
+    dates = np.array([np.datetime64(row['DATE_AS_AT']) for row in AIR_data])
+    dates = dates[dates >= THIRD_START_DATE]
+    third_doses = np.array([row[key] for row in AIR_data if key in row])
+    return dates, third_doses
+
+
 dates, doses_by_state = get_data()
 
 PHASE_1B = np.datetime64('2021-03-22')
@@ -518,8 +533,10 @@ def exponential(x, A, k, c):
     return A * np.exp(k * x) + c
 
 firstsecond_dates, first_actual, second_actual = first_and_second_by_state('aus')
+_, third_actual = third_by_state('aus')
+n_pad = len(second_actual) - len(third_actual)
+third_actual = np.concatenate([np.zeros(n_pad, dtype=int), third_actual])
 total_actual = doses_by_state['AUS'][-len(firstsecond_dates):]
-third_actual = total_actual - first_actual - second_actual
 
 first_second_interval = (
     len(second_actual) - np.argwhere(first_actual > second_actual[-1])[0][0]
@@ -1143,6 +1160,7 @@ plt.title('National daily doses by weekday')
 # ABS Estimated Resident Population, June 2020
 # https://www.abs.gov.au/statistics/people/population/national-state-and-territory-population/jun-2020
 POP_DATA = {
+    '5_11': {'MALE': 1_158_512, 'FEMALE': 1_099_783},
     '12_15': {'MALE': 620_701, 'FEMALE': 586_161},
     '16_19': {'MALE': 614_430, 'FEMALE': 581_206},
     '20_24': {'MALE': 880_327, 'FEMALE': 832_409},
@@ -1190,8 +1208,10 @@ second_dose_coverage_dates = first_dose_coverage_dates[
 
 # First date when data for ages 12-15 became available:
 AGES_12_15_FROM = np.datetime64('2021-09-13')
+AGES_5_11_FROM = np.datetime64('2022-01-10')
 
 ages_12_15_dates = first_dose_coverage_dates[first_dose_coverage_dates>=AGES_12_15_FROM]
+ages_5_11_dates = first_dose_coverage_dates[first_dose_coverage_dates>=AGES_5_11_FROM]
 
 labels_by_age = []
 first_dose_coverage_by_age = []
@@ -1201,8 +1221,10 @@ second_dose_coverage_by_age = []
 first_dose_dates_by_age = []
 second_dose_dates_by_age = []
 
-for group_start in [12, 16, 20, 30, 40, 50, 60, 70, 80, 90][::-1]:
-    if group_start == 12:
+for group_start in [5, 12, 16, 20, 30, 40, 50, 60, 70, 80, 90][::-1]:
+    if group_start == 5:
+        ranges = ['5_11']
+    elif group_start == 12:
         ranges = ['12_15']
     elif group_start == 16:
         ranges = ['16_19']
@@ -1213,22 +1235,34 @@ for group_start in [12, 16, 20, 30, 40, 50, 60, 70, 80, 90][::-1]:
     first_dose_coverage = []
     second_dose_coverage = []
     for row in doses_by_age:
+        if group_start == 5 and row['DATE_AS_AT'] < AGES_5_11_FROM:
+            continue
         if group_start == 12 and row['DATE_AS_AT'] < AGES_12_15_FROM:
             continue
         first_doses = 0
         second_doses = 0
         pop = 0
         for age_range in ranges:
-            first_doses += row[f'AIR_{age_range}_FIRST_DOSE_COUNT']
+            if group_start == 5:
+                first_doses_key = f'AIR_AUS_{age_range}_FIRST_DOSE_COUNT'
+                second_doses_key = f'AIR_AUS_{age_range}_SECOND_DOSE_COUNT'
+            else:
+                first_doses_key = f'AIR_{age_range}_FIRST_DOSE_COUNT'
+                second_doses_key = f'AIR_{age_range}_SECOND_DOSE_COUNT'
+
+            first_doses += row[first_doses_key]
             if row['DATE_AS_AT'] >= AIR_START_DATE:
-                second_doses += row[f'AIR_{age_range}_SECOND_DOSE_COUNT']
+                second_doses += row.get(second_doses_key, 0)
             pop += POP_DATA[age_range]['TOTAL']
         first_dose_coverage.append(100 * first_doses / pop)
         if row['DATE_AS_AT'] >= AIR_START_DATE:
             second_dose_coverage.append(100 * second_doses / pop)
     first_dose_coverage_by_age.append(np.array(first_dose_coverage))
     second_dose_coverage_by_age.append(np.array(second_dose_coverage))
-    if group_start == 12:
+    if group_start == 5:
+        first_dose_dates_by_age.append(ages_5_11_dates)
+        second_dose_dates_by_age.append(ages_5_11_dates)
+    elif group_start == 12:
         first_dose_dates_by_age.append(ages_12_15_dates)
         second_dose_dates_by_age.append(ages_12_15_dates)
     else:
@@ -1258,7 +1292,7 @@ plt.gca().xaxis.set_major_formatter(formatter)
 plt.gca().yaxis.set_major_locator(ticker.MultipleLocator(10))
 plt.axis(
     xmin=np.datetime64('2021-05-09'),
-    xmax=np.datetime64('2022-02-01'),
+    xmax=np.datetime64('2022-06-01'),
     ymin=0,
     ymax=100,
 )
@@ -1281,10 +1315,9 @@ for dates, coverage, label in zip(
     smoothed_coverage = 7 * n_day_average(np.diff(coverage), 7)[6:]
     smoothed_coverage = gaussian_smoothing(smoothed_coverage, 1)
 
-    # Ensure single datapoint of 12—15 data shows up, can remove in a day:
-    if len(smoothed_coverage) == 1:
-        dates = np.append(dates, [dates[-1] - 1])
-        smoothed_coverage = np.append(smoothed_coverage, [smoothed_coverage[-1]])
+    # Don't plot if there isn't enough data for a week of smoothing:
+    if len(dates[7:]) < 2:
+        continue
 
     plt.plot(
         dates[7:],
@@ -1300,7 +1333,7 @@ plt.gca().xaxis.set_major_formatter(formatter)
 plt.gca().yaxis.set_major_locator(ticker.MultipleLocator(1.0))
 plt.axis(
     xmin=np.datetime64('2021-05-09'),
-    xmax=np.datetime64('2022-02-01'),
+    xmax=np.datetime64('2022-06-01'),
     ymin=0,
     ymax=15,
 )
@@ -1324,7 +1357,7 @@ plt.gca().xaxis.set_major_formatter(formatter)
 plt.gca().yaxis.set_major_locator(ticker.MultipleLocator(10))
 plt.axis(
     xmin=np.datetime64('2021-05-09'),
-    xmax=np.datetime64('2022-02-01'),
+    xmax=np.datetime64('2022-06-01'),
     ymin=0,
     ymax=100,
 )
@@ -1339,10 +1372,9 @@ for dates, coverage, label in zip(
     smoothed_coverage = 7 * n_day_average(np.diff(coverage), 7)[6:]
     smoothed_coverage = gaussian_smoothing(smoothed_coverage, 1)
 
-    # Ensure single datapoint of 12—15 data shows up, can remove in a day:
-    if len(smoothed_coverage) == 1:
-        dates = np.append(dates, [dates[-1] - 1])
-        smoothed_coverage = np.append(smoothed_coverage, [smoothed_coverage[-1]])
+    # Don't plot if there isn't enough data for a week of smoothing:
+    if len(dates[7:]) < 2:
+        continue
 
     plt.plot(
         dates[7:],
@@ -1358,7 +1390,7 @@ plt.gca().xaxis.set_major_formatter(formatter)
 plt.gca().yaxis.set_major_locator(ticker.MultipleLocator(1.0))
 plt.axis(
     xmin=np.datetime64('2021-05-09'),
-    xmax=np.datetime64('2022-02-01'),
+    xmax=np.datetime64('2022-06-01'),
     ymin=0,
     ymax=15,
 )
@@ -1391,16 +1423,29 @@ ax15 = plt.gca()
 
 fig16 = plt.figure(figsize=(8, 6))
 ax16 = plt.gca()
+
+fig17 = plt.figure(figsize=(8, 6))
+ax17 = plt.gca()
+
+# Third dose weekly increase once we have more data
+# fig18 = plt.figure(figsize=(8, 6))
+# ax18 = plt.gca()
+
 for state, pop in POPS_12_PLUS.items():
     dates, first, second = first_and_second_by_state(state)
+    third_dates, third = third_by_state(state)
+
     percent_first = 100 * first / pop
     percent_second = 100 * second / pop
+    percent_third = 100 * third / pop
 
     smoothed_first_rate = 7 * n_day_average(np.diff(percent_first, prepend=0), 7)[7:]
     smoothed_second_rate = 7 * n_day_average(np.diff(percent_second, prepend=0), 7)[7:]
+    # smoothed_third_rate = 7 * n_day_average(np.diff(percent_third, prepend=0), 7)[7:]
 
     smoothed_first_rate = gaussian_smoothing(smoothed_first_rate, 1)
     smoothed_second_rate = gaussian_smoothing(smoothed_second_rate, 1)
+    # smoothed_third_rate = gaussian_smoothing(smoothed_third_rate, 1)
 
     label = 'National' if state == 'AUS' else state
 
@@ -1425,8 +1470,20 @@ for state, pop in POPS_12_PLUS.items():
         label=f"{label} ({smoothed_second_rate[-1]:.1f} %/week)",
     )
 
-for ax in [ax13, ax14, ax15, ax16]:
-    rate_plot = ax in [ax15, ax16]
+    ax17.plot(
+        third_dates,
+        gaussian_smoothing(percent_third, 0.666),
+        label=f"{label} ({percent_third[-1]:.1f} %)",
+    )
+
+    # ax18.plot(
+    #     third_dates[7:],
+    #     smoothed_third_rate,
+    #     label=f"{label} ({smoothed_second_rate[-1]:.1f} %/week)",
+    # )
+
+for ax in [ax13, ax14, ax15, ax16, ax17]: # ax18]:
+    rate_plot = ax in [ax15, ax16] # ax18]
     ax.legend(loc='upper right' if rate_plot else 'lower right', prop={'size': 8})
     ax.grid(True, linestyle=':', color='k', alpha=0.5)
     locator = mdates.DayLocator([1, 15])
@@ -1436,7 +1493,7 @@ for ax in [ax13, ax14, ax15, ax16]:
     ax.yaxis.set_major_locator(ticker.MultipleLocator(1 if rate_plot else 10))
     ax.axis(
         xmin=np.datetime64('2021-07-15'),
-        xmax=np.datetime64('2022-02-01'),
+        xmax=np.datetime64('2022-06-01'),
         ymin=0,
         ymax=10 if rate_plot else 100,
     )
@@ -1450,8 +1507,8 @@ ax13.set_title("First dose coverage by state/territory")
 ax14.set_title("Second dose coverage by state/territory")
 ax15.set_title("First dose weekly increase by state/territory")
 ax16.set_title("Second dose weekly increase by state/territory")
-
-
+ax17.set_title("Third dose coverage by state/territory")
+# ax18.set_title("Third dose weekly increase by state/territory")
 
 # Update the date in the HTML
 html_file = 'aus_vaccinations.html'
@@ -1497,5 +1554,7 @@ for extension in ['png', 'svg']:
         fig14.savefig(f'coverage_2nd_by_state.{extension}')
         fig15.savefig(f'coverage_rate_by_state.{extension}')
         fig16.savefig(f'coverage_2nd_rate_by_state.{extension}')
+        fig17.savefig(f'coverage_3rd_by_state.{extension}')
+        # fig18.savefig(f'coverage_3rd_rate_by_state.{extension}')
 
 plt.show()
