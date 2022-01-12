@@ -883,7 +883,7 @@ if VAX or not (LGA or OTHERS or CONCERN or SYDNEY or NOT_SYDNEY or HUNTER or ILL
     if OLD and dates[-1] < np.datetime64('2021-12-10'):
         ymax = 2_500
     elif VAX:
-        ymax = 75_000
+        ymax = 100_000
     else:
         ymax = 60_000
     ax2.axis(ymin=0, ymax=ymax)
