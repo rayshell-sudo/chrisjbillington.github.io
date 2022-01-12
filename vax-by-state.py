@@ -130,7 +130,9 @@ data.sort(key=lambda row: row['DATE_AS_AT'])
 # First date when data for ages 12-15 became available:
 AGES_12_15_FROM = np.datetime64('2021-09-13')
 
-dates = np.array(sorted(set([row['DATE_AS_AT'] for row in data])))
+data_dates = set([row['DATE_AS_AT'] for row in data])
+# dates = np.array(sorted(set([row['DATE_AS_AT'] for row in data])))
+dates = np.arange(min(data_dates), max(data_dates) + 1)
 dates_12_15 = dates[dates >= AGES_12_15_FROM]
 
 STATES = ['AUS', 'NSW', 'VIC', 'QLD', 'WA', 'SA', 'TAS', 'ACT', 'NT']
@@ -188,6 +190,14 @@ for state in STATES:
                 and row['AGE_UPPER'] == upper
                 and row['STATE'] == state
             ]
+
+            # Duplicate rows for days with missing data:
+            i = 0
+            while i < len(rows) - 1:
+                if rows[i + 1]['DATE_AS_AT'] != rows[i]['DATE_AS_AT'] + 1:
+                    rows.insert(i + 1, rows[i].copy())
+                    rows[i + 1]['DATE_AS_AT'] = rows[i]['DATE_AS_AT'] + 1
+                i += 1
 
             pop += rows[0]['ABS_ERP_JUN_2020_POP']
 
