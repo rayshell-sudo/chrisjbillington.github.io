@@ -352,8 +352,23 @@ elif WESTERN_NSW:
     new = sum(cases_by_lga[lga] for lga in cases_by_lga if lga in WESTERN_NSW_LGAS) 
 else:
     dates, new = covidlive_case_data('NSW', start_date=np.datetime64('2021-06-10'))
+    if dates[-1] >= np.datetime64('2022-01-13'):
+        # Data corrections as of the afternoon of Jan 13th:
+        new[dates==np.datetime64('2022-01-01')] += 2_132
+        new[dates==np.datetime64('2022-01-02')] += 2_132
+        new[dates==np.datetime64('2022-01-03')] += 2_132
+        new[dates==np.datetime64('2022-01-04')] += 2_132
+        new[dates==np.datetime64('2022-01-05')] += 2_132
+        new[dates==np.datetime64('2022-01-06')] += 7_247
+        new[dates==np.datetime64('2022-01-07')] += 7_247
+        new[dates==np.datetime64('2022-01-08')] += 7_247
+        new[dates==np.datetime64('2022-01-09')] += 7_247
+        new[dates==np.datetime64('2022-01-10')] += 7_247
+        new[dates==np.datetime64('2022-01-11')] += 7_247
+        new[dates==np.datetime64('2022-01-12')] += 7_247
 
-print("latest new cases:", new[-1])
+        new[dates==np.datetime64('2022-01-12')] -= 61_387
+
 
 if dates[-1] >= np.datetime64('2022-01-09'):
     TEST_DETECTION_RATE = 0.27
