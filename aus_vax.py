@@ -554,7 +554,11 @@ x_fit = np.arange(-n_fit, 0)
 y_fit = first_actual[-n_fit:]
 
 params, cov = curve_fit(
-    exponential, x_fit, y_fit, [MAX_ELIGIBLE - y_fit[-1], -1 / 14, MAX_ELIGIBLE]
+    exponential,
+    x_fit,
+    y_fit,
+    [MAX_ELIGIBLE - y_fit[-1], -1 / 14, MAX_ELIGIBLE],
+    maxfev=10000,
 )
 
 x_extrap = np.arange(n_extrap)
