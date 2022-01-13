@@ -375,7 +375,7 @@ ax2.legend(
     # labels,
     [handles[idx] for idx in order],
     [labels[idx] for idx in order],
-    loc='upper left',
+    loc='center right',
     ncol=1,
     prop={'size': 8},
 )
