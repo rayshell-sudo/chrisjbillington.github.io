@@ -353,6 +353,8 @@ elif WESTERN_NSW:
 else:
     dates, new = covidlive_case_data('NSW', start_date=np.datetime64('2021-06-10'))
 
+print("latest new cases:", new[-1])
+
 if dates[-1] >= np.datetime64('2022-01-09'):
     TEST_DETECTION_RATE = 0.27
 else:
