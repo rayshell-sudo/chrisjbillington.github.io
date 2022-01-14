@@ -1317,11 +1317,10 @@ for dates, coverage, label in zip(
     first_dose_dates_by_age, first_dose_coverage_by_age, labels_by_age
 ):
     smoothed_coverage = 7 * n_day_average(np.diff(coverage), 7)[6:]
-    smoothed_coverage = gaussian_smoothing(smoothed_coverage, 1)
-
     # Don't plot if there isn't enough data for a week of smoothing:
     if len(dates[7:]) < 2:
         continue
+    smoothed_coverage = gaussian_smoothing(smoothed_coverage, 1)
 
     plt.plot(
         dates[7:],
@@ -1374,11 +1373,12 @@ for dates, coverage, label in zip(
     second_dose_dates_by_age, second_dose_coverage_by_age, labels_by_age
 ):
     smoothed_coverage = 7 * n_day_average(np.diff(coverage), 7)[6:]
-    smoothed_coverage = gaussian_smoothing(smoothed_coverage, 1)
 
     # Don't plot if there isn't enough data for a week of smoothing:
     if len(dates[7:]) < 2:
         continue
+
+    smoothed_coverage = gaussian_smoothing(smoothed_coverage, 1)
 
     plt.plot(
         dates[7:],
