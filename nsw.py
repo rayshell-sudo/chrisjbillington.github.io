@@ -352,8 +352,28 @@ elif WESTERN_NSW:
     new = sum(cases_by_lga[lga] for lga in cases_by_lga if lga in WESTERN_NSW_LGAS) 
 else:
     dates, new = covidlive_case_data('NSW', start_date=np.datetime64('2021-06-10'))
-    if dates[-1] >= np.datetime64('2022-01-13'):
-        # Data corrections as of the afternoon of Jan 13th:
+
+    if dates[-1] >= np.datetime64('2022-01-14'):
+        # Data corrections as of Jan 14th:
+        new[dates==np.datetime64('2022-01-01')] += 4_399
+        new[dates==np.datetime64('2022-01-02')] += 4_399
+        new[dates==np.datetime64('2022-01-03')] += 4_400
+        new[dates==np.datetime64('2022-01-04')] += 4_400
+        new[dates==np.datetime64('2022-01-05')] += 4_400
+        new[dates==np.datetime64('2022-01-06')] += 9_516
+        new[dates==np.datetime64('2022-01-07')] += 10_722
+        new[dates==np.datetime64('2022-01-08')] += 10_722
+        new[dates==np.datetime64('2022-01-09')] += 10_722
+        new[dates==np.datetime64('2022-01-10')] += 10_723
+        new[dates==np.datetime64('2022-01-11')] += 10_723
+        new[dates==np.datetime64('2022-01-12')] += 10_723
+        new[dates==np.datetime64('2022-01-13')] += 3_476
+
+        new[dates==np.datetime64('2022-01-12')] -= 61_387
+        new[dates==np.datetime64('2022-01-13')] -= 37_938
+
+    elif dates[-1] == np.datetime64('2022-01-13'):
+        # Data corrections as of Jan 13th:
         new[dates==np.datetime64('2022-01-01')] += 2_132
         new[dates==np.datetime64('2022-01-02')] += 2_132
         new[dates==np.datetime64('2022-01-03')] += 2_132
