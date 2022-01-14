@@ -968,7 +968,8 @@ plt.axis(
 )
 plt.title('National cumulative 1st/2nd/3rd doses')
 plt.ylabel('Cumulative doses (millions)')
-today = np.datetime64(datetime.now(), 'D')
+# Might not actually be today, but the date the most recent data was published:
+today = dates[-1] + 1
 plt.axvline(today, linestyle=":", color='k', label=f"Today ({today})")
 plt.gca().yaxis.set_major_locator(ticker.MultipleLocator(2.0))
 ax7 = plt.gca()
