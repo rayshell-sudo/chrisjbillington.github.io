@@ -32,7 +32,7 @@ git commit --all -m "TAS update"
 flock "${LOCKFILE}" -c  "git pull --rebase --autostash; git push"
 
 # Animation is slower, so we do it after updating everything else:
-python animate-tas.py
+nice python animate-tas.py
 
 git commit --all -m "TAS animation"
 

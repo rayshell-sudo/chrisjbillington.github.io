@@ -32,7 +32,7 @@ git commit --all -m "SA update"
 flock "${LOCKFILE}" -c  "git pull --rebase --autostash; git push"
 
 # Animation is slower, so we do it after updating everything else:
-python animate-sa.py
+nice python animate-sa.py
 
 git commit --all -m "SA animation"
 

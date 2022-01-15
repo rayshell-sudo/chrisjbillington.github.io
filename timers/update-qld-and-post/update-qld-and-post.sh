@@ -32,7 +32,7 @@ git commit --all -m "QLD update"
 flock "${LOCKFILE}" -c  "git pull --rebase --autostash; git push"
 
 # Animation is slower, so we do it after updating everything else:
-python animate-qld.py
+nice python animate-qld.py
 
 git commit --all -m "QLD animation"
 

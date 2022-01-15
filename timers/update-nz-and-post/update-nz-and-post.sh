@@ -32,7 +32,7 @@ git commit --all -m "NZ update"
 flock "${LOCKFILE}" -c  "git pull --rebase --autostash; git push"
 
 # Animation is slower, so we do it after updating everything else:
-python animate-nz.py
+nice python animate-nz.py
 
 git commit --all -m "NZ animation"
 

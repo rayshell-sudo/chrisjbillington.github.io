@@ -32,7 +32,7 @@ git commit --all -m "NSW update"
 flock "${LOCKFILE}" -c  "git pull --rebase --autostash; git push"
 
 # Animation is slower, so we do it after updating everything else:
-python animate-nsw.py
+nice python animate-nsw.py
 
 git commit --all -m "NSW animation"
 

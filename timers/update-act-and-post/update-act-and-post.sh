@@ -32,7 +32,7 @@ git commit --all -m "ACT update"
 flock "${LOCKFILE}" -c  "git pull --rebase --autostash; git push"
 
 # Animation is slower, so we do it after updating everything else:
-python animate-act.py
+nice python animate-act.py
 
 git commit --all -m "ACT animation"
 

@@ -32,7 +32,7 @@ git commit --all -m "NT update"
 flock "${LOCKFILE}" -c  "git pull --rebase --autostash; git push"
 
 # Animation is slower, so we do it after updating everything else:
-python animate-nt.py
+nice python animate-nt.py
 
 git commit --all -m "NT animation"
 

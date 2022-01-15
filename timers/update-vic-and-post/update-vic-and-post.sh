@@ -32,7 +32,7 @@ git commit --all -m "VIC update"
 flock "${LOCKFILE}" -c  "git pull --rebase --autostash; git push"
 
 # Animation is slower, so we do it after updating everything else:
-python animate-vic.py
+nice python animate-vic.py
 
 git commit --all -m "VIC animation"
 
