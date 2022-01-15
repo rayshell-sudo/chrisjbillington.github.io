@@ -211,7 +211,59 @@ else:
     # dates, new = statewide_data()
     dates, new = covidlive_case_data('VIC', start_date=np.datetime64('2021-05-10'))
 
-    if dates[-1] >= np.datetime64('2022-01-13'):
+    if dates[-1] >= np.datetime64('2022-01-15'):
+        # Data corrections as of the afternoon of Jan 14th:
+        new[dates==np.datetime64('2021-12-31')] += 71
+        new[dates==np.datetime64('2022-01-01')] += 624
+        new[dates==np.datetime64('2022-01-02')] += 2_149
+        new[dates==np.datetime64('2022-01-03')] += 5_784
+        new[dates==np.datetime64('2022-01-04')] += 8_289
+        new[dates==np.datetime64('2022-01-05')] += 10_626
+        new[dates==np.datetime64('2022-01-06')] += 13_223
+        new[dates==np.datetime64('2022-01-07')] += 14_894
+        new[dates==np.datetime64('2022-01-08')] += 16_310
+        new[dates==np.datetime64('2022-01-09')] += 15_089
+        new[dates==np.datetime64('2022-01-10')] += 15_370
+        new[dates==np.datetime64('2022-01-11')] += 13_725
+        new[dates==np.datetime64('2022-01-12')] += 12_918
+        new[dates==np.datetime64('2022-01-13')] += 10_960
+        new[dates==np.datetime64('2022-01-14')] += 7_714
+
+        new[dates==np.datetime64('2022-01-07')] -= 26_428
+        new[dates==np.datetime64('2022-01-08')] -= 22_051
+        new[dates==np.datetime64('2022-01-09')] -= 17_190
+        new[dates==np.datetime64('2022-01-10')] -= 18_503
+        new[dates==np.datetime64('2022-01-11')] -= 18_434
+        new[dates==np.datetime64('2022-01-12')] -= 16_843
+        new[dates==np.datetime64('2022-01-13')] -= 15_440
+        new[dates==np.datetime64('2022-01-14')] -= 12_857
+
+    elif dates[-1] == np.datetime64('2022-01-14'):
+        # Data corrections as of the afternoon of Jan 14th:
+        new[dates==np.datetime64('2021-12-31')] += 71
+        new[dates==np.datetime64('2022-01-01')] += 624
+        new[dates==np.datetime64('2022-01-02')] += 2_149
+        new[dates==np.datetime64('2022-01-03')] += 5_784
+        new[dates==np.datetime64('2022-01-04')] += 8_289
+        new[dates==np.datetime64('2022-01-05')] += 10_626
+        new[dates==np.datetime64('2022-01-06')] += 13_223
+        new[dates==np.datetime64('2022-01-07')] += 14_894
+        new[dates==np.datetime64('2022-01-08')] += 15_745
+        new[dates==np.datetime64('2022-01-09')] += 14_523
+        new[dates==np.datetime64('2022-01-10')] += 14_804
+        new[dates==np.datetime64('2022-01-11')] += 13_159
+        new[dates==np.datetime64('2022-01-12')] += 12_352
+        new[dates==np.datetime64('2022-01-13')] += 8_646
+
+        new[dates==np.datetime64('2022-01-07')] -= 26_428
+        new[dates==np.datetime64('2022-01-08')] -= 22_051
+        new[dates==np.datetime64('2022-01-09')] -= 17_190
+        new[dates==np.datetime64('2022-01-10')] -= 18_503
+        new[dates==np.datetime64('2022-01-11')] -= 18_434
+        new[dates==np.datetime64('2022-01-12')] -= 16_843
+        new[dates==np.datetime64('2022-01-13')] -= 15_440
+
+    elif dates[-1] == np.datetime64('2022-01-13'):
         # Data corrections as of the afternoon of Jan 13th:
         new[dates==np.datetime64('2021-12-31')] += 71
         new[dates==np.datetime64('2022-01-01')] += 624
@@ -219,7 +271,7 @@ else:
         new[dates==np.datetime64('2022-01-03')] += 5_784
         new[dates==np.datetime64('2022-01-04')] += 8_289
         new[dates==np.datetime64('2022-01-05')] += 10_626
-        new[dates==np.datetime64('2022-01-06')] += 13_233
+        new[dates==np.datetime64('2022-01-06')] += 13_223
         new[dates==np.datetime64('2022-01-07')] += 14_153
         new[dates==np.datetime64('2022-01-08')] += 15_004
         new[dates==np.datetime64('2022-01-09')] += 13_782

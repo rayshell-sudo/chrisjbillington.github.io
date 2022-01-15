@@ -354,7 +354,7 @@ else:
     dates, new = covidlive_case_data('NSW', start_date=np.datetime64('2021-06-10'))
 
     if dates[-1] >= np.datetime64('2022-01-15'):
-        # Data corrections as of Jan 14th:
+        # Data corrections as of Jan 15th:
         new[dates==np.datetime64('2022-01-01')] += 5_230
         new[dates==np.datetime64('2022-01-02')] += 5_231
         new[dates==np.datetime64('2022-01-03')] += 5_232
