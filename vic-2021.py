@@ -211,8 +211,37 @@ else:
     # dates, new = statewide_data()
     dates, new = covidlive_case_data('VIC', start_date=np.datetime64('2021-05-10'))
 
-    if dates[-1] >= np.datetime64('2022-01-15'):
-        # Data corrections as of the afternoon of Jan 14th:
+    if dates[-1] >= np.datetime64('2022-01-16'):
+        # Data corrections as of the afternoon of Jan 16th:
+        new[dates==np.datetime64('2021-12-31')] += 71
+        new[dates==np.datetime64('2022-01-01')] += 624
+        new[dates==np.datetime64('2022-01-02')] += 2_149
+        new[dates==np.datetime64('2022-01-03')] += 5_784
+        new[dates==np.datetime64('2022-01-04')] += 8_289
+        new[dates==np.datetime64('2022-01-05')] += 10_626
+        new[dates==np.datetime64('2022-01-06')] += 13_223
+        new[dates==np.datetime64('2022-01-07')] += 14_894
+        new[dates==np.datetime64('2022-01-08')] += 16_310
+        new[dates==np.datetime64('2022-01-09')] += 15_523
+        new[dates==np.datetime64('2022-01-10')] += 15_804
+        new[dates==np.datetime64('2022-01-11')] += 14_159
+        new[dates==np.datetime64('2022-01-12')] += 13_352
+        new[dates==np.datetime64('2022-01-13')] += 11_935
+        new[dates==np.datetime64('2022-01-14')] += 9_678
+        new[dates==np.datetime64('2022-01-15')] += 6_202
+
+        new[dates==np.datetime64('2022-01-07')] -= 26_428
+        new[dates==np.datetime64('2022-01-08')] -= 22_051
+        new[dates==np.datetime64('2022-01-09')] -= 17_190
+        new[dates==np.datetime64('2022-01-10')] -= 18_503
+        new[dates==np.datetime64('2022-01-11')] -= 18_434
+        new[dates==np.datetime64('2022-01-12')] -= 16_843
+        new[dates==np.datetime64('2022-01-13')] -= 15_440
+        new[dates==np.datetime64('2022-01-14')] -= 12_857
+        new[dates==np.datetime64('2022-01-15')] -= 10_337
+
+    elif dates[-1] == np.datetime64('2022-01-15'):
+        # Data corrections as of the afternoon of Jan 15th:
         new[dates==np.datetime64('2021-12-31')] += 71
         new[dates==np.datetime64('2022-01-01')] += 624
         new[dates==np.datetime64('2022-01-02')] += 2_149
