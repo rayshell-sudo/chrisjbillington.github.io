@@ -967,10 +967,12 @@ if VAX or not (LGA or OTHERS or CONCERN or SYDNEY or NOT_SYDNEY or HUNTER or ILL
     ax2.set_yscale('linear')
     if OLD and dates[-1] < np.datetime64('2021-12-10'):
         ymax = 2_500
+    elif OLD and dates[-1] < np.datetime64('2022-01-15'):
+        ymax = 60_000
     elif VAX:
-        ymax = 100_000
+        ymax = 60_000
     else:
-        ymax = 100_000
+        ymax = 60_000
     ax2.axis(ymin=0, ymax=ymax)
     ax2.yaxis.set_major_locator(mticker.MultipleLocator(ymax / 10))
     ax2.yaxis.set_major_formatter(mticker.EngFormatter())

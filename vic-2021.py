@@ -885,10 +885,12 @@ if not LGA:
     maxproj = new_projection[t_projection < (END_PLOT - dates[-1]).astype(int)].max()
     if OLD and dates[-1] < np.datetime64('2021-12-24'):
         ymax = 4000
+    elif OLD and dates[-1] < np.datetime64('2022-01-15'):
+        ymax = 100_000
     elif VAX:
-        ymax = 120_000
+        ymax = 50_000
     else:
-        ymax = 60_000
+        ymax = 50_000
 
     ax2.axis(ymin=0, ymax=ymax)
     ax2.yaxis.set_major_locator(mticker.MultipleLocator(ymax / 10))
