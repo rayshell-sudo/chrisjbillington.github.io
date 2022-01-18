@@ -3,6 +3,7 @@ from datetime import datetime
 from pytz import timezone
 from pathlib import Path
 import json
+import pickle
 
 from scipy.signal import convolve
 import numpy as np
@@ -309,10 +310,13 @@ GREATER_SYDNEY_LGAS = {
     "Shellharbour"
 }
 
-dates, cases_by_lga = lga_data()
-
 if LGA_IX is not None or OTHERS or CONCERN or SYDNEY or NOT_SYDNEY or HUNTER or ILLAWARRA or WESTERN_NSW:
-    dates, cases_by_lga = lga_data()
+    LGA_DATA_CACHE = Path(f'NSW_LGA_DATA.temp.pickle')
+    if not LGA_DATA_CACHE.exists():
+        dates, cases_by_lga = lga_data()
+        LGA_DATA_CACHE.write_bytes(pickle.dumps((dates, cases_by_lga)))
+    dates, cases_by_lga = pickle.loads(LGA_DATA_CACHE.read_bytes())
+        
     # Sort LGAs in reverse order by last 14d cases
     sorted_lgas_of_concern = sorted(
         LGAs_OF_CONCERN, key=lambda k: -cases_by_lga[k][-14:].sum()
