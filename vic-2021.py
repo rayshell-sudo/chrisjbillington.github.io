@@ -3,6 +3,7 @@ from datetime import datetime
 from pytz import timezone
 from pathlib import Path
 import json
+import pickle
 
 from scipy.signal import convolve
 import numpy as np
@@ -196,7 +197,12 @@ def projected_vaccine_immune_population(t, historical_doses_per_100):
 
 
 if LGA_IX is not None:
-    dates, cases_by_lga = lga_data()
+    today = np.datetime64(datetime.now(), 'D')
+    LGA_DATA_CACHE = Path(f'VIC_LGA_DATA_{today}.temp.pickle')
+    if not LGA_DATA_CACHE.exists():
+        dates, cases_by_lga = lga_data()
+        LGA_DATA_CACHE.write_bytes(pickle.dumps((dates, cases_by_lga)))
+    dates, cases_by_lga = pickle.loads(LGA_DATA_CACHE.read_bytes())
     # Sort LGAs in reverse order by last 14d cases
     sorted_lgas = sorted(
         cases_by_lga.keys(), key=lambda k: -cases_by_lga[k][-14:].sum()
