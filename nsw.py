@@ -77,7 +77,8 @@ def lga_data(start_date=np.datetime64('2021-06-10')):
         "download/confirmed_cases_table1_location.csv"
     )
     df = pd.read_csv(url)
-
+    df = df.dropna()
+    
     LGAs = set(df['lga_name19'])
     cases_by_lga = {}
     for lga in LGAs:
