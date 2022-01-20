@@ -12,7 +12,7 @@ import matplotlib.dates as mdates
 import matplotlib.ticker as mticker
 
 from reff_plots_common import (
-    covidlive_case_data,
+    covidlive_new_cases,
     covidlive_doses_per_100,
     exponential,
     determine_smoothed_cases_and_Reff,
@@ -98,7 +98,7 @@ def projected_vaccine_immune_population(t, historical_doses_per_100):
     return immune
 
 
-dates, new = covidlive_case_data('SA', start_date=np.datetime64('2021-11-20'))
+dates, new = covidlive_new_cases('SA', start_date=np.datetime64('2021-11-20'))
 
 if dates[-1] >= np.datetime64('2022-01-09'):
     TEST_DETECTION_RATE = 0.27
