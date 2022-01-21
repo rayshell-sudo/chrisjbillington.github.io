@@ -117,8 +117,6 @@ IMAGES = [
 ]
 
 if __name__ == '__main__':
-    import sys
-    sys.exit(0)
     client_id = sys.argv[1]
     client_secret = sys.argv[2]
     password = sys.argv[3]
