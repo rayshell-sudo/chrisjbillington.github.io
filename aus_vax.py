@@ -1339,7 +1339,7 @@ plt.axis(
     xmin=np.datetime64('2021-05-09'),
     xmax=np.datetime64('2022-06-01'),
     ymin=0,
-    ymax=15,
+    ymax=16,
 )
 plt.title("First dose weekly increase by age group")
 plt.ylabel("Vaccination rate (% of age group / week)")
@@ -1397,7 +1397,7 @@ plt.axis(
     xmin=np.datetime64('2021-05-09'),
     xmax=np.datetime64('2022-06-01'),
     ymin=0,
-    ymax=15,
+    ymax=16,
 )
 plt.title("Second dose weekly increase by age group")
 plt.ylabel("Vaccination rate (% of age group / week)")
