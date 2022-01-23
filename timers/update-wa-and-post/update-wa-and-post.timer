@@ -1,0 +1,8 @@
+[Unit]
+Description=Timer for update-wa-and-post.service
+
+[Timer]
+OnCalendar=*-*-* 14:00:00
+
+[Install]
+WantedBy=timers.target

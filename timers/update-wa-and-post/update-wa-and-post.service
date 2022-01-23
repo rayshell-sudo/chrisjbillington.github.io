@@ -1,0 +1,6 @@
+[Unit]
+Description=Update WA plots and post to reddit
+
+[Service]
+ExecStart=/home/bilbo/chrisbillington.net/chrisjbillington.github.io/timers/update-wa-and-post/update-wa-and-post.sh
+User=bilbo
