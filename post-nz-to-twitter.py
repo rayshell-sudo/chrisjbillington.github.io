@@ -36,12 +36,27 @@ def tweet_1_text():
     NZ R_eff as of {today} with daily cases and restrictions. Latest estimate:
     R_eff = {R_eff:.2f} ± {u_R_eff:.2f}
 
-    Cases shown on both a linear scale (first image) and log scale (second image).
+    Plus SIR model projection.
+
+    Cases shown on a linear scale (log scale in next tweet).
 
     More info https://chrisbillington.net/COVID_NZ.html"""
     return fmt(COMMENT_TEXT)
 
 def tweet_2_text():
+    today, R_eff, u_R_eff = stats()
+    COMMENT_TEXT = f"""\
+    NZ R_eff as of {today} with daily cases and restrictions. Latest estimate:
+    R_eff = {R_eff:.2f} ± {u_R_eff:.2f}
+
+    Plus SIR model projection.
+
+    (Cases shown on a log scale)
+
+    More info https://chrisbillington.net/COVID_NZ.html"""
+    return fmt(COMMENT_TEXT)
+
+def tweet_3_text():
     stats = json.loads(Path("latest_nz_stats.json").read_text())
     R_eff_auckland = stats['R_eff_auckland']
     u_R_eff_auckland = stats['u_R_eff_auckland']
@@ -54,14 +69,10 @@ def tweet_2_text():
     NZ excluding Auckland: R_eff = {R_eff_notauckland:.02f} ± {u_R_eff_notauckland:.02f}
 
     (Cases shown on a log scale)
-
-    Case growth outside Auckland should be interpreted with caution, as it is a mix of
-    local growth and cases leaking from Auckland. Thus this R_eff may be an
-    overestimate.
     """
     return fmt(COMMENT_TEXT)
 
-def tweet_3_text():
+def tweet_4_text():
     stats = json.loads(Path("latest_nz_stats.json").read_text())
 
     proj_lines = [
@@ -105,25 +116,34 @@ if __name__ == '__main__':
 
     # Upload images
     linear = api.media_upload("COVID_NZ_linear.png")
+    vax_linear = api.media_upload("COVID_NZ_vax_linear.png")
     log = api.media_upload("COVID_NZ.png")
+    vax_log = api.media_upload("COVID_NZ_vax.png")
     auckland = api.media_upload("COVID_NZ_auckland.png")
     notauckland = api.media_upload("COVID_NZ_notauckland.png")
  
     # Post tweets with images
     tweet_1 = api.update_status(
         status=tweet_1_text(),
-        media_ids=[linear.media_id, log.media_id],
+        media_ids=[linear.media_id, vax_linear.media_id],
     )
  
     tweet_2 = api.update_status(
         status=tweet_2_text(),
+        media_ids=[log.media_id, vax_log.media_id],
         in_reply_to_status_id=tweet_1.id,
-        media_ids=[auckland.media_id, notauckland.media_id],
         auto_populate_reply_metadata=True,
     )
 
     tweet_3 = api.update_status(
         status=tweet_3_text(),
+        in_reply_to_status_id=tweet_1.id,
+        media_ids=[auckland.media_id, notauckland.media_id],
+        auto_populate_reply_metadata=True,
+    )
+
+    tweet_4 = api.update_status(
+        status=tweet_4_text(),
         in_reply_to_status_id=tweet_2.id,
         auto_populate_reply_metadata=True,
     )

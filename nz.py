@@ -98,7 +98,8 @@ def get_todays_cases():
         "covid-19-novel-coronavirus/covid-19-data-and-statistics/covid-19-current-cases"
     )
 
-    today = datetime.now().strftime('%d %B %Y')
+    today = datetime.now()# - timedelta(days=1)
+    today = today.strftime('%d %B %Y')
     updated_today_string = f'Page last updated: <span class="date">{today}</span>'
     for i in range(10):
         page = requests.get(url, headers=curl_headers).content.decode('utf8')
@@ -137,7 +138,8 @@ def get_todays_cases():
 
 def midnight_to_midnight_data():
 
-    today = datetime.now().strftime('%Y-%m-%d')
+    today = datetime.now()# - timedelta(days=1)
+    today = today.strftime('%Y-%m-%d')
     URL = f"https://www.health.govt.nz/system/files/documents/pages/covid_cases_{today}.csv"
 
     df = None
@@ -178,7 +180,8 @@ def moh_latest_cumulative_doses():
         "covid-19-novel-coronavirus/covid-19-data-and-statistics/covid-19-vaccine-data"
     )
 
-    today = datetime.now().strftime('%d %B %Y')
+    today = datetime.now()# - timedelta(days=1)
+    today = today.strftime('%d %B %Y')
     updated_today_string = f'Page last updated: <span class="date">{today}</span>'
     for i in range(10):
         page = requests.get(url, headers=curl_headers).content.decode('utf8')
@@ -327,7 +330,7 @@ if OLD:
     doses_per_100 = doses_per_100[:START_VAX_PROJECTIONS + OLD_END_IX]
 
 START_PLOT = np.datetime64('2021-08-16')
-END_PLOT = np.datetime64('2022-03-01') if VAX else dates[-1] + 28
+END_PLOT = np.datetime64('2022-05-01') if VAX else dates[-1] + 28
 
 tau = 5  # reproductive time of the virus in days
 R_clip = 50
@@ -382,7 +385,7 @@ else:
 
 # Fudge what would happen with a different R_eff:
 # cov_R_new_smoothed[-1] *= 0.05 / np.sqrt(variance_R[-1])
-# R[-1] = 0.75
+# R[-1] = 2.5
 # variance_R[-1] = 0.05**2
 
 R = R.clip(0, None)
@@ -700,28 +703,16 @@ else:
     fig1.savefig(f'COVID_NZ{suffix}.png', dpi=133)
 if not (AUCKLAND or NOTAUCKLAND):
     ax2.set_yscale('linear')
-    maxproj = new_projection[t_projection < (END_PLOT - dates[-1]).astype(int)].max()
-    ymax = 400
-    # if OLD:
-    #     ymax = 400
-    # elif maxproj < 60:
-    #     ymax = 80
-    # elif maxproj < 120:
-    #     ymax = 160
-    # elif maxproj < 150:
-    #     ymax = 200
-    # elif maxproj < 300:
-    #     ymax = 400
-    # elif maxproj < 600:
-    #     ymax = 800
-    # elif maxproj < 1200:
-    #     ymax = 1600
-    # elif maxproj < 1800:
-    #     ymax = 2400
-    # elif maxproj < 2400:
-    #     ymax = 3200
-    # else:
-    #     ymax = 4000
+
+    if OLD and dates[-1] < np.datetime64('2022-01-24'):
+        ymax = 400
+    elif OLD:
+        ymax = 40_000
+    elif VAX:
+        ymax = 40_000
+    else:
+        ymax = 400
+
     ax2.axis(ymin=0, ymax=ymax)
     ax2.yaxis.set_major_locator(mticker.MultipleLocator(ymax / 8))
     ax2.yaxis.set_major_formatter(mticker.EngFormatter())
