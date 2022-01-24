@@ -6,7 +6,7 @@ set -euxo
 source "$(dirname "$BASH_SOURCE")/../common.sh"
 
 # Wait for WA data to become available:
-if python wait-for-wa-update.py | grep "ready!"; then
+if python wait-for-wa-to-update.py | grep "ready!"; then
     ./wa.sh
 fi
 
