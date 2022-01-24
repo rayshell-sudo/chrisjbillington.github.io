@@ -214,6 +214,7 @@ else:
 
 MASKS = np.datetime64('2021-12-24')
 END_MASKS = np.datetime64('2022-01-08')
+MASKS_AGAIN = np.datetime64('2022-01-16')
 
 fig1 = plt.figure(figsize=(10, 6))
 ax1 = plt.axes()
@@ -225,6 +226,14 @@ ax1.fill_betweenx(
     color=whiten("green", 0.5),
     linewidth=0,
     label="Indoor mask mandate",
+)
+
+ax1.fill_betweenx(
+    [-10, 10],
+    [MASKS_AGAIN, MASKS_AGAIN],
+    [END_PLOT, END_PLOT],
+    color=whiten("green", 0.5),
+    linewidth=0,
 )
 
 ax1.fill_between(
