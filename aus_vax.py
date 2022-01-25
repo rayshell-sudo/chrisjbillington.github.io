@@ -334,7 +334,14 @@ PFIZER_PROJECTED_SHIPMENTS= """ # In thousands per week
 """
 
 PLOT_END_DATE = np.datetime64('2022-06-01')
-CUMULATIVE_YMAX = 50  # million
+
+# Number of people 12 years old and older, from ABS ERP June 2020
+# MAX_ELIGIBLE = 21_852_349
+# Number of people 5 years old and older, from ABS ERP June 2020
+MAX_ELIGIBLE = 24_072_361
+
+
+CUMULATIVE_YMAX = 3 * MAX_ELIGIBLE / 1e6
 DAILY_YMAX = 300
 
 PROJECT = True
@@ -365,8 +372,6 @@ PFIZER_WASTAGE = 0.05
 # in their forties, 50% of ~2M NSW residents 18-39, 350k from early in the rollout
 # MAX_AZ_ADMINISTERED = .9 * 5e6 + .4 * 3e6 + .5 * 1e6 + 0.5 * 2e6 + 350e3
 MAX_AZ_ADMINISTERED = 7e6
-# Number of people 12 years old and older, from ABS ERP June 2020
-MAX_ELIGIBLE = 21_852_349
 
 # Number of people 16 years old and older, from ABS ERP June 2020
 POP_16_PLUS = 20_607_204
@@ -984,28 +989,28 @@ if second_actual[-1] > 0.9 * MAX_ELIGIBLE:
 else:
     PHASE_D_DATE = proj_dates[proj_second_doses.searchsorted(0.9 * MAX_ELIGIBLE)] + 1
 
-plt.axhline(
-    0.7 * MAX_ELIGIBLE / 1e6,
-    linestyle="--",
-    color='C3',
-    label=f"70% target ({PHASE_B_DATE})",
-)
-plt.axhline(
-    0.8 * MAX_ELIGIBLE / 1e6,
-    linestyle="--",
-    color='C4',
-    label=f"80% target ({PHASE_C_DATE})",
-)
-plt.axhline(
-    0.9 * MAX_ELIGIBLE / 1e6,
-    linestyle="--",
-    color='C5',
-    label=f"90% target ({PHASE_D_DATE})",
-)
+# plt.axhline(
+#     0.7 * MAX_ELIGIBLE / 1e6,
+#     linestyle="--",
+#     color='C3',
+#     label=f"70% target ({PHASE_B_DATE})",
+# )
+# plt.axhline(
+#     0.8 * MAX_ELIGIBLE / 1e6,
+#     linestyle="--",
+#     color='C4',
+#     label=f"80% target ({PHASE_C_DATE})",
+# )
+# plt.axhline(
+#     0.9 * MAX_ELIGIBLE / 1e6,
+#     linestyle="--",
+#     color='C5',
+#     label=f"90% target ({PHASE_D_DATE})",
+# )
 twinax = plt.twinx()
 twinax.axis(ymin=0, ymax=100)
 twinax.yaxis.set_major_locator(ticker.MultipleLocator(10.0))
-plt.ylabel("Percentage of eligible (12+) population")
+plt.ylabel("Percentage of eligible (5+) population")
 
 
 for ax in [ax1, ax2, ax3, ax4, ax5, ax6, ax7]:
@@ -1403,17 +1408,17 @@ plt.title("Second dose weekly increase by age group")
 plt.ylabel("Vaccination rate (% of age group / week)")
 
 
-
-POPS_12_PLUS = {
-    'AUS': 21859854,
-    'NSW': 6955981,
-    'VIC': 5716185,
-    'QLD': 4382853,
-    'WA': 2247847,
-    'SA': 1523147,
-    'TAS': 466480,
-    'ACT': 363730,
-    'NT': 203631,
+# <12+> + <5-11>
+POPS_5_PLUS = {
+    'AUS': 21_859_854 + 2_258_250,
+    'NSW': 6955981 + 716_460,
+    'VIC': 5716185 + 578_499,
+    'QLD': 4382853 + 478_731,
+    'WA': 2247847 + 244_154,
+    'SA': 1523147 + 148_816,
+    'TAS': 466480 + 45_033,
+    'ACT': 363730 + 39_789,
+    'NT': 203631 + 24_750,
 }
 
 
@@ -1436,7 +1441,7 @@ ax17 = plt.gca()
 # fig18 = plt.figure(figsize=(8, 6))
 # ax18 = plt.gca()
 
-for state, pop in POPS_12_PLUS.items():
+for state, pop in POPS_5_PLUS.items():
     dates, first, second = first_and_second_by_state(state)
     third_dates, third = third_by_state(state)
 
@@ -1503,9 +1508,9 @@ for ax in [ax13, ax14, ax15, ax16, ax17]: # ax18]:
         ymax=10 if rate_plot else 100,
     )
     if rate_plot:
-        ax.set_ylabel("Vaccination rate (% of 12+ population / week)")
+        ax.set_ylabel("Vaccination rate (% of 5+ population / week)")
     else:
-        ax.set_ylabel("Vaccine coverage (% of 12+ population)")
+        ax.set_ylabel("Vaccine coverage (% of 5+ population)")
 
 
 ax13.set_title("First dose coverage by state/territory")
