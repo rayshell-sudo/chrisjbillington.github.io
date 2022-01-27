@@ -100,6 +100,9 @@ def projected_vaccine_immune_population(t, historical_doses_per_100):
 
 dates, new = covidlive_new_cases('NT', start_date=np.datetime64('2021-11-20'))
 
+# Data correction:
+new[dates==np.datetime64('2022-01-25')] = 778
+
 if dates[-1] >= np.datetime64('2022-01-09'):
     TEST_DETECTION_RATE = 0.27
 else:
