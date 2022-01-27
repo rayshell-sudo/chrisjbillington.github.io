@@ -15,7 +15,7 @@ import pandas as pd
 
 
 from reff_plots_common import (
-    covidlive_case_data,
+    covidlive_new_cases,
     covidlive_doses_per_100,
     exponential,
     determine_smoothed_cases_and_Reff,
@@ -357,7 +357,7 @@ elif ILLAWARRA:
 elif WESTERN_NSW:
     new = sum(cases_by_lga[lga] for lga in cases_by_lga if lga in WESTERN_NSW_LGAS) 
 else:
-    dates, new = covidlive_case_data('NSW', start_date=np.datetime64('2021-06-10'))
+    dates, new = covidlive_new_cases('NSW', start_date=np.datetime64('2021-06-10'))
 
     if dates[-1] >= np.datetime64('2022-01-16'):
         # Data corrections as of Jan 16th:
