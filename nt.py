@@ -100,8 +100,9 @@ def projected_vaccine_immune_population(t, historical_doses_per_100):
 
 dates, new = covidlive_new_cases('NT', start_date=np.datetime64('2021-11-20'))
 
-# Data correction:
+# Data corrections:
 new[dates==np.datetime64('2022-01-25')] = 778
+new[dates==np.datetime64('2022-01-26')] = 747
 
 if dates[-1] >= np.datetime64('2022-01-09'):
     TEST_DETECTION_RATE = 0.27
@@ -444,13 +445,13 @@ if True: # Just to keep the diff with nsw.py sensible here
     ax2.set_yscale('linear')
     maxproj = new_projection[t_projection < (END_PLOT - dates[-1]).astype(int)].max()
     if OLD and dates[-1] < np.datetime64('2021-01-15'):
-        ymax = 4_000
+        ymax = 2_000
     elif OLD:
-        ymax = 1_000
+        ymax = 2_000
     elif VAX:
-        ymax = 1_000
+        ymax = 2_000
     else:
-        ymax = 1_000
+        ymax = 2_000
     # if VAX:
     #     ymax = 40
     # else:
