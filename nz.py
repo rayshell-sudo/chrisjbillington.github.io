@@ -544,7 +544,7 @@ else:
 
 
 ax1.axhline(1.0, color='k', linewidth=1)
-ax1.axis(xmin=START_PLOT, xmax=END_PLOT, ymin=0, ymax=4)
+ax1.axis(xmin=START_PLOT, xmax=END_PLOT, ymin=0, ymax=5)
 ax1.grid(True, linestyle=":", color='k', alpha=0.5)
 
 ax1.set_ylabel(R"$R_\mathrm{eff}$")
@@ -616,7 +616,7 @@ ax2.fill_between(
 ax2.set_ylabel(f"Daily cases (log scale)")
 
 ax2.set_yscale('log')
-ax2.axis(ymin=1, ymax=10_000)
+ax2.axis(ymin=1, ymax=100_000)
 fig1.tight_layout(pad=1.8)
 
 handles, labels = ax1.get_legend_handles_labels()
@@ -707,14 +707,14 @@ if not (AUCKLAND or NOTAUCKLAND):
     if OLD and dates[-1] < np.datetime64('2022-01-24'):
         ymax = 400
     elif OLD:
-        ymax = 1_000
+        ymax = 20_000
     elif VAX:
-        ymax = 1_000
+        ymax = 20_000
     else:
         ymax = 400
 
     ax2.axis(ymin=0, ymax=ymax)
-    ax2.yaxis.set_major_locator(mticker.MultipleLocator(ymax / 8))
+    ax2.yaxis.set_major_locator(mticker.MultipleLocator(ymax / 10))
     ax2.yaxis.set_major_formatter(mticker.EngFormatter())
     ax2.set_ylabel("Daily confirmed cases (linear scale)")
     if OLD:
