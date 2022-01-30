@@ -707,9 +707,9 @@ if not (AUCKLAND or NOTAUCKLAND):
     if OLD and dates[-1] < np.datetime64('2022-01-24'):
         ymax = 400
     elif OLD:
-        ymax = 20_000
+        ymax = 40_000
     elif VAX:
-        ymax = 20_000
+        ymax = 40_000
     else:
         ymax = 400
 
