@@ -1,23 +1,18 @@
-# script to wait for QA case numbers for today to appear on covidlive.
+# script to wait for WA case numbers to be released
 
-import pandas as pd
 import time
+from datetime import datetime, timedelta
+from get_wa_cases import get_cases
 
-def covidlive_updated_today():
-    """Check covidlive for WA case numbers for today, and return bool for whether
-    they're there."""
-    try:
-        df = pd.read_html('https://covidlive.com.au/report/daily-source-overseas/wa')[1]
-    except Exception as e:
-        print(str(e))
-        return False
-    return df['LOCAL'][0] not in  ['-', df['LOCAL'][1]]
+def press_release_today():
+    yesterday = f"{datetime.now() - timedelta(days=1):%Y-%m-%d}"
+    if yesterday in get_cases():
+        return True
+    return False
+
 
 if __name__ == '__main__':
-    # Hit covidlive once every 5 minutes checking if it's updated:
-    while not covidlive_updated_today():
+    # Check once every 5 minutes for a press release
+    while not press_release_today():
         time.sleep(300)
-    # After it is updated, wait an extra minute. Sometimes the initial update is like,
-    # zero or something.
-    time.sleep(60)
     print("ready!")

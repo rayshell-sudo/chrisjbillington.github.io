@@ -12,7 +12,6 @@ import matplotlib.dates as mdates
 import matplotlib.ticker as mticker
 
 from reff_plots_common import (
-    covidlive_case_data,
     covidlive_doses_per_100,
     exponential,
     determine_smoothed_cases_and_Reff,
@@ -23,6 +22,8 @@ from reff_plots_common import (
     whiten,
     th,
 )
+
+from get_wa_cases import get_cases
 
 # Our uncertainty calculations are stochastic. Make them reproducible, at least:
 np.random.seed(0)
@@ -97,8 +98,9 @@ def projected_vaccine_immune_population(t, historical_doses_per_100):
 
     return immune
 
-
-dates, new = covidlive_case_data('WA', start_date=np.datetime64('2021-12-10'))
+case_data = get_cases()
+dates = np.array([np.datetime64(d) for d in case_data.keys()])
+new = np.array(list(case_data.values()))
 
 TEST_DETECTION_RATE = 0.27
     
@@ -434,7 +436,7 @@ if True: # Just to keep the diff with nsw.py sensible here
     ax2.set_yscale('linear')
     maxproj = new_projection[t_projection < (END_PLOT - dates[-1]).astype(int)].max()
     if VAX:
-        ymax = 10_000
+        ymax = 100
     else:
         ymax = 100
     ax2.axis(ymin=0, ymax=ymax)
