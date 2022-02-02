@@ -107,6 +107,7 @@ new[dates==np.datetime64('2022-01-27')] = 1006
 new[dates==np.datetime64('2022-01-28')] = 879
 new[dates==np.datetime64('2022-01-29')] = 901
 new[dates==np.datetime64('2022-01-30')] = 912
+new[dates==np.datetime64('2022-01-31')] = 1038
 
 if dates[-1] >= np.datetime64('2022-01-09'):
     TEST_DETECTION_RATE = 0.27
